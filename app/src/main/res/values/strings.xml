@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FuBang_Live</string>
+    <string name="bottom_radio_mine">我的</string>
+    <string name="bottom_radio_look">关注</string>
+    <string name="bottom_radio_direct">附近</string>
+    <string name="bottom_radio_head">首页</string>
+</resources>
