@@ -14,6 +14,10 @@ import android.widget.Toast;
 
 import com.fubang.live.R;
 import com.fubang.live.adapter.FragmentTabAdapter;
+import com.fubang.live.ui.fragment.FollowFragment;
+import com.fubang.live.ui.fragment.HomeFragment;
+import com.fubang.live.ui.fragment.MineFragment;
+import com.fubang.live.ui.fragment.NearFragment;
 
 import java.util.ArrayList;
 
@@ -61,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initview() {
+        fragments.add(0, new HomeFragment());
+        fragments.add(1, new NearFragment());
+        fragments.add(2, new FollowFragment());
+        fragments.add(3, new MineFragment());
+        tabAdapter = new FragmentTabAdapter(this, fragments, R.id.main_contaner, null);
+        //默认显示首页
+        toSelectFm(0);
     }
 
     private void initdate() {
