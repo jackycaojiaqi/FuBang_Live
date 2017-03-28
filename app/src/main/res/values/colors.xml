@@ -35,18 +35,21 @@
     <color name="gray_main_text_select">#e4007f</color>
     <color name="gray_login_input">#93e5e1</color>
     <color name="transparent_deep_aa">#AA000000</color>
-    <color name="color_main">#24d7c8</color>
+    <color name="color_main">#fedb31</color>
     <color name="orange">#73571f</color>
     <color name="black_room">#151617</color>
     <color name="login_wechat">#7dd541</color>
     <color name="login_qq">#2bd2e7</color>
     <color name="login_sina">#fc6d86</color>
     <color name="login_phone">#dd84fc</color>
-    <color name="gray_unselect">#c4f6f2</color>
+    <color name="gray_unselect">#ebebeb</color>
     <color name="orange_f1a94e">#f1a94e</color>
     <color name="gray_deep">#647072</color>
 
     <color name="pldroid_streaming_white">#fff</color>
     <color name="pldroid_streaming_red">#f00</color>
     <color name="pldroid_streaming_yellow">#FFFF00</color>
+    <color name="color_search_bg">#f4e697</color>
+    <color name="black_3a3a3a">#3a3a3a</color>
+    <color name="blue_1b99d1">#1b99d1</color>
 </resources>

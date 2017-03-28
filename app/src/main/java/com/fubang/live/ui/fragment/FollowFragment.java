@@ -55,8 +55,6 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
     private int group = 0;
     private List<RoomListEntity> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
-    private List<String> list_url = new ArrayList<>();
-    private Banner banner;
 
     @Nullable
     @Override
@@ -78,11 +76,6 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
     @Override
     public void onStop() {
         super.onStop();
-        //结束轮播
-        if (banner != null) {
-            banner.stopAutoPlay();
-        }
-
     }
 
     private void initview() {
@@ -103,22 +96,7 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
         rvFollow.setAdapter(roomFavAdapter);
         //水平分割线
         rvFollow.addItemDecoration(new DividerItemDecoration(
-                context, DividerItemDecoration.HORIZONTAL_LIST, 10, getActivity().getResources().getColor(R.color.color_main)));
-        //======================banner
-        list_url.add("http://img05.tooopen.com/images/20150830/tooopen_sy_140703593676.jpg");
-        list_url.add("http://img.sc115.com/uploads1/sc/jpgs/1503/apic19333_sc115.com.jpg");
-        list_url.add("http://img.7139.com/file/201207/04/299ac0ab2be96c216c6bd5255945cb6c.jpg");
-        View header = LayoutInflater.from(context).inflate(R.layout.header, rvFollow, false);
-        banner = (Banner) header.findViewById(R.id.banner);
-        //banner数据
-        //设置图片加载器
-        banner.setImageLoader(new GlideImageLoader());
-        //设置图片集合
-        banner.setImages(list_url);
-        //banner设置方法全部调用完毕时最后调用
-        banner.start();
-        banner.setDelayTime(3000);
-        roomFavAdapter.setHeaderView(header);
+                context, DividerItemDecoration.HORIZONTAL_LIST, 5, getActivity().getResources().getColor(R.color.gray_c)));
         //=====================下拉刷新
         srlRoom.setOnRefreshListener(this);
         //设置样式刷新显示的位置

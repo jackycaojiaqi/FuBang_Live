@@ -1,19 +1,23 @@
 package com.fubang.live.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fubang.live.R;
 import com.fubang.live.adapter.FragmentTabAdapter;
+import com.fubang.live.base.BaseActivity;
 import com.fubang.live.ui.fragment.FollowFragment;
 import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
@@ -26,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     @BindView(R.id.iv_main_home_page)
     ImageView ivMainHomePage;
     @BindView(R.id.tv_main_home_page)
@@ -56,12 +60,16 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Fragment> fragments = new ArrayList<>();
     private FragmentTransaction ft;
     private FragmentTabAdapter tabAdapter;
+    private PopupWindow pop_main;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTranslucentStatus();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        context = this;
         initview();
         initdate();
     }
@@ -104,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     void clicks(View view) {
         switch (view.getId()) {
             case R.id.ll_main_home_page:
-                ivMainHomePage.setImageResource(R.drawable.home_pressed);
+                ivMainHomePage.setImageResource(R.drawable.ic_main_home);
                 ivMainHomeRanking.setImageResource(R.drawable.ranking_list);
                 ivMainHomeFavorite.setImageResource(R.drawable.follow);
                 ivMainHomeMine.setImageResource(R.drawable.me);
@@ -128,15 +136,49 @@ public class MainActivity extends AppCompatActivity {
                 ivMainHomePage.setImageResource(R.drawable.home);
                 ivMainHomeRanking.setImageResource(R.drawable.ranking_list);
                 ivMainHomeFavorite.setImageResource(R.drawable.follow);
-                ivMainHomeMine.setImageResource(R.drawable.me_select);
+                ivMainHomeMine.setImageResource(R.drawable.ic_main_me);
                 toSelectFm(3);
                 break;
             case R.id.iv_main_home_live:
-                Intent intent = new Intent(this, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
-                startActivity(intent);
+                ShowPopAction();
+
                 break;
         }
+    }
+
+    /**
+     * 处理分享弹窗
+     */
+    private void ShowPopAction() {
+        View popupView = getLayoutInflater().inflate(R.layout.pop_main, null);
+        pop_main = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        pop_main.showAtLocation(llMainHomeFavorite, Gravity.TOP, 0, 0);
+        ImageView iv_cancle = (ImageView) popupView.findViewById(R.id.tv_main_cancle);
+        ImageView iv_live = (ImageView) popupView.findViewById(R.id.iv_main_goto_live);
+        ImageView iv_video = (ImageView) popupView.findViewById(R.id.iv_main_goto_video);
+        iv_cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pop_main.dismiss();
+            }
+        });
+        iv_live.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LiveActivity.class);
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
+                startActivity(intent);
+            }
+        });
+        iv_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LiveActivity.class);
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
+                startActivity(intent);
+            }
+        });
+
     }
 
     //记录用户首次点击返回键的时间

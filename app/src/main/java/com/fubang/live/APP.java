@@ -2,6 +2,8 @@ package com.fubang.live;
 
 import android.app.Application;
 
+import com.fubang.live.util.CrashHandler;
+import com.fubang.live.util.LiteOrmDBUtil;
 import com.qiniu.pili.droid.streaming.StreamingEnv;
 
 /**
@@ -12,5 +14,7 @@ public class APP extends Application {
     public void onCreate() {
         super.onCreate();
         StreamingEnv.init(getApplicationContext());
+        CrashHandler.getInstance().init(getApplicationContext());//本地统计日志
+        LiteOrmDBUtil.createDb(getApplicationContext(), "live");
     }
 }

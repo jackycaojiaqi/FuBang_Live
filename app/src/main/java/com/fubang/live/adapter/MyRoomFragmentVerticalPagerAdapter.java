@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.fubang.live.ui.fragment.FollowFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.ui.fragment.RoomContentFragment;
 import com.fubang.live.ui.fragment.RoomNoContentFragment;
@@ -54,7 +53,7 @@ public class MyRoomFragmentVerticalPagerAdapter extends FragmentPagerAdapter {
         } else if (position == 2) {
             return new RoomNoContentFragment();
         }
-        return new FollowFragment();
+        return new RoomContentFragment();
     }
 
 

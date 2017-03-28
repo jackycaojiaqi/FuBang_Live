@@ -23,10 +23,13 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.SearchAtivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.LiveActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:configChanges="orientation|screenSize"
-             />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"

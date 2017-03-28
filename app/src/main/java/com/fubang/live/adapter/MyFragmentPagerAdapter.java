@@ -6,7 +6,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.fubang.live.ui.fragment.FollowFragment;
+import com.fubang.live.ui.fragment.GameFragment;
+import com.fubang.live.ui.fragment.HotFragment;
 import com.fubang.live.ui.fragment.NearFragment;
+import com.fubang.live.ui.fragment.VideoFragment;
 
 /**
  * 　　　　　　　　┏┓　　　┏┓
@@ -34,8 +37,8 @@ import com.fubang.live.ui.fragment.NearFragment;
  * Created by jacky on 17/3/17.
  */
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-    public final int COUNT = 8;
-    private String[] titles = new String[]{"关注", "最近", "热门", "舞蹈", "关注", "最近", "热门", "舞蹈"};
+    public final int COUNT = 5;
+    private String[] titles = new String[]{"关注", "热门", "附近", "游戏", "视频"};
     private Context context;
 
     public MyFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -48,19 +51,13 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return new FollowFragment();
         } else if (position == 1) {
-            return new NearFragment();
+            return new HotFragment();
         } else if (position == 2) {
             return new NearFragment();
         } else if (position == 3) {
-            return new FollowFragment();
+            return new GameFragment();
         } else if (position == 4) {
-            return new NearFragment();
-        } else if (position == 5) {
-            return new FollowFragment();
-        } else if (position == 6) {
-            return new NearFragment();
-        } else if (position == 7) {
-            return new FollowFragment();
+            return new VideoFragment();
         }
         return new FollowFragment();
     }

@@ -39,3 +39,6 @@
  }
  #7牛推流
  -keep class com.qiniu.pili.droid.streaming.** { *; }
+ #七牛播放端
+ -keep class com.pili.pldroid.player.** { *; }
+ -keep class tv.danmaku.ijk.media.player.** {*;}

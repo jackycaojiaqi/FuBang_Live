@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="300dp">
+    android:layout_height="350dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:src="@color/black_room" />
+            android:src="@drawable/ic_user_pic" />
 
         <TextView
             android:id="@+id/tv_anchor_name"
@@ -25,7 +25,7 @@
             android:layout_marginTop="10dp"
             android:singleLine="true"
             android:text="MC大明"
-            android:textColor="@color/gray_deep"
+            android:textColor="@color/black_3a3a3a"
             android:textSize="16dp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_marginTop="10dp"
             android:singleLine="true"
             android:text="1889"
-            android:textColor="@color/orange_f1a94e"
+            android:textColor="@color/blue_1b99d1"
             android:textSize="16dp"
             android:textStyle="bold" />
 
@@ -54,6 +54,7 @@
             android:paddingRight="10dp"
             android:paddingTop="2dp"
             android:text="帅气"
+            android:textColor="@color/color_main"
             android:textSize="12dp" />
 
         <TextView
@@ -67,6 +68,7 @@
             android:paddingRight="10dp"
             android:paddingTop="2dp"
             android:text="魅力十足"
+            android:textColor="@color/color_main"
             android:textSize="12dp" />
     </RelativeLayout>
 
@@ -79,7 +81,7 @@
     <ImageView
         android:id="@+id/tv_anchor_bg"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="290dp"
         android:layout_alignParentBottom="true"
         android:scaleType="fitXY"
         android:src="@drawable/ic_bg" />
