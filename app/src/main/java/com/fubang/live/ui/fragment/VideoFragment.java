@@ -102,12 +102,10 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
         srlNear.setOnRefreshListener(this);
         //设置样式刷新显示的位置
         srlNear.setProgressViewOffset(true, -20, 100);
-
     }
 
     private void initdate() {
         presenter.getRoomList();
-
     }
 
     @OnClick(R.id.rl_near_filter)

@@ -141,7 +141,6 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.iv_main_home_live:
                 ShowPopAction();
-
                 break;
         }
     }

@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.WelcomeActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,9 +19,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.RoomActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.RoomActivity"
+            android:theme="@style/AppThemeFullscreen" />
         <activity
             android:name=".ui.SearchAtivity"
             android:launchMode="singleTask"

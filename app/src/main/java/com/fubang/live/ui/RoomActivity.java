@@ -2,6 +2,7 @@ package com.fubang.live.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 
@@ -9,6 +10,8 @@ import com.fubang.live.R;
 import com.fubang.live.adapter.MyRoomFragmentVerticalPagerAdapter;
 import com.fubang.live.base.BaseActivity;
 import com.socks.library.KLog;
+
+import org.simple.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,15 +41,27 @@ public class RoomActivity extends BaseActivity {
     private void initview() {
         dvpRoom.setAdapter(new MyRoomFragmentVerticalPagerAdapter(getSupportFragmentManager(), context));
         dvpRoom.setPageTransformer(false, new DefaultTransformer());
+        dvpRoom.setOffscreenPageLimit(3);
+        dvpRoom.setCurrentItem(1);
         dvpRoom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                KLog.e("select_page:" + position);
+
             }
 
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(final int position) {
+                KLog.e("onPageSelected:" + position);
 
+                if (position != 1) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            EventBus.getDefault().post("weizhi:"+position,"room_url");
+                            dvpRoom.setCurrentItem(1,true);
+                        }
+                    },400);
+                }
             }
 
             @Override
@@ -55,4 +70,5 @@ public class RoomActivity extends BaseActivity {
             }
         });
     }
+
 }

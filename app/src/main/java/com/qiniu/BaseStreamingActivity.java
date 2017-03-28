@@ -198,9 +198,7 @@ public class BaseStreamingActivity extends Activity implements
         } else {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
-
         super.onCreate(savedInstanceState);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (Config.SCREEN_ORIENTATION == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
@@ -209,7 +207,6 @@ public class BaseStreamingActivity extends Activity implements
             mIsEncOrientationPort = false;
         }
         setRequestedOrientation(Config.SCREEN_ORIENTATION);
-
         setContentView(R.layout.activity_camera_streaming);
 //
 //        SharedLibraryNameHelper.getInstance().renameSharedLibrary(
