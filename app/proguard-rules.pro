@@ -37,3 +37,5 @@
 -keep class com.youth.banner.** {
     *;
  }
+ #7牛推流
+ -keep class com.qiniu.pili.droid.streaming.** { *; }

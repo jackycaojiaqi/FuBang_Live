@@ -1,12 +1,12 @@
 package com.fubang.live.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +18,7 @@ import com.fubang.live.ui.fragment.FollowFragment;
 import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
+import com.fubang.live.util.Config;
 
 import java.util.ArrayList;
 
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     TextView tvMainHomeMine;
     @BindView(R.id.ll_main_home_mine)
     LinearLayout llMainHomeMine;
+    @BindView(R.id.iv_main_home_live)
+    ImageView ivMainHomeLive;
     private ArrayList<Fragment> fragments = new ArrayList<>();
     private FragmentTransaction ft;
     private FragmentTabAdapter tabAdapter;
@@ -96,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
         ft.commitAllowingStateLoss();
     }
 
-    @OnClick({R.id.ll_main_home_page, R.id.ll_main_home_ranking, R.id.ll_main_home_favorite, R.id.ll_main_home_mine})
+    @OnClick({R.id.ll_main_home_page, R.id.ll_main_home_ranking, R.id.ll_main_home_favorite, R.id.ll_main_home_mine
+            , R.id.iv_main_home_live})
     void clicks(View view) {
         switch (view.getId()) {
             case R.id.ll_main_home_page:
@@ -127,6 +131,11 @@ public class MainActivity extends AppCompatActivity {
                 ivMainHomeMine.setImageResource(R.drawable.me_select);
                 toSelectFm(3);
                 break;
+            case R.id.iv_main_home_live:
+                Intent intent = new Intent(this, LiveActivity.class);
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
+                startActivity(intent);
+                break;
         }
     }
 
@@ -147,4 +156,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
 }

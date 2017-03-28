@@ -290,10 +290,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
                 childCount = childCount - childCount % spanCount;
                 if (pos >= childCount)
                     return true;
+
             } else {// StaggeredGridLayoutManager 横向滚动
                 // 如果是最后一行，则不需要绘制底部
                 if ((pos + 1) % spanCount == 0)
                     return true;
+
             }
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             orientation = ((StaggeredGridLayoutManager) layoutManager)

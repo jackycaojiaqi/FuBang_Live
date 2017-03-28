@@ -45,4 +45,8 @@
     <color name="gray_unselect">#c4f6f2</color>
     <color name="orange_f1a94e">#f1a94e</color>
     <color name="gray_deep">#647072</color>
+
+    <color name="pldroid_streaming_white">#fff</color>
+    <color name="pldroid_streaming_red">#f00</color>
+    <color name="pldroid_streaming_yellow">#FFFF00</color>
 </resources>
