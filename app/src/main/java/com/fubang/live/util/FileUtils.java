@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
+import com.socks.library.KLog;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,12 +29,10 @@ import java.math.BigDecimal;
 public class FileUtils {
     private static final String Files = android.os.Environment
             .getExternalStorageDirectory().getAbsolutePath() + "/live/";
-    public static String CacheDir = FileUtils.getFiles() + "data/";
+    private static final String Files_Temp = android.os.Environment
+            .getExternalStorageDirectory().getAbsolutePath() + "/live/" + "temp/";
     private static String map_icons = FileUtils.getFiles() + "icons/";
     public static final String offlinedata = FileUtils.getFiles() + "offlinedata/";
-    public static final String panorama = offlinedata + "panorama/";
-    private static final String head = "file:///sdcard/ywd3.0";
-//    public static final String PhotoWallFalls = FileUtils.getFiles() + "offlinedata/PhotoWallFalls/";
 
     public static String getHeadFiles() {
         File file = new File(Files);
@@ -40,6 +40,14 @@ public class FileUtils {
             file.mkdirs();
         }
         return Files;
+    }
+
+    public static String getTempFiles() {
+        File file = new File(Files_Temp);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return Files_Temp;
     }
 
     /**

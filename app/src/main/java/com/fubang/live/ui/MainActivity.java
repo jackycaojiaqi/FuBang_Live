@@ -1,10 +1,13 @@
 package com.fubang.live.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,12 +26,15 @@ import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
+import com.socks.library.KLog;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 
 public class MainActivity extends BaseActivity {
     @BindView(R.id.iv_main_home_page)
@@ -74,8 +80,25 @@ public class MainActivity extends BaseActivity {
         initdate();
     }
 
+    @PermissionSuccess(requestCode = 100)
+    public void doSomething() {
+        KLog.e("333");
+    }
 
     private void initview() {
+        //获取权限
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            KLog.e("111");
+            PermissionGen.with(MainActivity.this)
+                    .addRequestCode(100)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+            KLog.e("222");
+        }
         fragments.add(0, new HomeFragment());
         fragments.add(1, new NearFragment());
         fragments.add(2, new FollowFragment());
