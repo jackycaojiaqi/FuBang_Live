@@ -87,8 +87,7 @@ public class RoomContentFragment extends BaseFragment {
         mLoadingView.setVisibility(View.VISIBLE);
         mCoverView = (ImageView) getView().findViewById(R.id.CoverView);
         mVideoView.setCoverView(mCoverView);
-
-        mVideoPath = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+        mVideoPath = "rtmp://pili-live-rtmp.fbyxsp.com/wanghong/wh_10088_58888";
 
         // If you want to fix display orientation such as landscape, you can use the code show as follow
         //
@@ -121,7 +120,10 @@ public class RoomContentFragment extends BaseFragment {
 
     @Subscriber(tag = "room_url")
     private void getRoomUrl(String url) {
-        KLog.e(url);
+        mVideoPath = url;
+        mVideoView.pause();
+        mCoverView.setVisibility(View.VISIBLE);
+        sendReconnectMessage();
     }
 
     @Override
@@ -230,7 +232,6 @@ public class RoomContentFragment extends BaseFragment {
     }
 
     private void sendReconnectMessage() {
-        showToastTips("正在重连...");
         mLoadingView.setVisibility(View.VISIBLE);
         mHandler.removeCallbacksAndMessages(null);
         mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 500);

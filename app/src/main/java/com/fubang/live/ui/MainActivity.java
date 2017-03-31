@@ -175,6 +175,7 @@ public class MainActivity extends BaseActivity {
         View popupView = getLayoutInflater().inflate(R.layout.pop_main, null);
         pop_main = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         pop_main.showAtLocation(llMainHomeFavorite, Gravity.TOP, 0, 0);
+        pop_main.setAnimationStyle(R.style.take_photo_anim);
         ImageView iv_cancle = (ImageView) popupView.findViewById(R.id.tv_main_cancle);
         ImageView iv_live = (ImageView) popupView.findViewById(R.id.iv_main_goto_live);
         ImageView iv_video = (ImageView) popupView.findViewById(R.id.iv_main_goto_video);
@@ -188,7 +189,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1490950388&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:jzac5IkPJfqKkwdOaWhP-_9D7K4=");
                 startActivity(intent);
             }
         });
@@ -196,7 +197,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "123456");
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1490950388&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:jzac5IkPJfqKkwdOaWhP-_9D7K4=");
                 startActivity(intent);
             }
         });

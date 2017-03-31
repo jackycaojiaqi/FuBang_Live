@@ -94,12 +94,14 @@ public class UserInfoActivity extends TakePhotoActivity {
     private PopupWindow pop_pic;
 
     /**
-     * 处理分享弹窗
+     * 处理拍照弹窗
      */
     private void ShowPopAction() {
         final View popupView = getLayoutInflater().inflate(R.layout.pop_user_pic, null);
         pop_pic = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        pop_pic.showAtLocation(tvTitle, Gravity.TOP, 0, 0);
+        pop_pic.showAtLocation(tvTitle, Gravity.CENTER_HORIZONTAL, 0, 0);
+        pop_pic.setAnimationStyle(R.style.take_photo_anim);
+        pop_pic.setOutsideTouchable(false);
         ImageView iv_cancle = (ImageView) popupView.findViewById(R.id.tv_user_info_pic_cancle);
         TextView tv_album = (TextView) popupView.findViewById(R.id.tv_user_info_pic_form_album);
         TextView tv_camera = (TextView) popupView.findViewById(R.id.tv_user_info_pic_form_camera);

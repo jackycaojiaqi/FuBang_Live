@@ -57,10 +57,10 @@ public class RoomActivity extends BaseActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            EventBus.getDefault().post("weizhi:"+position,"room_url");
-                            dvpRoom.setCurrentItem(1,true);
+                            EventBus.getDefault().post("rtmp://live.hkstv.hk.lxdns.com/live/hks", "room_url");
+                            dvpRoom.setCurrentItem(1, true);
                         }
-                    },400);
+                    }, 400);
                 }
             }
 

@@ -226,24 +226,28 @@ public class BaseStreamingActivity extends Activity implements
 
         mProfile = new StreamingProfile();
 
-        if (publishUrlFromServer.startsWith(Config.EXTRA_PUBLISH_URL_PREFIX)) {
-            // publish url
-            try {
-                mProfile.setPublishUrl(publishUrlFromServer.substring(Config.EXTRA_PUBLISH_URL_PREFIX.length()));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        } else if (publishUrlFromServer.startsWith(Config.EXTRA_PUBLISH_JSON_PREFIX)) {
-            try {
-                mJSONObject = new JSONObject(publishUrlFromServer.substring(Config.EXTRA_PUBLISH_JSON_PREFIX.length()));
-                StreamingProfile.Stream stream = new StreamingProfile.Stream(mJSONObject);
-                mProfile.setStream(stream);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(this, "Invalid Publish Url", Toast.LENGTH_LONG).show();
+//        if (publishUrlFromServer.startsWith(Config.EXTRA_PUBLISH_URL_PREFIX)) {
+//            // publish url
+//            try {
+        try {
+            mProfile.setPublishUrl(publishUrlFromServer);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
+//            } catch (URISyntaxException e) {
+//                e.printStackTrace();
+//            }
+//        } else if (publishUrlFromServer.startsWith(Config.EXTRA_PUBLISH_JSON_PREFIX)) {
+//            try {
+//                mJSONObject = new JSONObject(publishUrlFromServer.substring(Config.EXTRA_PUBLISH_JSON_PREFIX.length()));
+//                StreamingProfile.Stream stream = new StreamingProfile.Stream(mJSONObject);
+//                mProfile.setStream(stream);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            Toast.makeText(this, "Invalid Publish Url", Toast.LENGTH_LONG).show();
+//        }
 
         StreamingProfile.AudioProfile aProfile = new StreamingProfile.AudioProfile(44100, 96 * 1024);
         StreamingProfile.VideoProfile vProfile = new StreamingProfile.VideoProfile(30, 1000 * 1024, 48);

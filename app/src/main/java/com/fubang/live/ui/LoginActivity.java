@@ -9,9 +9,15 @@ import android.widget.RelativeLayout;
 
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
+import com.fubang.live.entities.UserEntity;
+import com.fubang.live.util.StartUtil;
+import com.sample.LoginMain;
 import com.socks.library.KLog;
+import com.xlg.android.protocol.LogonResponse;
+import com.xlg.android.utils.Tools;
 
 import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
 import java.util.HashMap;
 
@@ -39,13 +45,21 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
     @BindView(R.id.rl_login_phone)
     RelativeLayout rlLoginPhone;
     private Context context;
+    private int flag = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        EventBus.getDefault().register(this);
         ButterKnife.bind(this);
         context = this;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @OnClick({R.id.rl_login_wechat, R.id.rl_login_qq, R.id.rl_login_sina, R.id.rl_login_phone})
@@ -53,6 +67,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
         Intent intent;
         switch (view.getId()) {
             case R.id.rl_login_wechat:
+                flag = 3;
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
                 wechat.setPlatformActionListener(this);
                 wechat.showUser(null);//授权并获取用户信息
@@ -60,6 +75,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 wechat.removeAccount(true);
                 break;
             case R.id.rl_login_qq:
+                flag = 2;
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
                 qq.setPlatformActionListener(this);
                 qq.showUser(null);//授权并获取用户信息
@@ -81,6 +97,8 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
 
     }
 
+    private String userIcon, userId, userName;
+
     @Override
     public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
         KLog.e("arg1:" + i);
@@ -89,24 +107,19 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
             PlatformDb platDB = platform.getDb();//获取数平台数据DB
             //通过DB获取各种数据
             String token = platDB.getToken();
-            KLog.e("token:" + token);
-
             String userGender = platDB.getUserGender();
-            KLog.e("userGender:" + userGender);
-            String userIcon = platDB.getUserIcon();
-            KLog.e("userIcon:" + userIcon);
-            String userId = platDB.getUserId();
-            String userName = platDB.getUserName();
-            KLog.e("userName:" + userName);
-//                            EventBus.getDefault().post(new UserEntity(userIcon, userId, userName), "UserInfo");
-//                            StartUtil.putQQid(this, userId);
-//                            new Thread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    new LoginMain(0, "", userId, flag, flag, LoginActivity.this).start(0, "", flag, userId, flag, LoginActivity.this);
-//                                }
-//                            }).start();
-//                    startActivity(MainActivity_.intent(LoginActivity.this).extra("flag",flag).get());
+            userIcon = platDB.getUserIcon();
+            userId = platDB.getUserId();
+            userName = platDB.getUserName();
+            EventBus.getDefault().post(new UserEntity(userIcon, userId, userName), "UserInfo");
+            StartUtil.editInfo(this, userName, userId, userIcon, "1");
+//            Log.d("123",token+"  "+userId+"===="+userGender+"====="+userIcon+"======"+userName);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    new LoginMain(0, "", userId, flag, flag, LoginActivity.this).start(0, "", flag, userId, flag, LoginActivity.this);
+                }
+            }).start();
         }
 
 
@@ -122,5 +135,29 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
 
     }
 
+    @Subscriber(tag = "login_success")
+    public void loginSuccess(LogonResponse res) {
+//        flag = 0;
+        Tools.PrintObject(res);
+        StartUtil.putCount(LoginActivity.this, flag);
+//        Log.d("123",flag+"flag");
+        if (res != null) {
+            if (flag == 2 || flag == 3) {
+//                Log.d("123",userName+userIcon);
+                StartUtil.editInfo(this, userName, res.getUserid() + "", userIcon, res.getCuserpwd());
+            } else {
+//                Log.d("123",res.getHeadpic()+"lenth");
+                if (res.getHeadpic() > 15) {
+                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", res.getHeadpic() + "", res.getCuserpwd());
+                } else {
+//                    Log.d("123","不是吧这走?");
+                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", "head" + res.getHeadpic(), res.getCuserpwd());
+                }
+            }
+            StartUtil.putVersion(this, res.getNverison() + "");
+            StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
+            startActivity(new Intent(context, MainActivity.class));
+        }
+    }
 }
 
