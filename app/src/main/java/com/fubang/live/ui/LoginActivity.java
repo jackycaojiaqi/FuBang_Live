@@ -11,7 +11,7 @@ import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.UserEntity;
 import com.fubang.live.util.StartUtil;
-import com.sample.LoginMain;
+import com.sample.login.LoginMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
 import com.xlg.android.utils.Tools;

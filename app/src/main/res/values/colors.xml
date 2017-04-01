@@ -53,4 +53,5 @@
     <color name="black_3a3a3a">#3a3a3a</color>
     <color name="blue_1b99d1">#1b99d1</color>
     <color name="gray_dan">#f4f4f4</color>
+    <color name="gray_edit_bg">#fdf8f5</color>
 </resources>

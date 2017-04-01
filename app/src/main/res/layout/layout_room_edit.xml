@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rll_room_input"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/chat_new_input_line"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/room_new_tablayout"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/home_tab_backgroud"
+                app:tabIndicatorColor="@color/bottom_radio_checked_text"
+                app:tabSelectedTextColor="@color/bottom_radio_checked_text"
+                app:tabTextColor="@color/bottom_radio_text" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/room_new_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_room_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eee"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="6dp">
+
+
+            <ImageView
+                android:id="@+id/emotion_new_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:clickable="true"
+                android:src="@drawable/room_face_icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_button_reply_edittext"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_new_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#0000"
+                    android:maxLines="3"
+                    android:minHeight="36dp"
+                    android:textColor="@color/black_3a3a3a"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/room_new_chat_send"
+                android:layout_width="56dp"
+                android:layout_height="32dp"
+                android:background="@drawable/shape_button_reply_button"
+                android:text="发送"
+                android:textColor="@color/black_3a3a3a" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <RelativeLayout
+            android:id="@+id/emotion_new_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#eee"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:layout_height="300dp"
+            tools:visibility="visible">
+
+            <com.fubang.live.widget.SlidingTab.SlidingTabLayout
+                android:id="@+id/sliding_new_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_alignParentTop="true"
+                android:background="#eeeeee" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignBottom="@+id/sliding_new_tabs"
+                android:background="#e0e0e0" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/new_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/sliding_new_tabs" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_room_input_close"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_room_input" />
+
+</RelativeLayout>

@@ -24,7 +24,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.RoomActivity"
-            android:theme="@style/AppThemeFullscreen" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullscreen"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
             android:name=".ui.SearchAtivity"
             android:launchMode="singleTask"

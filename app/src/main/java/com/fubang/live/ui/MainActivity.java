@@ -189,16 +189,20 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1490950388&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:jzac5IkPJfqKkwdOaWhP-_9D7K4=");
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL,
+                        "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1491016444&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:TgnVOQSwRYif9kD-9sItlxgqso0=");
                 startActivity(intent);
+                pop_main.dismiss();
             }
         });
         iv_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL, "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1490950388&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:jzac5IkPJfqKkwdOaWhP-_9D7K4=");
+                intent.putExtra(Config.EXTRA_KEY_PUB_URL,
+                        "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1491016444&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:TgnVOQSwRYif9kD-9sItlxgqso0=");
                 startActivity(intent);
+                pop_main.dismiss();
             }
         });
 

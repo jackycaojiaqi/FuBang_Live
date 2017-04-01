@@ -27,7 +27,7 @@ public class RoomActivity extends BaseActivity {
     @BindView(R.id.vp_room)
     VerticalViewPager dvpRoom;
     private Context context;
-
+    public static boolean is_emoticon_show = false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +57,7 @@ public class RoomActivity extends BaseActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            EventBus.getDefault().post("rtmp://live.hkstv.hk.lxdns.com/live/hks", "room_url");
+                            EventBus.getDefault().post("rtmp://pili-live-rtmp.fbyxsp.com/wanghong/wh_10088_58888", "room_url");
                             dvpRoom.setCurrentItem(1, true);
                         }
                     }, 400);
