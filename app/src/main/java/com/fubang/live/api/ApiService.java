@@ -3,6 +3,7 @@ package com.fubang.live.api;
 
 
 import com.fubang.live.entities.RoomEntity;
+import com.fubang.live.entities.RtmpUrlEntity;
 
 import java.util.Map;
 
@@ -20,4 +21,6 @@ public interface ApiService {
     @GET("/index.php/app/roomlist?")
     Call<RoomEntity> getRoomEntity(@QueryMap Map<String, String> map);
 
+    @GET("/rtmp_pub.php?")
+    Call<RtmpUrlEntity> getRtmpUrlEntity(@QueryMap Map<String, String> map);
 }

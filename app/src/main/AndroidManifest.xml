@@ -44,6 +44,10 @@
             android:name=".ui.UserInfoActivity"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name=".ui.LiveDoneActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"

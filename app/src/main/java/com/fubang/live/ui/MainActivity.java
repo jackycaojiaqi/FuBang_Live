@@ -21,11 +21,16 @@ import android.widget.Toast;
 import com.fubang.live.R;
 import com.fubang.live.adapter.FragmentTabAdapter;
 import com.fubang.live.base.BaseActivity;
+import com.fubang.live.entities.RtmpUrlEntity;
+import com.fubang.live.modle.impl.RtmpUrlModelImpl;
+import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
 import com.fubang.live.ui.fragment.FollowFragment;
 import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
+import com.fubang.live.util.ToastUtil;
+import com.fubang.live.view.RtmpUrlView;
 import com.socks.library.KLog;
 
 import java.util.ArrayList;
@@ -36,7 +41,7 @@ import butterknife.OnClick;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements RtmpUrlView {
     @BindView(R.id.iv_main_home_page)
     ImageView ivMainHomePage;
     @BindView(R.id.tv_main_home_page)
@@ -68,6 +73,7 @@ public class MainActivity extends BaseActivity {
     private FragmentTabAdapter tabAdapter;
     private PopupWindow pop_main;
     private Context context;
+    private RtmpUrlPresenterImpl presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +115,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initdate() {
+
     }
 
     /**
@@ -188,21 +195,16 @@ public class MainActivity extends BaseActivity {
         iv_live.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL,
-                        "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1491016444&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:TgnVOQSwRYif9kD-9sItlxgqso0=");
-                startActivity(intent);
-                pop_main.dismiss();
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "10088", "88888");
+                presenter.getRtmpUrl();
+
             }
         });
         iv_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, LiveActivity.class);
-                intent.putExtra(Config.EXTRA_KEY_PUB_URL,
-                        "rtmp://pili-publish.fbyxsp.com/wanghong/wh_10088_58888?e=1491016444&token=rgNGguFNzZb47-3LXCxtm4H5iMjbMG-5dhhOR512:TgnVOQSwRYif9kD-9sItlxgqso0=");
-                startActivity(intent);
-                pop_main.dismiss();
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "10088", "88888");
+                presenter.getRtmpUrl();
             }
         });
 
@@ -226,4 +228,20 @@ public class MainActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void success(RtmpUrlEntity entity) {
+        if (entity != null) {
+            Intent intent = new Intent(context, LiveActivity.class);
+            intent.putExtra(Config.EXTRA_KEY_PUB_URL,
+                    entity.getPublishUrl());
+            startActivity(intent);
+            pop_main.dismiss();
+        }
+
+    }
+
+    @Override
+    public void faided() {
+        ToastUtil.show(context, R.string.net_error);
+    }
 }

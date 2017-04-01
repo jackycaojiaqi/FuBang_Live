@@ -2,6 +2,7 @@ package com.fubang.live.modle;
 
 
 import com.fubang.live.modle.impl.RoomListModelImpl;
+import com.fubang.live.modle.impl.RtmpUrlModelImpl;
 
 /**
  * model工厂类
@@ -26,5 +27,8 @@ public class ModelFactory {
 
     public RoomListModelImpl getRoomListModelImpl(){
         return RoomListModelImpl.getInstance();
+    }
+    public RtmpUrlModelImpl getRtmpUrlImpl(){
+        return RtmpUrlModelImpl.getInstance();
     }
 }

@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FollowFragment extends BaseFragment implements RoomListView, SwipeRefreshLayout.OnRefreshListener {
+public class FollowFragment extends BaseFragment implements RoomListView, SwipeRefreshLayout.OnRefreshListener  {
     @BindView(R.id.rv_follow)
     RecyclerView rvFollow;
     @BindView(R.id.srl_room)

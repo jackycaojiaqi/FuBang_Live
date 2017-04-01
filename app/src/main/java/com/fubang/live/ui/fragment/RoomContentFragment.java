@@ -35,11 +35,15 @@ import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
+import com.fubang.live.entities.RtmpUrlEntity;
+import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
+import com.fubang.live.ui.MainActivity;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.view.RtmpUrlView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
 import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
@@ -48,6 +52,7 @@ import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
+import com.socks.library.KLog;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
@@ -69,7 +74,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.content.Context.WINDOW_SERVICE;
 import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
-public class RoomContentFragment extends BaseFragment implements MicNotify {
+public class RoomContentFragment extends BaseFragment implements MicNotify, RtmpUrlView {
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
     @BindView(R.id.ib_change_orientation)
     ImageButton ibChangeOrientation;
@@ -128,6 +133,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify {
     RoomMain roomMain = new RoomMain(this);
     private int roomId;
     private EmotionInputDetector mDetector;
+    private RtmpUrlPresenterImpl presenter;
 
     private void setOptions(int codecType) {
         AVOptions options = new AVOptions();
@@ -178,7 +184,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify {
         mLoadingView.setVisibility(View.VISIBLE);
         mCoverView = (ImageView) getView().findViewById(R.id.CoverView);
         mVideoView.setCoverView(mCoverView);
-        mVideoPath = "rtmp://pili-live-rtmp.fbyxsp.com/wanghong/wh_10088_58888";
+
 
         // If you want to fix display orientation such as landscape, you can use the code show as follow
         //
@@ -204,13 +210,16 @@ public class RoomContentFragment extends BaseFragment implements MicNotify {
 
         mVideoView.setOnCompletionListener(mOnCompletionListener);
         mVideoView.setOnErrorListener(mOnErrorListener);
-        mVideoView.setVideoPath(mVideoPath);
-        mVideoView.start();
+//        mVideoView.setVideoPath(mVideoPath);
+//        mVideoView.start();
+        presenter = new RtmpUrlPresenterImpl(this, "10088", "88888");
+        presenter.getRtmpUrl();
     }
 
     @Subscriber(tag = "room_url")
     private void getRoomUrl(String url) {
         mVideoPath = url;
+        KLog.e(mVideoPath);
         mVideoView.pause();
         mCoverView.setVisibility(View.VISIBLE);
         sendReconnectMessage();
@@ -607,11 +616,26 @@ public class RoomContentFragment extends BaseFragment implements MicNotify {
 
         GlobalOnItemClickManager globalOnItemClickListener = GlobalOnItemClickManager.getInstance();
         globalOnItemClickListener.attachToEditText((EditText) getActivity().findViewById(R.id.edit_new_text));
-
     }
 
     @Override
     public void onMic(String ip, int port, int rand, int uid) {
+
+    }
+
+    @Override
+    public void success(RtmpUrlEntity entity) {
+        if (entity != null) {
+            mVideoPath = entity.getRTMPPlayURL();
+            KLog.e(mVideoPath);
+            mVideoView.setVideoPath(mVideoPath);
+            mVideoView.start();
+        }
+
+    }
+
+    @Override
+    public void faided() {
 
     }
 }

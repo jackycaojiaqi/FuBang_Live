@@ -17,6 +17,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +51,7 @@ import com.qiniu.pili.droid.streaming.StreamingStateChangedListener;
 import com.qiniu.pili.droid.streaming.SurfaceTextureCallback;
 import com.qiniu.pili.droid.streaming.av.common.PLFourCC;
 import com.qiniu.ui.RotateLayout;
+import com.socks.library.KLog;
 
 import org.json.JSONObject;
 
@@ -58,8 +64,11 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class BaseStreamingActivity extends Activity implements
-        View.OnLayoutChangeListener,
         StreamStatusCallback,
         StreamingPreviewCallback,
         SurfaceTextureCallback,
@@ -79,6 +88,19 @@ public class BaseStreamingActivity extends Activity implements
     private static final int MSG_FB = 4;
     private static final int MSG_PREVIEW_MIRROR = 5;
     private static final int MSG_ENCODING_MIRROR = 6;
+    @BindView(R.id.et_live_title)
+    EditText etLiveTitle;
+
+    public static ImageView ivLiveStart;
+    @BindView(R.id.ll_live_start)
+    protected LinearLayout llLiveStart;
+    @BindView(R.id.iv_live_share)
+    ImageView ivLiveShare;
+    @BindView(R.id.iv_live_exit)
+    ImageView ivLiveExit;
+    @BindView(R.id.iv_live_chat)
+    ImageView ivLiveChat;
+    protected RelativeLayout rl_live_control;
 
     private Context mContext;
 
@@ -136,6 +158,7 @@ public class BaseStreamingActivity extends Activity implements
                         public void run() {
                             // disable the shutter button before startStreaming
                             setShutterButtonEnabled(false);
+                            KLog.e("1111");
                             boolean res = mMediaStreamingManager.startStreaming();
                             mShutterButtonPressed = true;
                             Log.i(TAG, "res:" + res);
@@ -208,6 +231,7 @@ public class BaseStreamingActivity extends Activity implements
         }
         setRequestedOrientation(Config.SCREEN_ORIENTATION);
         setContentView(R.layout.activity_camera_streaming);
+        ButterKnife.bind(this);
 //
 //        SharedLibraryNameHelper.getInstance().renameSharedLibrary(
 //                SharedLibraryNameHelper.PLSharedLibraryType.PL_SO_TYPE_AAC,
@@ -344,6 +368,7 @@ public class BaseStreamingActivity extends Activity implements
 
     @Override
     public boolean onRecordAudioFailedHandled(int err) {
+        Log.i(TAG, "onRecordAudioFailedHandled");
         mMediaStreamingManager.updateEncodingType(AVCodecType.SW_VIDEO_CODEC);
         mMediaStreamingManager.startStreaming();
         return true;
@@ -398,10 +423,6 @@ public class BaseStreamingActivity extends Activity implements
         return false;
     }
 
-    @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        Log.i(TAG, "view!!!!:" + v);
-    }
 
     @Override
     public boolean onPreviewFrame(byte[] bytes, int width, int height, int rotation, int fmt, long tsInNanoTime) {
@@ -484,7 +505,7 @@ public class BaseStreamingActivity extends Activity implements
                 mMaxZoom = mMediaStreamingManager.getMaxZoom();
                 mStatusMsgContent = getString(R.string.string_state_ready);
                 // start streaming when READY
-                startStreaming();
+//                startStreaming();
                 break;
             case CONNECTING:
                 mStatusMsgContent = getString(R.string.string_state_connecting);
@@ -499,6 +520,7 @@ public class BaseStreamingActivity extends Activity implements
                 setShutterButtonEnabled(true);
                 setShutterButtonPressed(false);
                 if (mOrientationChanged) {
+                    KLog.e("SHUTDOWN");
                     mOrientationChanged = false;
                     startStreaming();
                 }
@@ -573,9 +595,8 @@ public class BaseStreamingActivity extends Activity implements
     }
 
     private void initUIs() {
-        View rootView = findViewById(R.id.content);
-        rootView.addOnLayoutChangeListener(this);
-
+        ivLiveStart = (ImageView) findViewById(R.id.iv_live_start);
+        rl_live_control = (RelativeLayout) findViewById(R.id.rl_live_control);
         mMuteButton = (Button) findViewById(R.id.mute_btn);
         mShutterButton = (Button) findViewById(R.id.toggleRecording_button);
         mTorchBtn = (Button) findViewById(R.id.torch_btn);
@@ -797,6 +818,7 @@ public class BaseStreamingActivity extends Activity implements
             return CAMERA_FACING_ID.CAMERA_FACING_BACK;
         }
     }
+
 
     private class Switcher implements Runnable {
         @Override
