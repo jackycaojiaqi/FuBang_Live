@@ -162,3 +162,8 @@
 -keep class com.alipay.android.app.IRemoteServiceCallback$Stub{*;}
 -keep class com.alipay.sdk.app.PayTask{ public *;}
 -keep class com.alipay.sdk.app.AuthTask{ public *;}
+
+ #高德定位
+ -keep class com.amap.api.location.**{*;}
+ -keep class com.amap.api.fence.**{*;}
+ -keep class com.autonavi.aps.amapapi.model.**{*;}
