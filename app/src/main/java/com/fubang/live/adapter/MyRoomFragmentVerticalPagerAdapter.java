@@ -9,6 +9,9 @@ import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.ui.fragment.RoomContentFragment;
 import com.fubang.live.ui.fragment.RoomNoContentFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 　　　　　　　　┏┓　　　┏┓
  * 　　　　　　　┏┛┻━━━┛┻┓
@@ -38,20 +41,22 @@ public class MyRoomFragmentVerticalPagerAdapter extends FragmentPagerAdapter {
     public final int COUNT = 3;
     private String[] titles = new String[]{"关注", "最近", "热门"};
     private Context context;
+    private List<Fragment> fragmentList = new ArrayList<>();
 
-    public MyRoomFragmentVerticalPagerAdapter(FragmentManager fm, Context context) {
+    public MyRoomFragmentVerticalPagerAdapter(FragmentManager fm, List<Fragment> fragmentList, Context context) {
         super(fm);
         this.context = context;
+        this.fragmentList = fragmentList;
     }
 
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new RoomNoContentFragment();
+            return fragmentList.get(0);
         } else if (position == 1) {
-            return new RoomContentFragment();
+            return fragmentList.get(1);
         } else if (position == 2) {
-            return new RoomNoContentFragment();
+            return fragmentList.get(2);
         }
         return new RoomContentFragment();
     }

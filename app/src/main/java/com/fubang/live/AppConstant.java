@@ -12,5 +12,8 @@ public class AppConstant {
     public static final String COUNT = "count";
     public static final String PAGE = "page";
     public static final String GROUP = "group";
-
+    public static final String ROOMID = "roomid";
+    public static final String ROOMIP = "roomip";
+    public static final String PORT = "port";
+    public static final String ROOMPWD = "roompwd";
 }

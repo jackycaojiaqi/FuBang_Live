@@ -86,9 +86,7 @@ public class Tools {
 	
 	public static void PrintObject(Object obj) {
 		Class clazz = obj.getClass();
-		
-		System.out.println("Class: " + clazz.getName());
-		
+
 		Method[] methods = clazz.getMethods();
 		for(int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
@@ -97,9 +95,9 @@ public class Tools {
 			if(false == name.startsWith("get")) {
 				continue;
 			}
-			
 			name.substring(3);
 			try {
+				System.out.println("Class: " + clazz.getName());
 				System.out.println("    =>" + name.substring(3) +
 						": " + method.invoke(obj));
 			} catch (IllegalAccessException e) {

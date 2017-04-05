@@ -112,8 +112,6 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
             userId = platDB.getUserId();
             userName = platDB.getUserName();
             EventBus.getDefault().post(new UserEntity(userIcon, userId, userName), "UserInfo");
-            StartUtil.editInfo(this, userName, userId, userIcon, "1");
-//            Log.d("123",token+"  "+userId+"===="+userGender+"====="+userIcon+"======"+userName);
             new Thread(new Runnable() {
                 @Override
                 public void run() {

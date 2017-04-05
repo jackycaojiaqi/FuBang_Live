@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
@@ -131,31 +132,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private int mIsLiveStreaming = 1;
     private Context context;
     RoomMain roomMain = new RoomMain(this);
-    private int roomId;
     private EmotionInputDetector mDetector;
     private RtmpUrlPresenterImpl presenter;
-
-    private void setOptions(int codecType) {
-        AVOptions options = new AVOptions();
-
-        // the unit of timeout is ms
-        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
-        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
-        options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
-        // Some optimization with buffering mechanism when be set to 1
-        options.setInteger(AVOptions.KEY_LIVE_STREAMING, mIsLiveStreaming);
-        if (mIsLiveStreaming == 1) {
-            options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
-        }
-
-        // 1 -> hw codec enable, 0 -> disable [recommended]
-        options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
-
-        // whether start play automatically after prepared, default value is 1
-        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
-
-        mVideoView.setAVOptions(options);
-    }
+    private String roomIp, ip, roomPwd;
+    private int roomId, port;
 
     @Nullable
     @Override
@@ -170,6 +150,20 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        roomPwd = getArguments().getString(AppConstant.ROOMPWD);
+        roomIp = getArguments().getString(AppConstant.ROOMIP);
+        roomId = Integer.parseInt(getArguments().getString(AppConstant.ROOMID));
+        String[] Ips = roomIp.split(";");
+        String[] ports = Ips[0].split(":");
+        ip = ports[0];
+        port = Integer.parseInt(ports[1]);
+        //连接房间
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(getActivity())), StartUtil.getUserPwd(getActivity()), ip, port, roomPwd);
+            }
+        }).start();
         //设置表情适配器
         mDetector = EmotionInputDetector.with(getActivity())
                 .setEmotionView(emotionNewLayout)
@@ -214,6 +208,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        mVideoView.start();
         presenter = new RtmpUrlPresenterImpl(this, "10088", "88888");
         presenter.getRtmpUrl();
+
+
     }
 
     @Subscriber(tag = "room_url")
@@ -244,6 +240,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void onDestroy() {
         super.onDestroy();
         mVideoView.stopPlayback();
+        roomMain.getRoom().getChannel().Close();
         EventBus.getDefault().unregister(this);
     }
 
@@ -254,38 +251,38 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             boolean isNeedReconnect = false;
             switch (errorCode) {
                 case PLMediaPlayer.ERROR_CODE_INVALID_URI:
-                      KLog.e("Invalid URL !");
+                    KLog.e("Invalid URL !");
                     break;
                 case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
-                      KLog.e("404 resource not found !");
+                    KLog.e("404 resource not found !");
                     break;
                 case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
-                      KLog.e("Connection refused !");
+                    KLog.e("Connection refused !");
                     break;
                 case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
-                      KLog.e("Connection timeout !");
+                    KLog.e("Connection timeout !");
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
-                      KLog.e("Empty playlist !");
+                    KLog.e("Empty playlist !");
                     break;
                 case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
-                      KLog.e("Stream disconnected !");
+                    KLog.e("Stream disconnected !");
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_IO_ERROR:
-                      KLog.e("Network IO Error !");
+                    KLog.e("Network IO Error !");
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
-                      KLog.e("Unauthorized Error !");
+                    KLog.e("Unauthorized Error !");
                     break;
                 case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
                     KLog.e("Prepare timeout !");
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
-                      KLog.e("Read frame timeout !");
+                    KLog.e("Read frame timeout !");
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
@@ -295,7 +292,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
                     break;
                 default:
-                      KLog.e("unknown error !");
+                    KLog.e("unknown error !");
                     break;
             }
             if (isNeedReconnect) {
@@ -312,7 +309,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private PLMediaPlayer.OnCompletionListener mOnCompletionListener = new PLMediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(PLMediaPlayer plMediaPlayer) {
-              KLog.e("Play Completed !");
+            KLog.e("Play Completed !");
 //            finish();
         }
     };
@@ -371,19 +368,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 mVideoView.setDisplayAspectRatio(mDisplayAspectRatio);
                 switch (mVideoView.getDisplayAspectRatio()) {
                     case PLVideoTextureView.ASPECT_RATIO_ORIGIN:
-                          KLog.e("Origin mode");
+                        KLog.e("Origin mode");
                         break;
                     case PLVideoTextureView.ASPECT_RATIO_FIT_PARENT:
-                          KLog.e("Fit parent !");
+                        KLog.e("Fit parent !");
                         break;
                     case PLVideoTextureView.ASPECT_RATIO_PAVED_PARENT:
-                          KLog.e("Paved parent !");
+                        KLog.e("Paved parent !");
                         break;
                     case PLVideoTextureView.ASPECT_RATIO_16_9:
-                          KLog.e("16 : 9 !");
+                        KLog.e("16 : 9 !");
                         break;
                     case PLVideoTextureView.ASPECT_RATIO_4_3:
-                          KLog.e("4 : 3 !");
+                        KLog.e("4 : 3 !");
                         break;
                     default:
                         break;
@@ -638,4 +635,27 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void faided() {
 
     }
+
+    private void setOptions(int codecType) {
+        AVOptions options = new AVOptions();
+
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
+        // Some optimization with buffering mechanism when be set to 1
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, mIsLiveStreaming);
+        if (mIsLiveStreaming == 1) {
+            options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
+        }
+
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
+
+        // whether start play automatically after prepared, default value is 1
+        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
+
+        mVideoView.setAVOptions(options);
+    }
+
 }
