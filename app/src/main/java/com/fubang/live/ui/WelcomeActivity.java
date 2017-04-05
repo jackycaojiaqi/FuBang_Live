@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
+import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 
 /**
  * Created by jacky on 17/3/28.
@@ -21,12 +23,24 @@ public class WelcomeActivity extends BaseActivity {
         setTranslucentStatus();
         setContentView(R.layout.activity_welcome);
         context = this;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(context, MainActivity.class));
-                finish();
-            }
-        }, 2000);
+        String userid = StartUtil.getUserId(context);
+        if (!StringUtil.isEmptyandnull(userid)) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(new Intent(context, MainActivity.class));
+                    finish();
+                }
+            }, 2000);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(new Intent(context, LoginActivity.class));
+                    finish();
+                }
+            }, 2000);
+        }
+
     }
 }

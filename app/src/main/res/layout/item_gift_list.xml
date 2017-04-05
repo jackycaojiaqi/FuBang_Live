@@ -8,8 +8,7 @@
     <ImageView
         android:id="@+id/room_gift_image"
         android:layout_width="50dp"
-        android:layout_height="50dp"
-         />
+        android:layout_height="50dp" />
 
     <TextView
         android:id="@+id/room_gift_name"

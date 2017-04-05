@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
@@ -90,14 +92,18 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 sina.removeAccount(true);
                 break;
             case R.id.rl_login_phone:
+//                StartUtil.editInfo(this, userName, userId + "", userIcon, "123");
                 intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
+                finish();
                 break;
         }
 
     }
 
-    private String userIcon, userId, userName;
+    private String userIcon;
+    private String userId = "18888777";
+    private String userName = "小新";
 
     @Override
     public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
@@ -119,8 +125,6 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 }
             }).start();
         }
-
-
     }
 
     @Override

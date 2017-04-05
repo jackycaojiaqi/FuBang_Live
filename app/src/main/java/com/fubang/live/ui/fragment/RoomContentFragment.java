@@ -2,7 +2,6 @@ package com.fubang.live.ui.fragment;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +10,9 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,16 +36,18 @@ import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
+import com.fubang.live.adapter.RoomChatAdapter;
+import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
-import com.fubang.live.ui.MainActivity;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.fubang.live.view.RtmpUrlView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
@@ -54,6 +58,7 @@ import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
+import com.xlg.android.protocol.RoomChatMsg;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
@@ -103,6 +108,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     ImageView ivRoomChat;
     @BindView(R.id.lv_room_message)
     ListView lvRoomMessage;
+    @BindView(R.id.lv_room_gift)
+    ListView lvRoomGift;
     //============================底部输入栏
     @BindView(R.id.room_new_chat_send)
     Button roomChatSend;
@@ -208,8 +215,11 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        mVideoView.start();
         presenter = new RtmpUrlPresenterImpl(this, "10088", "88888");
         presenter.getRtmpUrl();
-
-
+        //设置listadapter
+        adapter = new RoomChatAdapter(list_msg, context);
+        lvRoomMessage.setAdapter(adapter);
+        adapter_gift = new RoomGiftAdapter(list_gift,context);
+        lvRoomGift.setAdapter(adapter_gift);
     }
 
     @Subscriber(tag = "room_url")
@@ -219,6 +229,45 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         mVideoView.pause();
         mCoverView.setVisibility(View.VISIBLE);
         sendReconnectMessage();
+    }
+
+    private List<RoomChatMsg> list_msg = new ArrayList<>();
+    private List<GiftEntity> list_gift = new ArrayList<>();
+    private RoomChatAdapter adapter;
+    private RoomGiftAdapter adapter_gift;
+    //接收服务器发送的消息更新列表
+    @Subscriber(tag = "RoomChatMsg")
+    public void getRoomChatMsg(RoomChatMsg msg) {
+        KLog.e(msg.getContent() + " ");
+        if (msg.getMsgtype() == 0) {
+            if (msg.getIsprivate() == 0) {
+                //("<b><FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000\">/mr599</FONT></b>")) {
+                //<b><FONT style="FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000">/mr599</FONT></b>
+//                EventBus.getDefault().post(msg,"CommonMsg");
+//                listView.setSelection(listView.getCount() - 1);
+                if (list_msg.size() > 200) {//放置消息过多，异常
+                    list_msg.clear();
+                }
+                list_msg.add(msg);//以后消息过多会有问题
+                adapter.notifyDataSetChanged();
+                lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
+                lvRoomMessage.setVisibility(View.VISIBLE);
+                setAnimaAlpha(lvRoomMessage);
+            }
+        }
+//        if(msg.getMsgtype() == 0) {
+//            if (msg.getIsprivate() == 1) {
+//                if (msg.getToid() == sendToUser.getUserid() || msg.getToid() == Integer.parseInt(StartUtil.getUserId(this))) {
+//                    EventBus.getDefault().post(msg,"PersonMsg");
+//                }
+//            }
+//        }
+        if (msg.getMsgtype() == 12 && msg.getSrcid() == 2) {
+
+            Spanned spanned = Html.fromHtml(msg.getContent());
+            Log.d("123", spanned + "");
+        }
+
     }
 
     @Override
@@ -422,10 +471,13 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 }
                 break;
             case R.id.room_new_chat_send:
-//                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, "德玛西亚", "123", 0);
-                rllRoomInput.setVisibility(View.GONE);
-                if (imm != null) {
-                    imm.hideSoftInputFromWindow(roomMessageEdit.getWindowToken(), 0);
+                if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), "123", 0);
+                    roomMessageEdit.setText("");
+                    rllRoomInput.setVisibility(View.GONE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(roomMessageEdit.getWindowToken(), 0);
+                    }
                 }
                 break;
             //收藏房间
@@ -433,7 +485,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-//                        roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                        roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
                 Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
@@ -491,10 +543,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         });
     }
 
-    private EditText giftToUser;
+    private TextView giftToUser;
     private PopupWindow popupWindow;
     private List<GiftEntity> gifts = new ArrayList<>();
-
+    private int giftId;
     //礼物的悬浮框
     private void showWindow() {
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -504,7 +556,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         final TextView giftName = (TextView) view.findViewById(R.id.gift_name_txt);
         final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
 //        final EditText
-        giftToUser = (EditText) view.findViewById(R.id.gift_to_user);
+        giftToUser = (TextView) view.findViewById(R.id.gift_to_user);
         popupWindow = new PopupWindow(view);
         popupWindow.setFocusable(true);
         gifts.clear();
@@ -515,67 +567,23 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("123",gifts.get(position)+"------------>");
-//                giftId = gifts.get(position).getGiftId();
+                giftId =  gifts.get(position).getGiftId();
                 String name = gifts.get(position).getGiftName();
                 giftName.setText(name + "");
-//                popupWindow.dismiss();
             }
         });
-//        if (micUsers != null) {
-//            for (int i = 0; i < micUsers.size(); i++) {
-//                if (micUsers.get(i).getMicindex() == micFlag) {
-//                    giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                }
-//            }
-//        }
         //发送礼物
         giftSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                toid = -1;
-//                toName = "";
-////                if (giftToUser.getText().toString().equals("1")){
-//                for (int i = 0; i < micUsers.size(); i++) {
-//                    if (micUsers.get(i).getMicindex() == micFlag) {
-//                        toid = micUsers.get(i).getUserid();
-//                        toName = micUsers.get(i).getUseralias();
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                    }
-//                }
-//                }else if (giftToUser.getText().toString().equals("2")){
-//                    for (int i = 0; i < micUsers.size(); i++) {
-//                        if (micUsers.get(i).getMicindex()==1){
-//                            toid = micUsers.get(i).getUserid();
-//                            toName = micUsers.get(i).getUseralias();
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                        }
-//                    }
-//                }else if (giftToUser.getText().toString().equals("3")){
-//                    for (int i = 0; i < micUsers.size(); i++) {
-//                        if (micUsers.get(i).getMicindex()==2){
-//                            toid = micUsers.get(i).getUserid();
-//                            toName = micUsers.get(i).getUseralias();
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                        }
-//                    }
-//                }else
-////                        (giftToUser.getText().toString()!="1" &&giftToUser.getText().toString()!="2"&&giftToUser.getText().toString()!="3")
-//                {
-//                    Toast.makeText(RoomNewActivity.this, "赠送麦序错误,请重新选择", Toast.LENGTH_SHORT).show();
-//                    toid = -1;
-//                    toName = "";
-//                }
+
                 final int count = Integer.parseInt(giftCount.getText().toString());
-//                Log.d("123", "toid--" + toid + "---giftId---" + giftId + "---count---" + count + "---toName---" + toName);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-//                        roomMain.getRoom().getChannel().sendGiftRecord(toid, giftId, count, toName, StartUtil.getUserName(RoomActivity.this));
+                        roomMain.getRoom().getChannel().sendGiftRecord(18888, 374, count, "小新", StartUtil.getUserName(context));
                     }
                 }).start();
-
                 giftName.setText("送给");
                 popupWindow.dismiss();
 //                sendControl.setVisibility(View.VISIBLE);

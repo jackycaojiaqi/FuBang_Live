@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.base.BaseFragment;
@@ -94,6 +95,9 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(context, RoomActivity.class);
+                intent.putExtra(AppConstant.ROOMID,list.get(position).getRoomid());
+                intent.putExtra(AppConstant.ROOMIP,list.get(position).getGateway());
+                intent.putExtra(AppConstant.ROOMPWD,list.get(position).getRoompwd());
                 startActivity(intent);
             }
         });

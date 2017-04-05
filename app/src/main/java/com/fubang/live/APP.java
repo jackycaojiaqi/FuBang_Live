@@ -2,6 +2,7 @@ package com.fubang.live;
 
 import android.app.Application;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.live.util.CrashHandler;
 import com.fubang.live.util.LiteOrmDBUtil;
 import com.qiniu.pili.droid.streaming.StreamingEnv;
@@ -15,6 +16,7 @@ public class APP extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fresco.initialize(this);
         ShareSDK.initSDK(this);
         StreamingEnv.init(getApplicationContext());
         CrashHandler.getInstance().init(getApplicationContext());//本地统计日志

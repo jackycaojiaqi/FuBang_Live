@@ -6,6 +6,8 @@ import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.LinearLayout;
 
 import com.fubang.live.util.ScreenUtils;
@@ -47,5 +49,27 @@ public class BaseFragment extends Fragment {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+    public void setAnimaAlpha(final View view) {
+        AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
+        animation1.setDuration(30 * 1000);
+        animation1.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view.setAnimation(animation1);
+        animation1.start();
     }
 }

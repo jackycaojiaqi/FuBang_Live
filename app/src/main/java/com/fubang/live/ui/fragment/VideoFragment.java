@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.RoomNearAdapter;
 import com.fubang.live.adapter.RoomVideoAdapter;
@@ -88,6 +89,9 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(context, RoomActivity.class);
+                intent.putExtra(AppConstant.ROOMID,list.get(position).getRoomid());
+                intent.putExtra(AppConstant.ROOMIP,list.get(position).getGateway());
+                intent.putExtra(AppConstant.ROOMPWD,list.get(position).getRoompwd());
                 startActivity(intent);
             }
         });

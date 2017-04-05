@@ -136,6 +136,7 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
         });
     }
 
+
     @Override
     public void faidedRoomList() {
         Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();

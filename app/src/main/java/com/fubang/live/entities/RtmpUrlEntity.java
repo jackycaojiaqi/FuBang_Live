@@ -3,7 +3,7 @@ package com.fubang.live.entities;
 /**
  * Created by jacky on 17/4/1.
  */
-public class RtmpUrlEntity {
+public class RtmpUrlEntity extends BaseEntity {
 
     /**
      * state : 200
