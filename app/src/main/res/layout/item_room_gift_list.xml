@@ -22,10 +22,11 @@
             android:layout_height="50dp"
             android:src="@mipmap/ic_launcher" />
 
-        <TextView
-            android:id="@+id/room_gift_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="礼物名字" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/room_gift_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="x1" />
 </LinearLayout>

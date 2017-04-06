@@ -726,7 +726,8 @@ public class RoomChannel  implements ClientSocketHandler {
 		BigGiftRecord obj = new BigGiftRecord();
 		header.setCmd1(Header.MessageType_mxpTradeGiftRequest);
 		obj.setVcbid(mRoomID);
-		obj.setSrcid(mUserID);
+		obj.setSrcid(99888);
+		obj.setDstplatformid((short)0);
 		obj.setToid(toid);
 		obj.setGiftid(giftId);
 		obj.setCount(count);
@@ -737,7 +738,7 @@ public class RoomChannel  implements ClientSocketHandler {
 		obj.setTime(System.currentTimeMillis());
 		obj.setOldcount(0);
 		obj.setFlyid((short) -1);
-		obj.setSrcalias(userName);
+		obj.setSrcalias("99888");
 //		obj.setToalias(toid+"");
 		obj.setToalias(toName);
 		obj.setSztext("");

@@ -41,8 +41,8 @@ public class BigGiftRecord {
 	private byte[]			toalias = new byte[32];	//接收者昵称
 	@StructOrder(18)
 	private byte[]			sztext = new byte[40];//定义40,实际使用最多18个汉字或英文（最多占36个长度)
-	
-	
+
+
 	public int getVcbid() {
 		return vcbid;
 	}
@@ -158,6 +158,6 @@ public class BigGiftRecord {
 		Tools.String2ByteArrayGBK(this.sztext, sztext);
 	}
 
-	
-	
+
+
 }

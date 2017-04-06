@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.fubang.live.R;
 import com.fubang.live.entities.GiftEntity;
+import com.xlg.android.protocol.BigGiftRecord;
 
 import java.util.List;
 
@@ -44,8 +45,8 @@ import java.util.List;
  * 修改时间：2016-05-24 15:27
  * 修改备注：
  */
-public class RoomGiftAdapter extends ListBaseAdapter<GiftEntity> {
-    public RoomGiftAdapter(List<GiftEntity> list, Context context) {
+public class RoomGiftAdapter extends ListBaseAdapter<BigGiftRecord> {
+    public RoomGiftAdapter(List<BigGiftRecord> list, Context context) {
         super(list, context);
     }
 
@@ -58,9 +59,9 @@ public class RoomGiftAdapter extends ListBaseAdapter<GiftEntity> {
             convertView.setTag(holder);
         }
         holder = (ViewHolder) convertView.getTag();
-        holder.giftImage.setImageResource(list.get(position).getGiftImage());
-        holder.giftName.setText(list.get(position).getGiftName());
-        holder.giftGiven.setText("小新送出：" + list.get(position).getGiftName());
+        holder.giftImage.setImageResource(R.drawable.ic_gift_car);
+        holder.giftCount.setText("x" + list.get(position).getCount());
+        holder.giftGiven.setText(list.get(position).getSrcalias() + "送出礼物： ");
         return convertView;
     }
 
@@ -68,14 +69,14 @@ public class RoomGiftAdapter extends ListBaseAdapter<GiftEntity> {
         //显示礼物图片
         ImageView giftImage;
         //显示礼物名字
-        TextView giftName;
+        TextView giftCount;
         //显示礼物赠送人
         TextView giftGiven;
 
         public ViewHolder(View itemView) {
             giftImage = (ImageView) itemView.findViewById(R.id.room_gift_image);
-            giftName = (TextView) itemView.findViewById(R.id.room_gift_name);
             giftGiven = (TextView) itemView.findViewById(R.id.room_gift_given);
+            giftCount = (TextView) itemView.findViewById(R.id.room_gift_count);
         }
     }
 }

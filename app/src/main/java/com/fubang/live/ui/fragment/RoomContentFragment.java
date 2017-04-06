@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -58,6 +59,7 @@ import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
+import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.RoomChatMsg;
 
 import org.simple.eventbus.EventBus;
@@ -171,7 +173,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(getActivity())), StartUtil.getUserPwd(getActivity()), ip, port, roomPwd);
             }
         }).start();
-        //设置表情适配器
+//        //设置表情适配器
         mDetector = EmotionInputDetector.with(getActivity())
                 .setEmotionView(emotionNewLayout)
                 .bindToContent(llRoomInput)
@@ -218,10 +220,33 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         //设置listadapter
         adapter = new RoomChatAdapter(list_msg, context);
         lvRoomMessage.setAdapter(adapter);
-        adapter_gift = new RoomGiftAdapter(list_gift,context);
+        adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
+//        initEmotionMainFragment();
     }
 
+    //    /**
+//     * 初始化表情面板
+//     */
+//    public void initEmotionMainFragment(){
+//        //构建传递参数
+//        Bundle bundle = new Bundle();
+//        //绑定主内容编辑框
+//        bundle.putBoolean(EmotionMainFragment.BIND_TO_EDITTEXT,true);
+//        //隐藏控件
+//        bundle.putBoolean(EmotionMainFragment.HIDE_BAR_EDITTEXT_AND_BTN,false);
+//        //替换fragment
+//        //创建修改实例
+//        emotionMainFragment =EmotionMainFragment.newInstance(EmotionMainFragment.class,bundle);
+//        emotionMainFragment.bindToContentView(listView);
+//        FragmentTransaction transaction =getActivity().getSupportFragmentManager().beginTransaction();
+//        // Replace whatever is in thefragment_container view with this fragment,
+//        // and add the transaction to the backstack
+//        transaction.replace(com.zejian.emotionkeyboard.R.id.fl_emotionview_main,emotionMainFragment);
+//        transaction.addToBackStack(null);
+//        //提交修改
+//        transaction.commit();
+//    }
     @Subscriber(tag = "room_url")
     private void getRoomUrl(String url) {
         mVideoPath = url;
@@ -232,9 +257,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     }
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
-    private List<GiftEntity> list_gift = new ArrayList<>();
+    private List<BigGiftRecord> list_gift = new ArrayList<>();
     private RoomChatAdapter adapter;
     private RoomGiftAdapter adapter_gift;
+
     //接收服务器发送的消息更新列表
     @Subscriber(tag = "RoomChatMsg")
     public void getRoomChatMsg(RoomChatMsg msg) {
@@ -268,6 +294,17 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             Log.d("123", spanned + "");
         }
 
+    }
+
+    //接收礼物消息更新
+    @Subscriber(tag = "BigGiftRecord")
+    public void getGiftRecord(BigGiftRecord obj) {
+        int count = obj.getCount();
+        if (count != 0) {
+            list_gift.add(obj);
+            adapter_gift.notifyDataSetChanged();
+            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
+        }
     }
 
     @Override
@@ -403,8 +440,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private InputMethodManager imm;
 
     @OnClick({R.id.ib_change_orientation, R.id.ib_change_screen, R.id.iv_room_add_favorite,
-            R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat,
-            R.id.tv_room_input_close, R.id.room_new_chat_send})
+            R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat
+            , R.id.room_new_chat_send, R.id.tv_room_input_close})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
@@ -446,6 +483,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             case R.id.iv_room_share:
                 doShareAction();
                 break;
+            case R.id.tv_room_input_close:
+                rllRoomInput.setVisibility(View.GONE);
+                break;
             case R.id.iv_room_exit:
                 getActivity().finish();
                 break;
@@ -463,12 +503,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 }, 200);
                 break;
             case R.id.lv_room_message:
-                break;
-            case R.id.tv_room_input_close:
-                rllRoomInput.setVisibility(View.GONE);
-                if (imm != null) {
-                    imm.hideSoftInputFromWindow(roomMessageEdit.getWindowToken(), 0);
-                }
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
@@ -547,6 +581,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private PopupWindow popupWindow;
     private List<GiftEntity> gifts = new ArrayList<>();
     private int giftId;
+
     //礼物的悬浮框
     private void showWindow() {
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -567,7 +602,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                giftId =  gifts.get(position).getGiftId();
+                giftId = gifts.get(position).getGiftId();
                 String name = gifts.get(position).getGiftName();
                 giftName.setText(name + "");
             }
@@ -581,7 +616,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(18888, 374, count, "小新", StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(99887, 37, count, "99887", StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");

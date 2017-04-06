@@ -66,4 +66,6 @@ public class GiftEntity {
         this.giftId = giftId;
         this.giftImage = giftImage;
     }
+    public GiftEntity() {
+    }
 }
