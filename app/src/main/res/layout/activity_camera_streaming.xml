@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -26,13 +27,11 @@
 
     <Button
         android:id="@+id/camera_switch_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="top|center"
         android:layout_marginTop="20dp"
-        android:contentDescription="@string/cd_btn_camera_switcher"
-        android:textColor="@color/pldroid_streaming_white"
-        android:visibility="gone" />
+        android:background="@drawable/ic_change_camera" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -145,8 +144,37 @@
     <include
         layout="@layout/camera_button_holder"
         android:visibility="gone" />
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/lv_room_gift"
+            android:layout_above="@+id/lv_room_message"
+            android:layout_alignStart="@+id/lv_room_message"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="50dp"
+            android:divider="@null"
+            android:scrollbars="none"
+            app:layout_heightPercent="25%"
+            app:layout_widthPercent="70%"></ListView>
+
+        <ListView
+            android:id="@+id/lv_room_message"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="50dp"
+            android:divider="@null"
+            android:scrollbars="none"
+            app:layout_heightPercent="35%"
+            app:layout_widthPercent="70%"></ListView>
+    </android.support.percent.PercentRelativeLayout>
 
     <include layout="@layout/layout_live_start_info" />
 
     <include layout="@layout/layout_live_top" />
+
+
+    <include layout="@layout/layout_room_edit" />
 </FrameLayout>

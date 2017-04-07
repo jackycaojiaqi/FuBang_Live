@@ -225,28 +225,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        initEmotionMainFragment();
     }
 
-    //    /**
-//     * 初始化表情面板
-//     */
-//    public void initEmotionMainFragment(){
-//        //构建传递参数
-//        Bundle bundle = new Bundle();
-//        //绑定主内容编辑框
-//        bundle.putBoolean(EmotionMainFragment.BIND_TO_EDITTEXT,true);
-//        //隐藏控件
-//        bundle.putBoolean(EmotionMainFragment.HIDE_BAR_EDITTEXT_AND_BTN,false);
-//        //替换fragment
-//        //创建修改实例
-//        emotionMainFragment =EmotionMainFragment.newInstance(EmotionMainFragment.class,bundle);
-//        emotionMainFragment.bindToContentView(listView);
-//        FragmentTransaction transaction =getActivity().getSupportFragmentManager().beginTransaction();
-//        // Replace whatever is in thefragment_container view with this fragment,
-//        // and add the transaction to the backstack
-//        transaction.replace(com.zejian.emotionkeyboard.R.id.fl_emotionview_main,emotionMainFragment);
-//        transaction.addToBackStack(null);
-//        //提交修改
-//        transaction.commit();
-//    }
     @Subscriber(tag = "room_url")
     private void getRoomUrl(String url) {
         mVideoPath = url;
@@ -506,7 +484,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), "123", 0);
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), "小新", 0);
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {

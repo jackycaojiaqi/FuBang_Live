@@ -21,12 +21,14 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fubang.live.R;
+import com.fubang.live.base.BaseActivity;
 import com.fubang.live.util.Config;
 import com.qiniu.android.dns.DnsManager;
 import com.qiniu.android.dns.IResolver;
@@ -68,7 +70,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class BaseStreamingActivity extends Activity implements
+public class BaseStreamingActivity extends BaseActivity implements
         StreamStatusCallback,
         StreamingPreviewCallback,
         SurfaceTextureCallback,
@@ -90,8 +92,8 @@ public class BaseStreamingActivity extends Activity implements
     private static final int MSG_ENCODING_MIRROR = 6;
     @BindView(R.id.et_live_title)
     EditText etLiveTitle;
-
-    public static ImageView ivLiveStart;
+    @BindView(R.id.iv_live_start)
+    protected ImageView ivLiveStart;
     @BindView(R.id.ll_live_start)
     protected LinearLayout llLiveStart;
     @BindView(R.id.iv_live_share)
@@ -100,6 +102,27 @@ public class BaseStreamingActivity extends Activity implements
     ImageView ivLiveExit;
     @BindView(R.id.iv_live_chat)
     ImageView ivLiveChat;
+    //礼物聊天列表
+    @BindView(R.id.lv_room_message)
+    protected ListView lvRoomMessage;
+    @BindView(R.id.lv_room_gift)
+    protected ListView lvRoomGift;
+    //============================底部输入栏
+    @BindView(R.id.room_new_chat_send)
+    protected Button roomChatSend;
+    @BindView(R.id.rll_room_input)
+    protected RelativeLayout rllRoomInput;
+    @BindView(R.id.chat_new_input_line)
+    protected LinearLayout llRoomInput;
+    @BindView(R.id.tv_room_input_close)
+    protected TextView tvRoomInputClose;
+    @BindView(R.id.edit_new_text)
+    protected EditText roomMessageEdit;
+    @BindView(R.id.emotion_new_button)
+    protected ImageView emotionButton;
+    @BindView(R.id.emotion_new_layout)
+    protected RelativeLayout emotionNewLayout;
+
     protected RelativeLayout rl_live_control;
 
     private Context mContext;
@@ -595,7 +618,6 @@ public class BaseStreamingActivity extends Activity implements
     }
 
     private void initUIs() {
-        ivLiveStart = (ImageView) findViewById(R.id.iv_live_start);
         rl_live_control = (RelativeLayout) findViewById(R.id.rl_live_control);
         mMuteButton = (Button) findViewById(R.id.mute_btn);
         mShutterButton = (Button) findViewById(R.id.toggleRecording_button);
@@ -768,9 +790,9 @@ public class BaseStreamingActivity extends Activity implements
             return;
         }
         if (camId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            mCameraSwitchBtn.setText("Back");
+//            mCameraSwitchBtn.setText("Back");
         } else {
-            mCameraSwitchBtn.setText("Front");
+//            mCameraSwitchBtn.setText("Front");
         }
     }
 
