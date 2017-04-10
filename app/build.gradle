@@ -79,4 +79,6 @@ dependencies {
     //图片选择工具
     compile 'com.jph.takephoto:takephoto_library:4.0.3'
     compile files('libs/AMap_Location_V3.3.0_20170118.jar')
+    compile files('libs/umeng-analytics-v6.1.0.jar')
+    compile files('libs/utdid4all-1.0.4.jar')
 }

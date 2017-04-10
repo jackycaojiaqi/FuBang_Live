@@ -49,4 +49,5 @@
     <string name="cd_encoding_mirror">cd_encoding_mirror</string>
     <string name="buffering">加载中</string>
     <string name="net_error">网络错误</string>
+    <string name="sending_request">请求中</string>
 </resources>

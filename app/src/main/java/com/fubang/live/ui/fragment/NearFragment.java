@@ -89,9 +89,9 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(context, RoomActivity.class);
-                intent.putExtra(AppConstant.ROOMID,list.get(position).getRoomid());
-                intent.putExtra(AppConstant.ROOMIP,list.get(position).getGateway());
-                intent.putExtra(AppConstant.ROOMPWD,list.get(position).getRoompwd());
+                intent.putExtra(AppConstant.ROOMID, list.get(position).getRoomid());
+                intent.putExtra(AppConstant.ROOMIP, list.get(position).getGateway());
+                intent.putExtra(AppConstant.ROOMPWD, list.get(position).getRoompwd());
                 startActivity(intent);
             }
         });
@@ -99,7 +99,7 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
         //=====================下拉刷新
         srlNear.setOnRefreshListener(this);
         //设置样式刷新显示的位置
-        srlNear.setProgressViewOffset(true, -20, 100);
+        srlNear.setProgressViewOffset(true, -10, 50);
 
     }
 
@@ -119,6 +119,7 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
 
     @Override
     public void successRoomList(RoomEntity entity) {
+        srlNear.setRefreshing(false);
         if (page == 1) {
             list.clear();
         }
@@ -141,17 +142,13 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
 
     @Override
     public void faidedRoomList() {
+        srlNear.setRefreshing(false);
         Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                srlNear.setRefreshing(false);
-            }
-        }, 2000);
+        presenter.getRoomList();
     }
 
 }

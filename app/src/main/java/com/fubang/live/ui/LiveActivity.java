@@ -278,7 +278,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), "小新", 0);
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {

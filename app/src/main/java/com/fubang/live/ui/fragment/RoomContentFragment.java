@@ -43,6 +43,7 @@ import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
+import com.fubang.live.ui.MainActivity;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
@@ -166,6 +167,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         String[] ports = Ips[0].split(":");
         ip = ports[0];
         port = Integer.parseInt(ports[1]);
+        KLog.e(roomId + " " + ip + " " + port + " " + roomPwd);
         //连接房间
         new Thread(new Runnable() {
             @Override
@@ -215,7 +217,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         mVideoView.setOnErrorListener(mOnErrorListener);
 //        mVideoView.setVideoPath(mVideoPath);
 //        mVideoView.start();
-        presenter = new RtmpUrlPresenterImpl(this, "10088", "88888");
+        presenter = new RtmpUrlPresenterImpl(this, "90001", "888881");
         presenter.getRtmpUrl();
         //设置listadapter
         adapter = new RoomChatAdapter(list_msg, context);
@@ -484,7 +486,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), "小新", 0);
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {
@@ -511,7 +513,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
      * 处理分享弹窗
      */
     private void doShareAction() {
-        View popupView = getActivity().getLayoutInflater().inflate(R.layout.pop_share, null);
+        final View popupView = getActivity().getLayoutInflater().inflate(R.layout.pop_share, null);
         pop_share = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         pop_share.showAtLocation(tvRoomAnchorName, Gravity.TOP, 0, 0);
         TextView tv_cancle = (TextView) popupView.findViewById(R.id.tv_share_cancle);
@@ -524,6 +526,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(Wechat.NAME);
                 ShareUtil.getInstance().showShareNew(context, plat);
+                pop_share.dismiss();
             }
         });
         ll_wechat_circle.setOnClickListener(new View.OnClickListener() {
@@ -531,6 +534,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(WechatMoments.NAME);
                 ShareUtil.getInstance().showShareNew(context, plat);
+                pop_share.dismiss();
             }
         });
         ll_qq.setOnClickListener(new View.OnClickListener() {
@@ -538,6 +542,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(QQ.NAME);
                 ShareUtil.getInstance().showShareNew(context, plat);
+                pop_share.dismiss();
             }
         });
         ll_sina.setOnClickListener(new View.OnClickListener() {
@@ -545,6 +550,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(SinaWeibo.NAME);
                 ShareUtil.getInstance().showShareNew(context, plat);
+                pop_share.dismiss();
             }
         });
         tv_cancle.setOnClickListener(new View.OnClickListener() {

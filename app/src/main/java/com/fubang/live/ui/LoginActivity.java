@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.UserEntity;
+import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
 import com.sample.login.LoginMain;
 import com.socks.library.KLog;
@@ -75,6 +76,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 wechat.showUser(null);//授权并获取用户信息
                 //移除授权
                 wechat.removeAccount(true);
+                DialogFactory.showRequestDialog(context);
                 break;
             case R.id.rl_login_qq:
                 flag = 2;
@@ -83,6 +85,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 qq.showUser(null);//授权并获取用户信息
                 //移除授权
                 qq.removeAccount(true);
+                DialogFactory.showRequestDialog(context);
                 break;
             case R.id.rl_login_sina:
                 Platform sina = ShareSDK.getPlatform(SinaWeibo.NAME);
@@ -90,6 +93,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 sina.showUser(null);//授权并获取用户信息
                 //移除授权
                 sina.removeAccount(true);
+                DialogFactory.showRequestDialog(context);
                 break;
             case R.id.rl_login_phone:
 //                StartUtil.editInfo(this, userName, userId + "", userIcon, "123");
@@ -124,17 +128,18 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                     new LoginMain(0, "", userId, flag, flag, LoginActivity.this).start(0, "", flag, userId, flag, LoginActivity.this);
                 }
             }).start();
+            DialogFactory.hideRequestDialog();
         }
     }
 
     @Override
     public void onError(Platform platform, int i, Throwable throwable) {
-
+        DialogFactory.hideRequestDialog();
     }
 
     @Override
     public void onCancel(Platform platform, int i) {
-
+        DialogFactory.hideRequestDialog();
     }
 
     @Subscriber(tag = "login_success")

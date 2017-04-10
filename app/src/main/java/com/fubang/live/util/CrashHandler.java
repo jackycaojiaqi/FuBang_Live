@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -117,6 +119,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         }.start();
         //保存日志文件
         saveCatchInfo2File(ex);
+        MobclickAgent.reportError(mContext,ex);
         return true;
     }
 

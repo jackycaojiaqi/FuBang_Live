@@ -33,9 +33,11 @@ import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
+import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 
@@ -91,6 +93,16 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         context = this;
         initview();
         initdate();
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void initlocation() {
@@ -235,7 +247,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_live.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "10088", "88888");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "90001", "888881");
                 presenter.getRtmpUrl();
 
             }
@@ -243,7 +255,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "10088", "88888");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "90001", "888881");
                 presenter.getRtmpUrl();
             }
         });

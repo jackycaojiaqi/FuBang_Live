@@ -22,6 +22,7 @@ import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.ui.fragment.RoomContentFragment;
 import com.fubang.live.ui.fragment.RoomNoContentFragment;
 import com.fubang.live.ui.fragment.VideoFragment;
+import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
@@ -77,7 +78,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
     }
 
     private void initdate() {
-        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, "10088", "88888");
+        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, "90001", "888881");
         presenter.getRtmpUrl();
     }
 

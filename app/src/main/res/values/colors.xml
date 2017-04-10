@@ -32,6 +32,8 @@
     <color name="green_626262">#626262</color>
     <color name="gray">#808080</color>
     <color name="transparent_80">#80000000</color>
+    <color name="sc_transparent_background">#00111111</color>
+
     <color name="gray_main_text_select">#e4007f</color>
     <color name="gray_login_input">#93e5e1</color>
     <color name="transparent_deep_aa">#AA000000</color>

@@ -95,9 +95,9 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(context, RoomActivity.class);
-                intent.putExtra(AppConstant.ROOMID,list.get(position).getRoomid());
-                intent.putExtra(AppConstant.ROOMIP,list.get(position).getGateway());
-                intent.putExtra(AppConstant.ROOMPWD,list.get(position).getRoompwd());
+                intent.putExtra(AppConstant.ROOMID, list.get(position).getRoomid());
+                intent.putExtra(AppConstant.ROOMIP, list.get(position).getGateway());
+                intent.putExtra(AppConstant.ROOMPWD, list.get(position).getRoompwd());
                 startActivity(intent);
             }
         });
@@ -123,7 +123,7 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
         //=====================下拉刷新
         srlRoom.setOnRefreshListener(this);
         //设置样式刷新显示的位置
-        srlRoom.setProgressViewOffset(true, -20, 100);
+        srlRoom.setProgressViewOffset(true, -10, 50);
 
     }
 
@@ -135,6 +135,7 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
 
     @Override
     public void successRoomList(RoomEntity entity) {
+        srlRoom.setRefreshing(false);
         if (page == 1) {
             list.clear();
         }
@@ -157,6 +158,7 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
 
     @Override
     public void faidedRoomList() {
+        srlRoom.setRefreshing(false);
         Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
     }
 
@@ -167,12 +169,8 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                srlRoom.setRefreshing(false);
-            }
-        }, 2000);
+        presenter.getRoomList();
+
     }
 
     public class GlideImageLoader extends ImageLoader {
