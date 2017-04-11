@@ -125,20 +125,7 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
         }
         List<RoomListEntity> roomListEntities = entity.getRoomlist();
         list.addAll(roomListEntities);
-        list.addAll(roomListEntities);
         roomFavAdapter.notifyDataSetChanged();
-        rvFollow.clearOnScrollListeners();
-        rvFollow.setOnScrollListener(new UpDownScrollListener() {
-            @Override
-            public void onHide() {
-                EventBus.getDefault().post("hide", "tab_state");
-            }
-
-            @Override
-            public void onShow() {
-                EventBus.getDefault().post("show", "tab_state");
-            }
-        });
     }
 
 

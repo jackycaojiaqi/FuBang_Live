@@ -27,7 +27,6 @@ public abstract class UpDownScrollListener extends RecyclerView.OnScrollListener
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
-        KLog.e(dy);
         if (dy > 10) {
             onHide();
         } else if (dy < -20) {

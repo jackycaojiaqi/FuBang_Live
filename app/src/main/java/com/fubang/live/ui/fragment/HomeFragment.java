@@ -76,16 +76,16 @@ public class HomeFragment extends BaseFragment {
         tbFmHomeTab.setupWithViewPager(vpFmHomeTab);
     }
 
-    //接收标题栏是否隐藏信息
-    @Subscriber(tag = "tab_state")
-    public void getState(String obj) {
-        KLog.e(obj);
-        if (obj.equals("hide")) {
-            hideIndicator(llFmHomeTab, getActivity());
-        } else if (obj.equals("show")) {
-            showIndicator(llFmHomeTab, getActivity());
-        }
-    }
+//    //接收标题栏是否隐藏信息
+//    @Subscriber(tag = "tab_state")
+//    public void getState(String obj) {
+//        KLog.e(obj);
+//        if (obj.equals("hide")) {
+//            hideIndicator(llFmHomeTab, getActivity());
+//        } else if (obj.equals("show")) {
+//            showIndicator(llFmHomeTab, getActivity());
+//        }
+//    }
 
     @Override
     public void onDestroy() {

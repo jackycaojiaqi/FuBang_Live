@@ -133,18 +133,6 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
         List<RoomListEntity> roomListEntities = entity.getRoomlist();
         list.addAll(roomListEntities);
         roomFavAdapter.notifyDataSetChanged();
-        rvNear.clearOnScrollListeners();
-        rvNear.setOnScrollListener(new UpDownScrollListener() {
-            @Override
-            public void onHide() {
-                EventBus.getDefault().post("hide", "tab_state");
-            }
-
-            @Override
-            public void onShow() {
-                EventBus.getDefault().post("show", "tab_state");
-            }
-        });
     }
 
     @Override
