@@ -51,7 +51,6 @@ public class GiftUtil {
         list.add(new GiftEntity(37, R.drawable.ic_gift_flower_wait_for_you, "等你"));
         list.add(new GiftEntity(38, R.drawable.ic_gift_love, "爱"));
         list.add(new GiftEntity(39, R.drawable.ic_gift_shuai, "帅"));
-        list.add(new GiftEntity(40, R.drawable.ic_gift_stars, "星星"));
 
         return list;
     }

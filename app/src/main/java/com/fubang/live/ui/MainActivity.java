@@ -133,7 +133,6 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
     private void initview() {
         //获取权限
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            KLog.e("111");
             PermissionGen.with(MainActivity.this)
                     .addRequestCode(100)
                     .permissions(
@@ -142,11 +141,9 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .request();
         } else {
-            KLog.e("222");
         }
         //获取权限
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            KLog.e("333");
             PermissionGen.with(MainActivity.this)
                     .addRequestCode(200)
                     .permissions(
@@ -299,6 +296,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
+        StartUtil.putCity(context, aMapLocation.getCity());
         KLog.e(aMapLocation.getCity());
         KLog.e(aMapLocation.getAddress());
     }

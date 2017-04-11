@@ -24,12 +24,15 @@ import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.listener.HidingScrollListener;
+import com.fubang.live.listener.UpDownScrollListener;
 import com.fubang.live.presenter.impl.RoomListPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.view.RoomListView;
 import com.fubang.live.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 import com.youth.banner.loader.ImageLoader;
+
+import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,15 +121,15 @@ public class GameFragment extends BaseFragment implements RoomListView, SwipeRef
         list.addAll(roomListEntities);
         roomFavAdapter.notifyDataSetChanged();
         rvFollow.clearOnScrollListeners();
-        rvFollow.setOnScrollListener(new HidingScrollListener(roomListEntities.size()) {
+        rvFollow.setOnScrollListener(new UpDownScrollListener() {
             @Override
             public void onHide() {
-
+                EventBus.getDefault().post("hide", "tab_state");
             }
 
             @Override
             public void onShow() {
-
+                EventBus.getDefault().post("show", "tab_state");
             }
         });
     }

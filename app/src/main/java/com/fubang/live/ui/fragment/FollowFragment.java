@@ -25,6 +25,7 @@ import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.listener.HidingScrollListener;
 import com.fubang.live.listener.OnVerticalScrollListener;
+import com.fubang.live.listener.UpDownScrollListener;
 import com.fubang.live.presenter.impl.RoomListPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.util.ScreenUtils;
@@ -35,6 +36,8 @@ import com.squareup.picasso.Picasso;
 import com.youth.banner.Banner;
 import com.youth.banner.loader.ImageLoader;
 
+import org.simple.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +47,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FollowFragment extends BaseFragment implements RoomListView, SwipeRefreshLayout.OnRefreshListener  {
+public class FollowFragment extends BaseFragment implements RoomListView, SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.rv_follow)
     RecyclerView rvFollow;
     @BindView(R.id.srl_room)
@@ -91,9 +94,9 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(context, RoomActivity.class);
-                intent.putExtra(AppConstant.ROOMID,list.get(position).getRoomid());
-                intent.putExtra(AppConstant.ROOMIP,list.get(position).getGateway());
-                intent.putExtra(AppConstant.ROOMPWD,list.get(position).getRoompwd());
+                intent.putExtra(AppConstant.ROOMID, list.get(position).getRoomid());
+                intent.putExtra(AppConstant.ROOMIP, list.get(position).getGateway());
+                intent.putExtra(AppConstant.ROOMPWD, list.get(position).getRoompwd());
                 startActivity(intent);
             }
         });
@@ -122,17 +125,18 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
         }
         List<RoomListEntity> roomListEntities = entity.getRoomlist();
         list.addAll(roomListEntities);
+        list.addAll(roomListEntities);
         roomFavAdapter.notifyDataSetChanged();
         rvFollow.clearOnScrollListeners();
-        rvFollow.setOnScrollListener(new HidingScrollListener(roomListEntities.size()) {
+        rvFollow.setOnScrollListener(new UpDownScrollListener() {
             @Override
             public void onHide() {
-
+                EventBus.getDefault().post("hide", "tab_state");
             }
 
             @Override
             public void onShow() {
-
+                EventBus.getDefault().post("show", "tab_state");
             }
         });
     }
@@ -151,7 +155,7 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
 
     @Override
     public void onRefresh() {
-       presenter.getRoomList();
+        presenter.getRoomList();
     }
 
     public class GlideImageLoader extends ImageLoader {

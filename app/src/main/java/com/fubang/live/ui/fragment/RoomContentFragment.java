@@ -2,6 +2,9 @@ package com.fubang.live.ui.fragment;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PointF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,12 +13,14 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -51,6 +56,7 @@ import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.view.RtmpUrlView;
+import com.fubang.live.widget.DivergeView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
 import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
@@ -66,6 +72,7 @@ import com.xlg.android.protocol.RoomChatMsg;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,6 +135,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     ImageView emotionButton;
     @BindView(R.id.emotion_new_layout)
     RelativeLayout emotionNewLayout;
+    @BindView(R.id.divergeView)
+    com.fubang.live.widget.DivergeView DivergeView;
 
 
     private MediaController mMediaController;
@@ -225,6 +234,59 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
 //        initEmotionMainFragment();
+        //爱心赛贝尔曲线
+        initDivergeView();
+        //禁止listview滑动
+
+    }
+
+    private ArrayList<Bitmap> mList;
+
+    private void initDivergeView() {
+        mList = new ArrayList<>();
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
+        DivergeView.post(new Runnable() {
+            @Override
+            public void run() {
+                DivergeView.setEndPoint(new PointF(DivergeView.getMeasuredWidth() / 2, 0));
+                DivergeView.setDivergeViewProvider(new Provider());
+                handle.sendEmptyMessage(12);
+            }
+        });
+        DivergeView.startDiverges(5);
+    }
+
+    private int SEND_LIKE_ANIM = 12;
+    Handler handle = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 12:
+                    handle.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DivergeView.startDiverges(5);
+                            handle.sendEmptyMessage(12);
+                        }
+                    }, 1000);
+                    break;
+
+            }
+        }
+    };
+
+    class Provider implements DivergeView.DivergeViewProvider {
+
+        @Override
+        public Bitmap getBitmap(Object obj) {
+            return mList == null ? null : mList.get((int) obj);
+        }
     }
 
     @Subscriber(tag = "room_url")
@@ -257,7 +319,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 list_msg.add(msg);//以后消息过多会有问题
                 adapter.notifyDataSetChanged();
                 lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
-                lvRoomMessage.setVisibility(View.VISIBLE);
                 setAnimaAlpha(lvRoomMessage);
             }
         }
@@ -284,6 +345,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             list_gift.add(obj);
             adapter_gift.notifyDataSetChanged();
             lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
+            setAnimaAlpha(lvRoomGift);
         }
     }
 
@@ -457,7 +519,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 if (popupWindow.isShowing()) {
                     popupWindow.dismiss();
                 } else {
-                    popupWindow.showAsDropDown(ivRoomGift);
+                    popupWindow.showAsDropDown(mLoadingView);
                 }
                 break;
             case R.id.iv_room_share:
@@ -609,13 +671,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             }
         });
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        ColorDrawable dw = new ColorDrawable(0xffffffff);
+        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        ColorDrawable dw = new ColorDrawable(0x00ffffff);
         popupWindow.setBackgroundDrawable(dw);
-//        popupWindow.showAsDropDown(giftImage);
-//        popupWindow.showAtLocation(roomInputLinear,Gravity.BOTTOM,0,0);
-        WindowManager wm = (WindowManager) getActivity().getSystemService(WINDOW_SERVICE);
-        int height = wm.getDefaultDisplay().getHeight();
-        popupWindow.setHeight(height / 2);
         popupWindow.setOutsideTouchable(true);
     }
 

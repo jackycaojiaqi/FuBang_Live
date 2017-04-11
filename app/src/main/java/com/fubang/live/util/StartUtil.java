@@ -34,7 +34,16 @@ public class StartUtil {
     public static final String CVALUE = "cvalue";
     public static final String DEVICEID = "deviceid";
     public static final String DEVICE = "device";
-
+    public static final String CITY = "city";
+    public static void putCity(Context context, String city){
+        SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
+        preferences.edit().putString(CVALUE,city).commit();
+    }
+    public static String getCity(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
+        String city = preferences.getString(CVALUE,"TaiZhou");
+        return city;
+    }
     public static void putIpPort(Context context, String ip){
         SharedPreferences preferences = context.getSharedPreferences(IP_PORT,Context.MODE_PRIVATE);
         preferences.edit().putString(CVALUE,ip).commit();
