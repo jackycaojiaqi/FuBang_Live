@@ -46,6 +46,7 @@ public class Header {
 	public static final byte MessageType_mxpTransMediaRequest = (byte)(6 + 50); // 56
 	public static final byte MessageType_mxpTransMediaResponse = (byte)(6 + 51); // 57
 	public static final byte MessageType_mxpTransMediaError = (byte)(6 + 52); // 58
+	public static final byte MessageType_mxpSetMicStateRequest = (byte)(6 + 53); // 59
 	public static final byte MessageType_mxpSetMicStateNotify = (byte)(6 + 56); // 62
 	public static final byte MessageType_mxpSetDevStateNotify = (byte)(6 + 60); // 66
 	public static final byte MessageType_mxpSyncUserAliasNotify = (byte)(6 + 64); // 70

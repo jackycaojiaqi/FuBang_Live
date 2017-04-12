@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
 
 import org.json.JSONException;
@@ -117,7 +119,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         new Thread(new Runnable() {
             @Override
             public void run() {
-                roomMain.Start(90001, Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), "120.26.245.18", 11194, "");
+                roomMain.Start(99888, Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), "121.40.140.100", 10358, "");
             }
         }).start();
 
@@ -251,7 +253,15 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             case R.id.iv_live_start:
                 if (mIsReady) {
                     startStreaming();
+                    //发起主播上麦
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomMain.getRoom().getChannel().sendUpMic();
+                        }
+                    }).start();
                 }
+
                 break;
             case R.id.iv_live_share:
                 doShareAction();

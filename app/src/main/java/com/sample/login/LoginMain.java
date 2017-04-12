@@ -56,7 +56,7 @@ public class LoginMain implements LoginHandler {
     private int loginFlag;
     private LoginMain login;
 
-    public LoginMain(int id, String pwd , String cldcode, int flag, int visitor, Context context) {
+    public LoginMain(int id, String pwd, String cldcode, int flag, int visitor, Context context) {
         this.id = id;
         this.pwd = pwd;
         this.cldcode = cldcode;
@@ -66,18 +66,18 @@ public class LoginMain implements LoginHandler {
     }
 
 
-    public void start(int userId, String userPwd , int userVisitor, String userCldcode , int userFlag, Context mContext) {
+    public void start(int userId, String userPwd, int userVisitor, String userCldcode, int userFlag, Context mContext) {
         id = userId;
         pwd = userPwd;
         visitor = userVisitor;
         cldcode = userCldcode;
         flag = userFlag;
         context = mContext;
-        login = new LoginMain(userId,userPwd,cldcode,userFlag,userVisitor,context);
+        login = new LoginMain(userId, userPwd, cldcode, userFlag, userVisitor, context);
         loginFlag = 1;
         // 121.43.155.221:15518
         // 121.43.63.101:18517
-        login.channel.Connect("120.26.245.18", 33111 );
+        login.channel.Connect("121.40.140.100", 33111);
 //        login.channel.Connect("42.121.57.170", 12211 );
 
 //        loginFlag = 1;
@@ -93,23 +93,23 @@ public class LoginMain implements LoginHandler {
 
     @Override
     public void onConnectSuccessed() {
-        loginFlag ++;
+        loginFlag++;
         // TODO Auto-generated method stub
         System.out.println("连接服务器成功");
 //        android.util.Log.d("123",id+pwd);
         channel.SendHello();
 
-        channel.SendLogonRequest(id, visitor, 1, pwd, StartUtil.getDeviceId(context), "",cldcode,flag);
+        channel.SendLogonRequest(id, visitor, 1, pwd, StartUtil.getDeviceId(context), "", cldcode, flag);
 //        Log.d("123",StartUtil.getDeviceId(context));
 //        channel.SendLogonRequest(0, 2, 1, "", "android-test", "" ,cldcode,2);
     }
 
     @Override
     public void onConnectFailed() {
-        if (loginFlag == 1){
-            login.channel.Connect("115.231.26.124",33111);
-            loginFlag ++;
-        }else {
+        if (loginFlag == 1) {
+            login.channel.Connect("121.40.140.100", 33112);
+            loginFlag++;
+        } else {
             // TODO Auto-generated method stub
             System.out.println("连接服务器失败");
         }
@@ -134,11 +134,11 @@ public class LoginMain implements LoginHandler {
         System.out.println("Headpic: " + res.getHeadpic());
         System.out.println("Online_stat: " + res.getOnline_stat());
         System.out.println("Reserve: " + res.getReserve());
-        System.out.println("cvalue: "+ res.getCvalue());
+        System.out.println("cvalue: " + res.getCvalue());
 //        if (StartUtil.isFirst(context)) {
-            EventBus.getDefault().post(res, "login_success");
+        EventBus.getDefault().post(res, "login_success");
 //        }else {
-            EventBus.getDefault().post(res, "splash_success");
+        EventBus.getDefault().post(res, "splash_success");
 //        }
         channel.Close();
     }
@@ -147,7 +147,7 @@ public class LoginMain implements LoginHandler {
     public void onLogonError(LogonError err) {
         // TODO Auto-generated method stub
         System.out.println("登录失败");
-        EventBus.getDefault().post("0","splash_fail");
+        EventBus.getDefault().post("0", "splash_fail");
     }
 
     @Override
@@ -158,8 +158,8 @@ public class LoginMain implements LoginHandler {
 
     @Override
     public void onRegisterResponse(RegisterResponse res) {
-        EventBus.getDefault().post(res,"registerSuccess");
-        System.out.println("注册成功-----"+res.getUserid());
-        System.out.println("错误id-----"+res.getErrid());
+        EventBus.getDefault().post(res, "registerSuccess");
+        System.out.println("注册成功-----" + res.getUserid());
+        System.out.println("错误id-----" + res.getErrid());
     }
 }

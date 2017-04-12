@@ -226,7 +226,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         mVideoView.setOnErrorListener(mOnErrorListener);
 //        mVideoView.setVideoPath(mVideoPath);
 //        mVideoView.start();
-        presenter = new RtmpUrlPresenterImpl(this, "90001", "888881");
+        presenter = new RtmpUrlPresenterImpl(this, String.valueOf(roomId), "888881");
         presenter.getRtmpUrl();
         //设置listadapter
         adapter = new RoomChatAdapter(list_msg, context);
@@ -368,7 +368,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void onDestroy() {
         super.onDestroy();
         mVideoView.stopPlayback();
-        roomMain.getRoom().getChannel().Close();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().Close();
+            }
+        }).start();
         EventBus.getDefault().unregister(this);
     }
 
@@ -548,7 +553,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
+                        }
+                    }).start();
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {
@@ -650,7 +660,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 giftId = gifts.get(position).getGiftId();
                 String name = gifts.get(position).getGiftName();
-                giftName.setText(name + "");
+                giftName.setText(name + " 送给");
             }
         });
         //发送礼物

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.view.WindowManager;
 
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
@@ -51,7 +52,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
     private RtmpUrlPresenterImpl presenter;
     private String rtmp_url;
     private String roomIp, ip, port, roomPwd;
-    private int roomId;
+    private String roomId;
     private List<Fragment> list_fragment = new ArrayList<>();
 
     @Override
@@ -59,7 +60,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
         ButterKnife.bind(this);
-
+        roomId = getIntent().getStringExtra(AppConstant.ROOMID);
         context = this;
         Bundle bundle = new Bundle();
         bundle.putString(AppConstant.ROOMPWD, getIntent().getStringExtra(AppConstant.ROOMPWD));
@@ -78,7 +79,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
     }
 
     private void initdate() {
-        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, "90001", "888881");
+        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, roomId, "888881");
         presenter.getRtmpUrl();
     }
 

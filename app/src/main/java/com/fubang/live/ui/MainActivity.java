@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_live.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "90001", "888881");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "99888", "888881");
                 presenter.getRtmpUrl();
 
             }
@@ -253,7 +253,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "90001", "888881");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "99888", "888881");
                 presenter.getRtmpUrl();
             }
         });
@@ -287,7 +287,6 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
             startActivity(intent);
             pop_main.dismiss();
         }
-
     }
 
     @Override

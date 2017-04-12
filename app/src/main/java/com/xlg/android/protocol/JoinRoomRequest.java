@@ -11,21 +11,12 @@ public class JoinRoomRequest {
 	@StructOrder(2)
 	private int	userstate;				//用户在房间内状态，用了低16位(在麦状态等）
 	@StructOrder(3)
-	private int deviceid;			//1-pc  2-手机
-	@StructOrder(4)
 	private byte []			username = new byte[32];	//暂未用
-	@StructOrder(5)
+	@StructOrder(4)
 	private byte []			cuserpwd = new byte[32];		//用户密码	@StructOrder(76)
-	@StructOrder(6)
+	@StructOrder(5)
 	private byte []			vcbpwd = new byte[32];			//房间密码。
 
-	public int getDeviceid() {
-		return deviceid;
-	}
-
-	public void setDeviceid(int deviceid) {
-		this.deviceid = deviceid;
-	}
 
 	public int getUserid() {
 		return userid;

@@ -30,7 +30,6 @@
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:scaleType="centerCrop"
             android:src="@drawable/ic_user_pic" />
     </RelativeLayout>
 

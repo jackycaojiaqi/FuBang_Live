@@ -1,12 +1,17 @@
 package com.fubang.live.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.facebook.common.util.UriUtil;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.fubang.live.R;
 import com.fubang.live.entities.GiftEntity;
 import com.xlg.android.protocol.BigGiftRecord;
@@ -59,7 +64,18 @@ public class RoomGiftAdapter extends ListBaseAdapter<BigGiftRecord> {
             convertView.setTag(holder);
         }
         holder = (ViewHolder) convertView.getTag();
-        holder.giftImage.setImageResource(R.drawable.ic_gift_car);
+        Uri uri = new Uri.Builder()
+                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                .path(String.valueOf(R.drawable.ic_gift_624_1))
+                .build();
+
+        DraweeController draweeController =
+                Fresco.newDraweeControllerBuilder()
+                        .setUri(uri)
+                        .setAutoPlayAnimations(true) // 设置加载图片完成后是否直接进行播放
+                        .build();
+
+        holder.giftImage.setController(draweeController);
         holder.giftCount.setText("x" + list.get(position).getCount());
         holder.giftGiven.setText(list.get(position).getSrcalias() + "送出礼物： ");
         return convertView;
@@ -67,14 +83,14 @@ public class RoomGiftAdapter extends ListBaseAdapter<BigGiftRecord> {
 
     static class ViewHolder {
         //显示礼物图片
-        ImageView giftImage;
+        SimpleDraweeView giftImage;
         //显示礼物名字
         TextView giftCount;
         //显示礼物赠送人
         TextView giftGiven;
 
         public ViewHolder(View itemView) {
-            giftImage = (ImageView) itemView.findViewById(R.id.room_gift_image);
+            giftImage = (SimpleDraweeView) itemView.findViewById(R.id.room_gift_image);
             giftGiven = (TextView) itemView.findViewById(R.id.room_gift_given);
             giftCount = (TextView) itemView.findViewById(R.id.room_gift_count);
         }
