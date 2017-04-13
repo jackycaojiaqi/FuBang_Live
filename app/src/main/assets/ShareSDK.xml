@@ -98,7 +98,7 @@
         SortId="4"
         AppId="wxc0f30688760bba2c"
         AppSecret="4fd0d05b453378ec3810d41e6b138bfc"
-        BypassApproval="true"
+        BypassApproval="false"
         Enable="true" />
 
     <WechatMoments
@@ -106,7 +106,7 @@
         SortId="5"
         AppId="wxc0f30688760bba2c"
         AppSecret="4fd0d05b453378ec3810d41e6b138bfc"
-        BypassApproval="true"
+        BypassApproval="false"
         Enable="true" />
 
     <WechatFavorite
@@ -116,7 +116,6 @@
         AppSecret="4fd0d05b453378ec3810d41e6b138bfc"
         Enable="true" />
 
-    <!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
 
 
 </DevInfor>

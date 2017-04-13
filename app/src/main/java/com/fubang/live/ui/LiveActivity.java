@@ -1,7 +1,9 @@
 package com.fubang.live.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -65,6 +67,9 @@ import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 import cn.sharesdk.wechat.moments.WechatMoments;
+import kr.co.namee.permissiongen.PermissionFail;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 
 import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
@@ -80,6 +85,28 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+        //获取权限
+        if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(LiveActivity.this)
+                    .addRequestCode(100)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+        }
+        //获取权限
+        if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(LiveActivity.this)
+                    .addRequestCode(200)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+        }
         EventBus.getDefault().register(this);
 //        setContentView(R.layout.activity_live);
         AspectFrameLayout afl = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
@@ -134,6 +161,37 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private List<BigGiftRecord> list_gift = new ArrayList<>();
     private RoomChatAdapter adapter;
     private RoomGiftAdapter adapter_gift;
+
+    @PermissionFail(requestCode = 100)
+    public void Permission100Fail() {
+        //获取权限
+        if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(LiveActivity.this)
+                    .addRequestCode(100)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+        }
+
+    }
+
+    @PermissionFail(requestCode = 200)
+    public void Permission200Fail() {
+        //获取权限
+        if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(LiveActivity.this)
+                    .addRequestCode(200)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+        }
+    }
 
     //接收服务器发送的消息更新列表
     @Subscriber(tag = "RoomChatMsg")

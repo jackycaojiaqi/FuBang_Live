@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
 
@@ -126,10 +127,12 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         mlocationClient.startLocation();
     }
 
+    //定位权限请求成功
     @PermissionSuccess(requestCode = 200)
     public void doSomething() {
         initlocation();
     }
+
 
     private void initview() {
         //获取权限

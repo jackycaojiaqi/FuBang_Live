@@ -2,6 +2,7 @@ package com.xlg.android;
 
 import android.util.Log;
 
+import com.socks.library.KLog;
 import com.xlg.android.protocol.ActWaitMicUserInfo;
 import com.xlg.android.protocol.AddClosedFriendInfo;
 import com.xlg.android.protocol.AuthorityRejected;
@@ -643,7 +644,7 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setSrcalias(userName);
         obj.setToalias("");
         obj.setContent(chatmsg);
-        Tools.PrintObject(obj);
+        KLog.e(chatmsg);
         sendPack(header, obj);
 
     }

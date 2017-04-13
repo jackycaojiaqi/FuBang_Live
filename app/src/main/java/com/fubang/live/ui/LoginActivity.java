@@ -111,9 +111,8 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
 
     @Override
     public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
-        KLog.e("arg1:" + i);
         if (i == Platform.ACTION_USER_INFOR) {
-            KLog.e("arg1:" + i);
+
             PlatformDb platDB = platform.getDb();//获取数平台数据DB
             //通过DB获取各种数据
             String token = platDB.getToken();
@@ -121,6 +120,9 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
             userIcon = platDB.getUserIcon();
             userId = platDB.getUserId();
             userName = platDB.getUserName();
+            KLog.e("userIcon:" + userIcon);
+            KLog.e("userId:" + userId);
+            KLog.e("userName:" + userName);
             EventBus.getDefault().post(new UserEntity(userIcon, userId, userName), "UserInfo");
             new Thread(new Runnable() {
                 @Override

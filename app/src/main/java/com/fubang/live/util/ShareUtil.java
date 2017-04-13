@@ -32,7 +32,6 @@ public class ShareUtil {
     }
 
 
-
 //    public void showShare(Context context, String platform) {
 //        final OnekeyShare oks = new OnekeyShare();
 //        //指定分享的平台，如果为空，还是会调用九宫格的平台列表界面
@@ -68,31 +67,35 @@ public class ShareUtil {
         Platform.ShareParams sp = new Platform.ShareParams();
         sp.setTitle("富邦直播");
         sp.setTitleUrl("www.baidu.com"); // 标题的超链接
-        sp.setText("富邦直播");
-        sp.setImageUrl("富邦直播");
+        sp.setText("富邦直播，你值得拥有！");
+        sp.setImageUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492651940&di=66d41148d98384b03f7297bfce9442bd&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.bjxifu.cn%2Ftupian%2Fbd9977330.jpg.jpg");
         sp.setSite("富邦直播");
         sp.setSiteUrl("富邦直播");
-
+        sp.setUrl("www.baidu.com");
+        sp.setShareType(Platform.SHARE_WEBPAGE);
         // 设置分享事件回调（注：回调放在不能保证在主线程调用，不可以在里面直接处理UI操作）
         platform.setPlatformActionListener(new PlatformActionListener() {
             public void onError(Platform arg0, int arg1, Throwable arg2) {
-                KLog.e("分享失败" + arg2.getMessage()+arg2.getLocalizedMessage());
+                KLog.e("分享失败" + arg2.getMessage() + arg2.getLocalizedMessage());
+                ToastUtil.show(context, "分享失败");
                 //失败的回调，arg:平台对象，arg1:表示当前的动作，arg2:异常信息
             }
 
             public void onComplete(Platform arg0, int arg1, HashMap<String, Object> arg2) {
+                ToastUtil.show(context, "分享成功");
                 //分享成功的回调
-                KLog.e("分享成功");
             }
 
             public void onCancel(Platform arg0, int arg1) {
                 //取消分享的回调
-                KLog.e("分享取消");
+                ToastUtil.show(context, "分享取消");
             }
         });
         // 执行图文分享
         platform.SSOSetting(false);
-        platform.authorize();
+        if (!platform.getName().contains("Wechat")) {
+            platform.authorize();
+        }
         platform.share(sp);
     }
 }

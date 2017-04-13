@@ -553,12 +553,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 break;
             case R.id.room_new_chat_send:
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
-                        }
-                    }).start();
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {
