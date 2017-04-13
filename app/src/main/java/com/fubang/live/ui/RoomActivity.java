@@ -84,7 +84,6 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
     }
 
     private void initview() {
-
         dvpRoom.setAdapter(new MyRoomFragmentVerticalPagerAdapter(getSupportFragmentManager(), list_fragment, context));
         dvpRoom.setPageTransformer(false, new DefaultTransformer());
         dvpRoom.setOffscreenPageLimit(3);

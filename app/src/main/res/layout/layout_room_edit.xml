@@ -5,7 +5,6 @@
     android:id="@+id/rll_room_input"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparent"
     android:visibility="gone">
 
 

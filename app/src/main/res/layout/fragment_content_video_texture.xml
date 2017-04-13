@@ -94,8 +94,8 @@
             android:layout_marginRight="50dp"
             android:divider="@null"
             android:scrollbars="none"
-            app:layout_heightPercent="35%"
             android:visibility="gone"
+            app:layout_heightPercent="35%"
             app:layout_widthPercent="70%"></com.fubang.live.widget.MyListView>
     </android.support.percent.PercentRelativeLayout>
 

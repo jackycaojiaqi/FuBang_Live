@@ -25,7 +25,7 @@
             android:name=".ui.RoomActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".ui.SearchAtivity"
             android:launchMode="singleTask"
@@ -38,7 +38,7 @@
             android:name=".ui.LiveActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".ui.UserInfoActivity"
             android:configChanges="orientation|screenSize"
