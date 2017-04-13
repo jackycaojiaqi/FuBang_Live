@@ -3,6 +3,7 @@ package com.fubang.live.modle;
 
 import com.fubang.live.modle.impl.RoomListModelImpl;
 import com.fubang.live.modle.impl.RtmpUrlModelImpl;
+import com.fubang.live.modle.impl.UpMicModelImpl;
 
 /**
  * model工厂类
@@ -11,7 +12,7 @@ import com.fubang.live.modle.impl.RtmpUrlModelImpl;
 public class ModelFactory {
     private static volatile ModelFactory instance = null;
 
-    private ModelFactory(){
+    private ModelFactory() {
     }
 
     public static ModelFactory getInstance() {
@@ -25,10 +26,15 @@ public class ModelFactory {
         return instance;
     }
 
-    public RoomListModelImpl getRoomListModelImpl(){
+    public RoomListModelImpl getRoomListModelImpl() {
         return RoomListModelImpl.getInstance();
     }
-    public RtmpUrlModelImpl getRtmpUrlImpl(){
+
+    public UpMicModelImpl getUpMicModelImpl() {
+        return UpMicModelImpl.getInstance();
+    }
+
+    public RtmpUrlModelImpl getRtmpUrlImpl() {
         return RtmpUrlModelImpl.getInstance();
     }
 }

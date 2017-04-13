@@ -18,9 +18,12 @@ import retrofit2.http.QueryMap;
  */
 public interface ApiService {
 
-    @GET("/index.php/app/roomlist?")
+    @GET("/index.php/app/roomlist?")//获取房间列表
     Call<RoomEntity> getRoomEntity(@QueryMap Map<String, String> map);
 
-    @GET("/rtmp_pub.php?")
+    @GET("/index.php/app/upmic?")//主播上麦
+    Call<RoomEntity> getUpMic(@QueryMap Map<String, String> map);
+
+    @GET("/rtmp_pub.php?")//获取推流地址
     Call<RtmpUrlEntity> getRtmpUrlEntity(@QueryMap Map<String, String> map);
 }

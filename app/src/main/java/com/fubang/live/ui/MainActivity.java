@@ -248,19 +248,17 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_live.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "99888", "888881");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
                 presenter.getRtmpUrl();
-
             }
         });
         iv_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, "99888", "888881");
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
                 presenter.getRtmpUrl();
             }
         });
-
     }
 
     //记录用户首次点击返回键的时间
@@ -288,6 +286,8 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
             intent.putExtra(Config.EXTRA_KEY_PUB_URL,
                     entity.getPublishUrl());
             startActivity(intent);
+            KLog.e(entity.getPublishUrl());
+            KLog.e(entity.getRTMPPlayURL());
             pop_main.dismiss();
         }
     }

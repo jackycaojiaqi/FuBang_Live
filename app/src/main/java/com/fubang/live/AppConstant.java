@@ -17,4 +17,5 @@ public class AppConstant {
     public static final String ROOMIP = "roomip";
     public static final String PORT = "port";
     public static final String ROOMPWD = "roompwd";
+    public static final String NVCBID = "nvcbid";
 }

@@ -24,15 +24,21 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseActivity;
+import com.fubang.live.entities.RoomEntity;
+import com.fubang.live.presenter.impl.UpMicPresenterImpl;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
+import com.fubang.live.util.ToastUtil;
+import com.fubang.live.view.RoomListView;
+import com.fubang.live.view.UpMicView;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
 import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
 import com.qiniu.BaseStreamingActivity;
@@ -80,6 +86,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private Context context;
     private RoomMain roomMain = new RoomMain(this);
     private EmotionInputDetector mDetector;
+    private UpMicPresenterImpl presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,19 +149,14 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 .bindToEmotionButton(emotionButton)
                 .build();
         setUpEmotionViewPager();
-        //连接房间
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                roomMain.Start(99888, Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), "121.40.140.100", 10358, "");
-            }
-        }).start();
 
         //设置listadapter
         adapter = new RoomChatAdapter(list_msg, context);
         lvRoomMessage.setAdapter(adapter);
         adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
+
+
     }
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
@@ -302,6 +304,8 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     }
 
     private InputMethodManager imm;
+    private String ip;
+    private int port;
 
     @OnClick({R.id.iv_live_start, R.id.iv_live_share, R.id.iv_live_exit, R.id.iv_live_chat
             , R.id.tv_room_input_close, R.id.room_new_chat_send})
@@ -310,14 +314,38 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         switch (view.getId()) {
             case R.id.iv_live_start:
                 if (mIsReady) {
-                    startStreaming();
-                    //发起主播上麦
-                    new Thread(new Runnable() {
+                    //上麦presenter
+                    presenter = new UpMicPresenterImpl(new UpMicView() {
                         @Override
-                        public void run() {
-                            roomMain.getRoom().getChannel().sendUpMic();
+                        public void successUpMic(RoomEntity entity) {
+                            if (entity.getRoomlist().size() > 0) {
+                                final String roomPwd = entity.getRoomlist().get(0).getRoompwd();
+                                String roomIp = entity.getRoomlist().get(0).getGateway();
+                                String roomId = entity.getRoomlist().get(0).getRoomid();
+                                String[] Ips = roomIp.split(";");
+                                String[] ports = Ips[0].split(":");
+                                ip = ports[0];
+                                port = Integer.parseInt(ports[1]);
+                                KLog.e(roomId + " " + ip + " " + port + " " + roomPwd);
+                                //连接房间
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        roomMain.Start(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), ip, port, roomPwd);
+                                    }
+                                }).start();
+                                startStreaming();
+                            } else {
+                                ToastUtil.show(context, R.string.auth_upmic);
+                            }
                         }
-                    }).start();
+
+                        @Override
+                        public void faidedUpMic(Throwable e) {
+                            ToastUtil.show(context, R.string.auth_upmic);
+                        }
+                    }, Integer.parseInt(StartUtil.getUserId(context)));
+                    presenter.getUpMicInfo();
                 }
 
                 break;

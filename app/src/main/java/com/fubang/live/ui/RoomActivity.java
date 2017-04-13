@@ -79,7 +79,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
     }
 
     private void initdate() {
-        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, roomId, "888881");
+        presenter = new RtmpUrlPresenterImpl(RoomActivity.this, roomId, roomId);
         presenter.getRtmpUrl();
     }
 
@@ -96,6 +96,7 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
 
             @Override
             public void onPageSelected(final int position) {
+                //这里要做前后房间切换的处理，现在没有做
                 KLog.e("onPageSelected:" + position);
                 if (position != 1) {
                     new Handler().postDelayed(new Runnable() {

@@ -226,7 +226,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         mVideoView.setOnErrorListener(mOnErrorListener);
 //        mVideoView.setVideoPath(mVideoPath);
 //        mVideoView.start();
-        presenter = new RtmpUrlPresenterImpl(this, String.valueOf(roomId), "888881");
+        presenter = new RtmpUrlPresenterImpl(this, String.valueOf(roomId), String.valueOf(roomId));
         presenter.getRtmpUrl();
         //设置listadapter
         adapter = new RoomChatAdapter(list_msg, context);
@@ -667,7 +667,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(99887, 37, count, "99887", StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(roomId, 37, count, String.valueOf(roomId), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");
