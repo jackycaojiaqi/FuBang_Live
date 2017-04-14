@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.UserEntity;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.sample.login.LoginMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
@@ -47,6 +50,15 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
     RelativeLayout rlLoginSina;
     @BindView(R.id.rl_login_phone)
     RelativeLayout rlLoginPhone;
+
+    @BindView(R.id.et_login_username)
+    EditText etLoginUsername;
+    @BindView(R.id.iv_username_clear)
+    ImageView ivUsernameClear;
+    @BindView(R.id.et_login_userpwd)
+    EditText etLoginUserpwd;
+    @BindView(R.id.iv_userpwd_clear)
+    ImageView ivUserpwdClear;
     private Context context;
     private int flag = 0;
 
@@ -65,7 +77,11 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
         EventBus.getDefault().unregister(this);
     }
 
-    @OnClick({R.id.rl_login_wechat, R.id.rl_login_qq, R.id.rl_login_sina, R.id.rl_login_phone})
+    private int username;
+    private String pwd;
+
+    @OnClick({R.id.rl_login_wechat, R.id.rl_login_qq, R.id.rl_login_sina, R.id.rl_login_phone
+            , R.id.iv_userpwd_clear, R.id.iv_username_clear})
     public void onClick(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -96,18 +112,33 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 DialogFactory.showRequestDialog(context);
                 break;
             case R.id.rl_login_phone:
-//                StartUtil.editInfo(this, userName, userId + "", userIcon, "123");
-                intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
-                finish();
+                flag = 0;
+                username = Integer.parseInt(etLoginUsername.getText().toString().trim());
+                pwd = etLoginUserpwd.getText().toString().trim();
+                if (!StringUtil.isEmptyandnull(String.valueOf(username)) && !TextUtils.isEmpty(pwd)) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new LoginMain(username, pwd, "", flag, 0, LoginActivity.this).start(username, pwd, 0, "", flag, LoginActivity.this);
+                        }
+                    }).start();
+                } else {
+                    Toast.makeText(LoginActivity.this, "账号密码不能为空", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.iv_userpwd_clear:
+                etLoginUserpwd.setText("");
+                break;
+            case R.id.iv_username_clear:
+                etLoginUsername.setText("");
                 break;
         }
 
     }
 
     private String userIcon;
-    private String userId = "18888777";
-    private String userName = "小新";
+    private String userId;
+    private String userName;
 
     @Override
     public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
@@ -130,7 +161,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                     new LoginMain(0, "", userId, flag, flag, LoginActivity.this).start(0, "", flag, userId, flag, LoginActivity.this);
                 }
             }).start();
-            DialogFactory.hideRequestDialog();
+
         }
     }
 
@@ -146,26 +177,30 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
 
     @Subscriber(tag = "login_success")
     public void loginSuccess(LogonResponse res) {
-//        flag = 0;
+        DialogFactory.hideRequestDialog();
         Tools.PrintObject(res);
         StartUtil.putCount(LoginActivity.this, flag);
-//        Log.d("123",flag+"flag");
         if (res != null) {
             if (flag == 2 || flag == 3) {
-//                Log.d("123",userName+userIcon);
                 StartUtil.editInfo(this, userName, res.getUserid() + "", userIcon, res.getCuserpwd());
-            } else {
-//                Log.d("123",res.getHeadpic()+"lenth");
+            } else if (flag == 0) {
                 if (res.getHeadpic() > 15) {
                     StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", res.getHeadpic() + "", res.getCuserpwd());
                 } else {
-//                    Log.d("123","不是吧这走?");
                     StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", "head" + res.getHeadpic(), res.getCuserpwd());
                 }
             }
             StartUtil.putVersion(this, res.getNverison() + "");
             StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
             startActivity(new Intent(context, MainActivity.class));
+        }
+    }
+
+    @Subscriber(tag = "login_fail")
+    public void loginFail(String loginflag) {
+        DialogFactory.hideRequestDialog();
+        if (loginflag == "0") {
+            Toast.makeText(this, "账号密码错误", Toast.LENGTH_SHORT).show();
         }
     }
 }

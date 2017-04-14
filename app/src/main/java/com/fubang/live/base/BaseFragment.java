@@ -71,7 +71,7 @@ public class BaseFragment extends Fragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                view.setVisibility(View.GONE);
+                view.setVisibility(View.INVISIBLE);
             }
 
             @Override

@@ -147,7 +147,7 @@ public class LoginMain implements LoginHandler {
     public void onLogonError(LogonError err) {
         // TODO Auto-generated method stub
         System.out.println("登录失败");
-        EventBus.getDefault().post("0", "splash_fail");
+        EventBus.getDefault().post("0", "login_fail");
     }
 
     @Override

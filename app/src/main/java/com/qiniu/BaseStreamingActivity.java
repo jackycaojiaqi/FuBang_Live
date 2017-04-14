@@ -181,7 +181,6 @@ public class BaseStreamingActivity extends BaseActivity implements
                         public void run() {
                             // disable the shutter button before startStreaming
                             setShutterButtonEnabled(false);
-                            KLog.e("1111");
                             boolean res = mMediaStreamingManager.startStreaming();
                             mShutterButtonPressed = true;
                             Log.i(TAG, "res:" + res);

@@ -2,6 +2,7 @@ package com.xlg.android;
 
 import android.util.Log;
 
+import com.fubang.live.util.StartUtil;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.ActWaitMicUserInfo;
 import com.xlg.android.protocol.AddClosedFriendInfo;
@@ -668,12 +669,12 @@ public class RoomChannel implements ClientSocketHandler {
 07-14 14:22:56.255 9493-17445/com.fubang.fubangzhibo I/System.out:     =>Toid: 1
 07-14 14:22:56.255 9493-17445/com.fubang.fubangzhibo I/System.out:     =>Vcbid: 123456*/
     //发送礼物
-    public void sendGiftRecord(int toid, int giftId, int count, String toName, String userName) {
+    public void sendGiftRecord(int sendid ,int toid, int giftId, int count, String toName, String userName) {
         Header header = new Header();
         BigGiftRecord obj = new BigGiftRecord();
         header.setCmd1(Header.MessageType_mxpTradeGiftRequest);
         obj.setVcbid(mRoomID);
-        obj.setSrcid(99888);
+        obj.setSrcid(sendid);//发送者id
         obj.setDstplatformid((short) 0);
         obj.setToid(toid);
         obj.setGiftid(giftId);
@@ -685,11 +686,10 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setTime(System.currentTimeMillis());
         obj.setOldcount(0);
         obj.setFlyid((short) -1);
-        obj.setSrcalias("99888");
+        obj.setSrcalias(userName);
 //		obj.setToalias(toid+"");
         obj.setToalias(toName);
         obj.setSztext("");
-        Log.d("123", obj.toString());
         sendPack(header, obj);
     }
 

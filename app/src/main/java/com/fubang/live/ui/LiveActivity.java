@@ -238,6 +238,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             list_gift.add(obj);
             adapter_gift.notifyDataSetChanged();
             lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
+            setAnimaAlpha(lvRoomGift);
         }
     }
 

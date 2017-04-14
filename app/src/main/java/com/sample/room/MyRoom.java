@@ -399,8 +399,7 @@ public class MyRoom implements RoomHandler {
     }
 
     @Override
-    public void onTradeGiftError(int i) {
-
+    public void onTradeGiftError(int i) {//504金币不足
         PrintUnknown("onTradeGiftError: ");
         KLog.e(i);
     }

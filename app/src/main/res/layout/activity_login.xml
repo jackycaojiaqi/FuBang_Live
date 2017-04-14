@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/enter_bj"
     android:orientation="vertical">
 
     <LinearLayout
@@ -15,40 +16,129 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="80dp"
             android:src="@mipmap/ic_launcher" />
 
         <RelativeLayout
-            android:id="@+id/rl_login_wechat"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:layout_marginTop="10dp"
+            android:background="@drawable/shap_rec_30dp_login_phone">
+
+            <EditText
+                android:id="@+id/et_login_username"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="30dp"
+                android:background="@null"
+                android:hint="@string/input_userid"
+                android:inputType="number"
+                android:maxLength="20"
+                android:paddingLeft="10dp"
+                android:text="99887"></EditText>
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="21dp"
+                android:background="@drawable/ic_username"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/iv_username_clear"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/ic_cancle"
+                android:padding="5dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shap_rec_30dp_login_phone">
+
+            <EditText
+                android:id="@+id/et_login_userpwd"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="30dp"
+                android:background="@null"
+                android:hint="@string/input_userpwd"
+                android:inputType="number"
+                android:maxLength="20"
+                android:paddingLeft="10dp"
+                android:text="1"></EditText>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="21dp"
+                android:background="@drawable/ic_password"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/iv_userpwd_clear"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/ic_cancle"
+                android:padding="5dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_login_phone"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/shap_rec_30dp_login_wechat">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="微信登录"
+                android:text="登录"
                 android:textColor="@color/white"
                 android:textSize="18dp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_login_qq"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/shap_rec_30dp_login_qq">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="QQ登录"
-                android:textColor="@color/login_qq"
-                android:textSize="18dp" />
-        </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rl_login_wechat"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="50dp"
+
+                android:background="@drawable/ic_cat_we">
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rl_login_qq"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ic_login_qq">
+
+            </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/rl_login_sina"
@@ -67,21 +157,7 @@
                 android:textSize="18dp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_login_phone"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/shap_rec_30dp_login_phone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="手机登录"
-                android:textColor="@color/login_phone"
-                android:textSize="18dp" />
-        </RelativeLayout>
     </LinearLayout>
 
     <TextView

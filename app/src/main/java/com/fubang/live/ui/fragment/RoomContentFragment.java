@@ -55,6 +55,7 @@ import com.fubang.live.util.NetUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
+import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
 import com.fubang.live.widget.DivergeView;
 import com.fubang.live.widget.MediaController;
@@ -662,12 +663,15 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         giftSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (giftId == -1) {
+                    ToastUtil.show(context, R.string.please_select_a_gift);
+                    return;
+                }
                 final int count = Integer.parseInt(giftCount.getText().toString());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(roomId, 37, count, String.valueOf(roomId), StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, 37, count, String.valueOf(roomId), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");
@@ -680,6 +684,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         ColorDrawable dw = new ColorDrawable(0x00ffffff);
         popupWindow.setBackgroundDrawable(dw);
         popupWindow.setOutsideTouchable(true);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                giftId = -1;
+            }
+        });
     }
 
     /**
@@ -738,7 +748,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         if (mIsLiveStreaming == 1) {
             options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
         }
-
         // 1 -> hw codec enable, 0 -> disable [recommended]
         options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
 

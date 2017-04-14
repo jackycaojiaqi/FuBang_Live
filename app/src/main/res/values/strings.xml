@@ -51,4 +51,7 @@
     <string name="net_error">网络错误</string>
     <string name="sending_request">请求中</string>
     <string name="auth_upmic">直播需要先通过实名认证</string>
+    <string name="input_userid">请输入用户名</string>
+    <string name="input_userpwd">请输入密码</string>
+    <string name="please_select_a_gift">请选择一种礼物</string>
 </resources>

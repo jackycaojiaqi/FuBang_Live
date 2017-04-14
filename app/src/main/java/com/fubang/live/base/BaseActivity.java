@@ -57,6 +57,7 @@ public class BaseActivity extends AppCompatActivity {
         tintManager.setStatusBarTintResource(0);//状态栏无背景
 
     }
+
     public void setAnimaAlpha(final View view) {
         AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
         animation1.setDuration(30 * 1000);
@@ -68,7 +69,7 @@ public class BaseActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                view.setVisibility(View.GONE);
+                view.setVisibility(View.INVISIBLE);
             }
 
             @Override
