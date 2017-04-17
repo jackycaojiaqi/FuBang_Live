@@ -58,4 +58,5 @@
     <string name="auth_name_about">根据相关法规，开直播需要实名认证\n实名认证不涉及金钱账户\n认证信息我们会严格保密</string>
     <string name="auth_name_about_shrot">根据相关法规，开直播需要实名认证</string>
     <string name="submit">提交</string>
+    <string name="in_room_time_out">登录房间超时</string>
 </resources>

@@ -28,7 +28,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.config
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -41,6 +41,9 @@ android {
         fubang {
         }
 
+    }
+    dexOptions {
+        jumboMode true
     }
 }
 

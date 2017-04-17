@@ -341,7 +341,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
-            if (list_gift.size()>3){
+            if (list_gift.size() > 2) {
                 list_gift.clear();
             }
             list_gift.add(obj);
@@ -354,9 +354,15 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     //接收帐号踢出房间信息 ，提示重新登录
     @Subscriber(tag = "RoomKickoutUserInfo")
     public void KickOutRoom(RoomKickoutUserInfo obj) {
-        ToastUtil.show(getActivity().getApplicationContext(),R.string.kickout);
-        int reasonid = obj.getReasonid();
-        getActivity().finish();
+        KLog.e(obj.getReasonid());
+        if (obj.getReasonid() == 522) {
+            ToastUtil.show(getActivity().getApplicationContext(), R.string.kickout);
+//            getActivity().finish();
+        } else if (obj.getReasonid() == 701) {
+            ToastUtil.show(getActivity().getApplicationContext(), R.string.in_room_time_out);
+//            getActivity().finish();
+        }
+
     }
 
     @Override

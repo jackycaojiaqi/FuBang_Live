@@ -1,32 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="left|center_vertical">
-
-    <TextView
-        android:id="@+id/room_gift_given"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:text="xiaoxin:" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/shap_rec_30dp_gift_trans_bg"
+        android:gravity="left|center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp">
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/room_gift_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@mipmap/ic_launcher" />
+        <TextView
+            android:id="@+id/room_gift_given"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="xiaoxin:"
+            android:textColor="@color/white" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/room_gift_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/ic_launcher" />
+
+        </LinearLayout>
     </LinearLayout>
+
     <TextView
         android:id="@+id/room_gift_count"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="x1" />
+        android:singleLine="true"
+        android:text="x1"
+        android:textColor="@color/color_main"
+        android:textSize="24dp" />
 </LinearLayout>

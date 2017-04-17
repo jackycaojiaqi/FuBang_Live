@@ -75,21 +75,20 @@
         <com.fubang.live.widget.MyListView
             android:id="@+id/lv_room_gift"
             android:layout_above="@+id/lv_room_message"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="50dp"
-            android:divider="@null"
+            android:layout_marginLeft="5dp"
+            android:divider="#00000000"
+            android:dividerHeight="10dp"
             android:scrollbars="none"
             android:stackFromBottom="true"
             android:visibility="invisible"
             app:layout_heightPercent="25%"
-            app:layout_widthPercent="70%"></com.fubang.live.widget.MyListView>
+            app:layout_widthPercent="85%"></com.fubang.live.widget.MyListView>
 
         <com.fubang.live.widget.MyListView
             android:id="@+id/lv_room_message"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="50dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="50dp"
             android:divider="@null"
             android:scrollbars="none"
             android:visibility="invisible"

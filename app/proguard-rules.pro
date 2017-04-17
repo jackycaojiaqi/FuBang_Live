@@ -273,5 +273,6 @@
   -keep class me.kaelaela.verticalviewpager.**{*;}
  #zxing
   -keep class com.uuzuche.lib_zxing.**{*;}
-
+ #entity类不被混淆
+  -keep class com.fubang.live.entities.**{*;}
 
