@@ -216,7 +216,6 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onKickoutRoomUserNotify(RoomKickoutUserInfo obj) {
-
         PrintUnknown("onKickoutRoomUserNotify: ");
         Tools.PrintObject(obj);
         EventBus.getDefault().post(obj, "RoomKickoutUserInfo");

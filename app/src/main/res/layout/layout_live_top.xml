@@ -78,7 +78,8 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/ic_room_share" />
+                android:src="@drawable/ic_room_share"
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_live_exit"

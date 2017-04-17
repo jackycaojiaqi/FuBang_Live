@@ -70,8 +70,7 @@
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-      >
+        android:layout_height="match_parent">
 
         <com.fubang.live.widget.MyListView
             android:id="@+id/lv_room_gift"
@@ -79,8 +78,9 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="50dp"
             android:divider="@null"
-            android:visibility="invisible"
             android:scrollbars="none"
+            android:stackFromBottom="true"
+            android:visibility="invisible"
             app:layout_heightPercent="25%"
             app:layout_widthPercent="70%"></com.fubang.live.widget.MyListView>
 
@@ -91,8 +91,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="50dp"
             android:divider="@null"
-            android:visibility="invisible"
             android:scrollbars="none"
+            android:visibility="invisible"
             app:layout_heightPercent="35%"
             app:layout_widthPercent="70%"></com.fubang.live.widget.MyListView>
     </android.support.percent.PercentRelativeLayout>

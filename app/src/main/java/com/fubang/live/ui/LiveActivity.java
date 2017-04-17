@@ -97,9 +97,8 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             PermissionGen.with(LiveActivity.this)
                     .addRequestCode(100)
                     .permissions(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Manifest.permission.CAMERA)
+
                     .request();
         } else {
         }
@@ -108,9 +107,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             PermissionGen.with(LiveActivity.this)
                     .addRequestCode(200)
                     .permissions(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Manifest.permission.RECORD_AUDIO)
                     .request();
         } else {
         }
@@ -235,6 +232,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
+            if (list_gift.size() > 3) {
+                list_gift.clear();
+            }
             list_gift.add(obj);
             adapter_gift.notifyDataSetChanged();
             lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
@@ -258,7 +258,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        roomMain.getRoom().getChannel().Close();
+        if (roomMain.getRoom() != null) {
+            roomMain.getRoom().getChannel().Close();
+        }
         EventBus.getDefault().unregister(this);
     }
 
@@ -374,8 +376,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 rllRoomInput.setVisibility(View.GONE);
                 break;
             case R.id.room_new_chat_send:
-                if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
+                final String msg = roomMessageEdit.getText().toString();
+                if (!StringUtil.isEmptyandnull(msg)) {
+                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {

@@ -57,4 +57,6 @@
     <color name="blue_1b99d1">#1b99d1</color>
     <color name="gray_dan">#f4f4f4</color>
     <color name="gray_edit_bg">#fdf8f5</color>
+    <color name="yellow_dan">#FFFBDC</color>
+    <color name="gray_bg">#f5fbfb</color>
 </resources>

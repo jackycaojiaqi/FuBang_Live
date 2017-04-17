@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.ui.AuthActivity;
 import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.UserInfoActivity;
 
@@ -29,6 +30,8 @@ import butterknife.Unbinder;
 public class MineFragment extends BaseFragment {
     @BindView(R.id.rl_setting)
     RelativeLayout rlSetting;
+    @BindView(R.id.rll_mian_auth)
+    RelativeLayout rllMianAuth;
     Unbinder unbinder;
     @BindView(R.id.iv_mine_bg)
     ImageView ivMineBg;
@@ -62,7 +65,7 @@ public class MineFragment extends BaseFragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.rl_setting, R.id.iv_mine_bg})
+    @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_setting:
@@ -70,6 +73,9 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.iv_mine_bg:
                 startActivity(new Intent(getActivity(), UserInfoActivity.class));
+                break;
+            case R.id.rll_mian_auth:
+                startActivity(new Intent(context,AuthActivity.class));
                 break;
         }
 

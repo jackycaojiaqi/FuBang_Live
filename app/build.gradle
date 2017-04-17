@@ -28,13 +28,19 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.config
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.config
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
+        fubang {
+        }
+
     }
 }
 
@@ -80,5 +86,5 @@ dependencies {
     compile 'com.jph.takephoto:takephoto_library:4.0.3'
     compile files('libs/AMap_Location_V3.3.0_20170118.jar')
     compile files('libs/umeng-analytics-v6.1.0.jar')
-    compile files('libs/utdid4all-1.0.4.jar')
+    compile files('libs/alipaySdk-20170309.jar')
 }

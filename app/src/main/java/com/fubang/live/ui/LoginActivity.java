@@ -17,6 +17,7 @@ import com.fubang.live.entities.UserEntity;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
+import com.fubang.live.util.ToastUtil;
 import com.sample.login.LoginMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
@@ -193,6 +194,7 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
             StartUtil.putVersion(this, res.getNverison() + "");
             StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
             startActivity(new Intent(context, MainActivity.class));
+            finish();
         }
     }
 

@@ -329,6 +329,7 @@
             android:background="@color/gray_dan" />
 
         <RelativeLayout
+            android:id="@+id/rll_mian_auth"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"

@@ -39,6 +39,10 @@ import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
 import com.socks.library.KLog;
 import com.umeng.analytics.MobclickAgent;
+import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.RoomKickoutUserInfo;
+
+import org.simple.eventbus.Subscriber;
 
 import java.util.ArrayList;
 
@@ -303,4 +307,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         KLog.e(aMapLocation.getCity());
         KLog.e(aMapLocation.getAddress());
     }
+
+
+
 }

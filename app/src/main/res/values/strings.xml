@@ -54,4 +54,8 @@
     <string name="input_userid">请输入用户名</string>
     <string name="input_userpwd">请输入密码</string>
     <string name="please_select_a_gift">请选择一种礼物</string>
+    <string name="kickout">您被踢出房间</string>
+    <string name="auth_name_about">根据相关法规，开直播需要实名认证\n实名认证不涉及金钱账户\n认证信息我们会严格保密</string>
+    <string name="auth_name_about_shrot">根据相关法规，开直播需要实名认证</string>
+    <string name="submit">提交</string>
 </resources>

@@ -2,6 +2,7 @@ package com.fubang.live.ui.fragment;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
@@ -48,6 +49,7 @@ import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
+import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.MainActivity;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
@@ -69,6 +71,7 @@ import com.sample.room.RoomMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomKickoutUserInfo;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
@@ -246,11 +249,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private void initDivergeView() {
         mList = new ArrayList<>();
         mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
-        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
-        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
-        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
-        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
-        mList.add(((BitmapDrawable) ResourcesCompat.getDrawable(getResources(), R.drawable.ic_praise_sm5, null)).getBitmap());
         DivergeView.post(new Runnable() {
             @Override
             public void run() {
@@ -259,7 +257,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 handle.sendEmptyMessage(12);
             }
         });
-        DivergeView.startDiverges(5);
+        DivergeView.startDiverges(0);
     }
 
     private int SEND_LIKE_ANIM = 12;
@@ -272,7 +270,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     handle.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            DivergeView.startDiverges(5);
+                            DivergeView.startDiverges(0);
                             handle.sendEmptyMessage(12);
                         }
                     }, 1000);
@@ -343,11 +341,22 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
+            if (list_gift.size()>3){
+                list_gift.clear();
+            }
             list_gift.add(obj);
             adapter_gift.notifyDataSetChanged();
             lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
             setAnimaAlpha(lvRoomGift);
         }
+    }
+
+    //接收帐号踢出房间信息 ，提示重新登录
+    @Subscriber(tag = "RoomKickoutUserInfo")
+    public void KickOutRoom(RoomKickoutUserInfo obj) {
+        ToastUtil.show(getActivity().getApplicationContext(),R.string.kickout);
+        int reasonid = obj.getReasonid();
+        getActivity().finish();
     }
 
     @Override
@@ -372,9 +381,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         new Thread(new Runnable() {
             @Override
             public void run() {
-                roomMain.getRoom().getChannel().Close();
+                if (roomMain.getRoom() != null) {
+                    roomMain.getRoom().getChannel().Close();
+                }
             }
         }).start();
+        handle.removeCallbacksAndMessages(null);
         EventBus.getDefault().unregister(this);
     }
 
@@ -553,8 +565,14 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             case R.id.lv_room_message:
                 break;
             case R.id.room_new_chat_send:
+                final String msg = roomMessageEdit.getText().toString();
                 if (!StringUtil.isEmptyandnull(roomMessageEdit.getText().toString())) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, roomMessageEdit.getText().toString(), StartUtil.getUserId(context), 0);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
+                        }
+                    }).start();
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {
@@ -671,7 +689,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, 37, count, String.valueOf(roomId), StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, String.valueOf(roomId), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");
