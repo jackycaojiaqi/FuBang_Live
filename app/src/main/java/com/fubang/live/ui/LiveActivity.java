@@ -141,7 +141,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         //设置表情适配器
         mDetector = EmotionInputDetector.with(LiveActivity.this)
                 .setEmotionView(emotionNewLayout)
-                .bindToContent(llRoomInput)
+                .bindToContent(emotionNewLayout)
                 .bindToEditText(roomMessageEdit)
                 .bindToEmotionButton(emotionButton)
                 .build();
@@ -453,20 +453,18 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
      */
 
     private void setUpEmotionViewPager() {
-        final String[] titles = new String[]{"经典", "vip"};
+        final String[] titles = new String[]{"经典"};
         EmotionAdapter mViewPagerAdapter = new EmotionAdapter(getSupportFragmentManager(), titles);
         final ViewPager mViewPager = (ViewPager) findViewById(R.id.new_pager);
 //        if (mViewPager != null) {
         mViewPager.setAdapter(mViewPagerAdapter);
-
         mViewPager.setCurrentItem(0);
 //        }
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_new_tabs);
-        slidingTabLayout.setCustomTabView(R.layout.widget_tab_indicator, R.id.text);
-        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(context, R.color.colorPrimary));
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(mViewPager);
-
+//        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_new_tabs);
+//        slidingTabLayout.setCustomTabView(R.layout.widget_tab_indicator, R.id.text);
+//        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(context, R.color.colorPrimary));
+//        slidingTabLayout.setDistributeEvenly(true);
+//        slidingTabLayout.setViewPager(mViewPager);
         GlobalOnItemClickManager globalOnItemClickListener = GlobalOnItemClickManager.getInstance();
         globalOnItemClickListener.attachToEditText((EditText) findViewById(R.id.edit_new_text));
     }

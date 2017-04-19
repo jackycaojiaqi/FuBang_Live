@@ -8,41 +8,19 @@
     android:visibility="gone">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_room_input_close"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/chat_new_input_line"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/room_new_tablayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:background="@color/home_tab_backgroud"
-                    app:tabIndicatorColor="@color/bottom_radio_checked_text"
-                    app:tabSelectedTextColor="@color/bottom_radio_checked_text"
-                    app:tabTextColor="@color/bottom_radio_text" />
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/room_new_viewpager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_room_input"
+            android:id="@+id/chat_new_input_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -126,29 +104,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
                     android:layout_alignParentTop="true"
-                    android:background="#eeeeee" />
+                    android:background="#eeeeee"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignBottom="@+id/sliding_new_tabs"
-                    android:background="#e0e0e0" />
+                    android:background="#e0e0e0"
+                    android:visibility="gone" />
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/new_pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="37dp" />
+                    android:layout_alignParentStart="true" />
 
             </RelativeLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_room_input_close"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/ll_room_input" />
-    </RelativeLayout>
+
+    </LinearLayout>
 </RelativeLayout>

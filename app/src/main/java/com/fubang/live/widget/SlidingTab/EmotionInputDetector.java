@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -87,12 +88,14 @@ public class EmotionInputDetector {
                 } else {
                     if (isSoftInputShown()) {
                         lockContentHeight();
+
                         showEmotionLayout();
+
                         unlockContentHeightDelayed();
                     } else {
                         showEmotionLayout();
                     }
-                    RoomActivity. is_emoticon_show = false;
+                    RoomActivity.is_emoticon_show = false;
                 }
             }
         });
@@ -113,7 +116,6 @@ public class EmotionInputDetector {
     }
 
     public boolean interceptBackPress() {
-        // TODO: 15/11/2 change this method's name
         if (mEmotionLayout.isShown()) {
             hideEmotionLayout(false);
             return true;
@@ -121,14 +123,22 @@ public class EmotionInputDetector {
         return false;
     }
 
+    int softInputHeight;
+
     private void showEmotionLayout() {
-        int softInputHeight = getSupportSoftInputHeight();
+        softInputHeight = getSupportSoftInputHeight();
         if (softInputHeight == 0) {
             softInputHeight = sp.getInt(SHARE_PREFERENCE_TAG, 400);
         }
         hideSoftInput();
-        mEmotionLayout.getLayoutParams().height = softInputHeight;
-        mEmotionLayout.setVisibility(View.VISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mEmotionLayout.getLayoutParams().height = softInputHeight;
+                mEmotionLayout.setVisibility(View.VISIBLE);
+            }
+        }, 80);
     }
 
     private void hideEmotionLayout(boolean showSoftInput) {

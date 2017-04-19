@@ -34,15 +34,15 @@ public class EmotionAdapter extends FragmentStatePagerAdapter {
             case 0:
                 f = new ClassicFragment();
                 break;
-            case 1:
-                f = new XiHaHouFragment();
-                break;
-            case 2:
-                f = new TuzkiFragment();
-                break;
-            case 3:
-                f = new YangCongTouFragment();
-                break;
+//            case 1:
+//                f = new XiHaHouFragment();
+//                break;
+//            case 2:
+//                f = new TuzkiFragment();
+//                break;
+//            case 3:
+//                f = new YangCongTouFragment();
+//                break;
         }
         mPages.put(position, f);
         return f;

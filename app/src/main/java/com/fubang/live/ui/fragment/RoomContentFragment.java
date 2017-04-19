@@ -191,7 +191,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        //设置表情适配器
         mDetector = EmotionInputDetector.with(getActivity())
                 .setEmotionView(emotionNewLayout)
-                .bindToContent(llRoomInput)
+                .bindToContent(emotionNewLayout)
                 .bindToEditText(roomMessageEdit)
                 .bindToEmotionButton(emotionButton)
                 .build();
@@ -721,7 +721,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
      */
 
     private void setUpEmotionViewPager() {
-        final String[] titles = new String[]{"经典", "vip"};
+        final String[] titles = new String[]{"经典"};
         EmotionAdapter mViewPagerAdapter = new EmotionAdapter(getActivity().getSupportFragmentManager(), titles);
         final ViewPager mViewPager = (ViewPager) getActivity().findViewById(R.id.new_pager);
 //        if (mViewPager != null) {
@@ -729,11 +729,11 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
         mViewPager.setCurrentItem(0);
 //        }
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) getView().findViewById(R.id.sliding_new_tabs);
-        slidingTabLayout.setCustomTabView(R.layout.widget_tab_indicator, R.id.text);
-        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(mViewPager);
+//        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) getView().findViewById(R.id.sliding_new_tabs);
+//        slidingTabLayout.setCustomTabView(R.layout.widget_tab_indicator, R.id.text);
+//        slidingTabLayout.setSelectedIndicatorColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+//        slidingTabLayout.setDistributeEvenly(true);
+//        slidingTabLayout.setViewPager(mViewPager);
 
         GlobalOnItemClickManager globalOnItemClickListener = GlobalOnItemClickManager.getInstance();
         globalOnItemClickListener.attachToEditText((EditText) getActivity().findViewById(R.id.edit_new_text));
