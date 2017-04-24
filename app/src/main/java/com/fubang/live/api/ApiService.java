@@ -26,4 +26,6 @@ public interface ApiService {
 
     @GET("/rtmp_pub.php?")//获取推流地址
     Call<RtmpUrlEntity> getRtmpUrlEntity(@QueryMap Map<String, String> map);
+
+    public  static final  String MSG_SEND_AUTH_INFO ="/index.php/app/roomlist";
 }

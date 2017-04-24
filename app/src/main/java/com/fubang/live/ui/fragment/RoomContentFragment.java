@@ -12,19 +12,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -39,18 +37,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
+import com.fubang.live.adapter.RoomAudienceAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
+import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
-import com.fubang.live.ui.LoginActivity;
-import com.fubang.live.ui.MainActivity;
+import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
@@ -62,7 +62,6 @@ import com.fubang.live.view.RtmpUrlView;
 import com.fubang.live.widget.DivergeView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
-import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
 import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
@@ -72,11 +71,11 @@ import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
+import com.xlg.android.protocol.RoomUserInfo;
 
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
-import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +90,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 import cn.sharesdk.wechat.moments.WechatMoments;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.content.Context.WINDOW_SERVICE;
+import static android.widget.LinearLayout.HORIZONTAL;
 import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
 public class RoomContentFragment extends BaseFragment implements MicNotify, RtmpUrlView {
@@ -124,6 +123,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     ListView lvRoomMessage;
     @BindView(R.id.lv_room_gift)
     ListView lvRoomGift;
+    @BindView(R.id.rv_room_audience)
+    RecyclerView rvRoomAudience;
     //============================底部输入栏
     @BindView(R.id.room_new_chat_send)
     Button roomChatSend;
@@ -159,6 +160,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private RtmpUrlPresenterImpl presenter;
     private String roomIp, ip, roomPwd;
     private int roomId, port;
+    private List<RoomUserInfo> list_audience = new ArrayList<>();
+    private BaseQuickAdapter roomUserAdapter;
 
     @Nullable
     @Override
@@ -237,6 +240,18 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         lvRoomMessage.setAdapter(adapter);
         adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
+        roomUserAdapter = new RoomAudienceAdapter(R.layout.item_audience_room, list_audience);
+        rvRoomAudience.setLayoutManager(new LinearLayoutManager(context, HORIZONTAL, false));
+        roomUserAdapter.openLoadAnimation();
+        roomUserAdapter.setAutoLoadMoreSize(5);
+        roomUserAdapter.setEnableLoadMore(true);
+        roomUserAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                KLog.e(position);
+            }
+        });
+        rvRoomAudience.setAdapter(roomUserAdapter);
 //        initEmotionMainFragment();
         //爱心赛贝尔曲线
         initDivergeView();
@@ -254,26 +269,25 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void run() {
                 DivergeView.setEndPoint(new PointF(DivergeView.getMeasuredWidth() / 2, 0));
                 DivergeView.setDivergeViewProvider(new Provider());
-                handle.sendEmptyMessage(12);
             }
         });
-        DivergeView.startDiverges(0);
+        DivergeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handle.sendEmptyMessage(SEND_LIKE_ANIM);
+            }
+        });
+
     }
 
-    private int SEND_LIKE_ANIM = 12;
+    private final int SEND_LIKE_ANIM = 12;
     Handler handle = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 12:
-                    handle.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            DivergeView.startDiverges(0);
-                            handle.sendEmptyMessage(12);
-                        }
-                    }, 1000);
+                case SEND_LIKE_ANIM:
+                    DivergeView.startDiverges(0);
                     break;
 
             }
@@ -365,6 +379,27 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     }
 
+    //接收主播信息
+    @Subscriber(tag = "onMicUser")
+    public void AnchorInfo(RoomUserInfo obj) {
+        KLog.e(obj.getUserid());
+        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
+        tvAnchorId.setText(obj.getUserid());//主播ID
+        tvAnchorKbiNum.setText(obj.getNk() + " ");//主播K币
+    }
+
+    //接收观众列表信息
+    @Subscriber(tag = "userList")
+    public void AudienceInfo(RoomUserInfo[] obj) {
+        list_audience.clear();
+        for (int i = 0; i < obj.length - 1; i++) {
+            list_audience.add(obj[i]);
+            KLog.e(list_audience.get(i).getUserid());
+        }
+        roomUserAdapter.notifyDataSetChanged();
+        tvRoomAnchorOnlineNum.setText(list_audience.size());//房间观众数量
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -388,6 +423,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void run() {
                 if (roomMain.getRoom() != null) {
+                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
                     roomMain.getRoom().getChannel().Close();
                 }
             }
@@ -594,7 +630,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
-                Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

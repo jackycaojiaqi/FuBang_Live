@@ -41,6 +41,7 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/rl_user_info_name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
@@ -108,7 +109,8 @@
                 android:layout_height="20dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_arrow_right" />
+                android:src="@drawable/ic_arrow_right"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -118,6 +120,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_user_info_gender"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
@@ -157,6 +160,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_user_info_sign"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
@@ -199,7 +203,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"

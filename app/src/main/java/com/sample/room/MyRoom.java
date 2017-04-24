@@ -166,11 +166,10 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onGetRoomUserListResponse(int g1, RoomUserInfo[] obj) {
 
-        KLog.e("onGetRoomUserListResponse: " + g1);
-        EventBus.getDefault().postSticky(obj, "userList");
+        KLog.e("onGetRoomUserListResponse: " + obj.length);
+        EventBus.getDefault().post(obj, "userList");
         for (int i = 0; i < obj.length - 1; i++) {
             Tools.PrintObject(obj[i]);
-            Log.d("123", obj[i].getMicindex() + "----------micindex");
             if (0 != (obj[i].getUserstate() & FT_ROOMUSER_STATUS_PUBLIC_MIC)) {
                 EventBus.getDefault().post(obj[i], "onMicUser");
                 videoUID = obj[i].getUserid();
@@ -188,7 +187,6 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onGetRoomMicListResponse(UseridList obj) {
-
         PrintUnknown("onGetRoomMicListResponse: ");
     }
 

@@ -259,6 +259,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     protected void onDestroy() {
         super.onDestroy();
         if (roomMain.getRoom() != null) {
+            roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
             roomMain.getRoom().getChannel().Close();
         }
         EventBus.getDefault().unregister(this);

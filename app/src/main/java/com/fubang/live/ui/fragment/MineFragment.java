@@ -13,16 +13,26 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.callback.StringDialogCallback;
 import com.fubang.live.ui.AuthActivity;
+import com.fubang.live.ui.AuthApplyActivity;
 import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.UserInfoActivity;
+import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.ToastUtil;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.socks.library.KLog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import okhttp3.Call;
+import okhttp3.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,6 +67,26 @@ public class MineFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
+        initdate();
+    }
+
+    private void initdate() {
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_USER_INFO;
+        OkGo.get(url)//
+                .tag(this)//
+                .params("nuserid", StartUtil.getUserId(context))
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        KLog.json(s);
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override
@@ -75,7 +105,7 @@ public class MineFragment extends BaseFragment {
                 startActivity(new Intent(getActivity(), UserInfoActivity.class));
                 break;
             case R.id.rll_mian_auth:
-                startActivity(new Intent(context,AuthActivity.class));
+                startActivity(new Intent(context, AuthApplyActivity.class));
                 break;
         }
 

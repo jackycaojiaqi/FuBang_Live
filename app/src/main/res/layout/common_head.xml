@@ -23,7 +23,8 @@
         android:textSize="18dp" />
 
     <TextView
-        android:layout_width="100dp"
+        android:id="@+id/tv_submit"
+        android:layout_width="70dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:gravity="center"

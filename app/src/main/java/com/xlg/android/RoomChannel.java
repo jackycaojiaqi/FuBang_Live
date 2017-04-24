@@ -645,7 +645,6 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setSrcalias(userName);
         obj.setToalias("");
         obj.setContent(chatmsg);
-        KLog.e(chatmsg);
         sendPack(header, obj);
 
     }
@@ -724,8 +723,9 @@ public class RoomChannel implements ClientSocketHandler {
         Header header = new Header();
         CollageRequest obj = new CollageRequest();
         header.setCmd1(Header.MessageType_mxpCollageRequest);
-        obj.setVcbid(mRoomID);
-        obj.setUserid(mUserID);
+        obj.setVcbid(vcbid);
+        obj.setUserid(userid);
+        KLog.e(vcbid+" "+userid);
         sendPack(header, obj);
     }
 

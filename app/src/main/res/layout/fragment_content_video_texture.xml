@@ -70,7 +70,9 @@
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <com.fubang.live.widget.MyListView
             android:id="@+id/lv_room_gift"

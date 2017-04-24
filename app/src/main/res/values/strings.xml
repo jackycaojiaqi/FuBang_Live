@@ -59,4 +59,11 @@
     <string name="auth_name_about_shrot">根据相关法规，开直播需要实名认证</string>
     <string name="submit">提交</string>
     <string name="in_room_time_out">登录房间超时</string>
+    <string name="id_incorrect">身份证号码格式不正确</string>
+    <string name="name_incorrect">姓名格式不对</string>
+    <string name="up_auth_info_success">上传认证信息成功</string>
+    <string name="up_auth_info_failure">上传认证信息失败</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="content_not_null">内容不能为空</string>
 </resources>

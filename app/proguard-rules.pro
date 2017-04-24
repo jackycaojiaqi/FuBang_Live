@@ -275,4 +275,17 @@
   -keep class com.uuzuche.lib_zxing.**{*;}
  #entity类不被混淆
   -keep class com.fubang.live.entities.**{*;}
+#okhttputils
+-dontwarn com.zhy.http.**
+-keep class com.zhy.http.**{*;}
+
+
+#okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.**{*;}
+
+
+#okio
+-dontwarn okio.**
+-keep class okio.**{*;}
 
