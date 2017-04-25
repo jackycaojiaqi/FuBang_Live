@@ -66,4 +66,9 @@
     <string name="male">男</string>
     <string name="female">女</string>
     <string name="content_not_null">内容不能为空</string>
+    <string name="modify_success">修改信息成功</string>
+    <string name="modify_failed">修改信息失败</string>
+    <string name="up_auth_pic_failure">上传用户头像失败</string>
+    <string name="up_auth_pic_success">上传头像成功</string>
+    <string name="unknow">未知</string>
 </resources>

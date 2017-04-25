@@ -35,11 +35,10 @@ public class FBImage {
                     builder.addRequestHandler(new RequestHandler() {
                         @Override
                         public boolean canHandleRequest(Request data) {
-                            if (data.uri.getScheme().equals("http")
-                                    && data.uri.getPath().startsWith("/image/")) {
+                            if (data.uri.getScheme().equals("http")) {
                                 return true;
                             }
-                            return false;
+                            return true;
                         }
 
                         @Override
@@ -51,7 +50,6 @@ public class FBImage {
                             File local_file = new File(file_path);
 
                             if (local_file.exists() == false) {
-
                                 if (!local_file.getParentFile().exists()) {
                                     local_file.getParentFile().mkdirs();
                                 }
@@ -179,80 +177,9 @@ public class FBImage {
 
     public static RequestCreator Create(Context context, String path,
                                         int width, int height, int retina, int quality, boolean is) {
-        String s = "";
-        if (width != 0) {
-            s += "_" + width + "w";
-        }
-        if (height != 0) {
-            s += "_" + height + "h";
-        }
-        if (retina > 1 && retina < 4) {
-            s += "_" + retina + "x";
-        }
-        if (quality > 20 && quality < 100) {
-            s += "_" + quality + "q";
-        } else if (quality == 0) {
-            s += "_30q";
-        } else {
-            s += "";
-        }
-        if (s.startsWith("_")) {
-            s = s.substring(1);
-        }
-        if (s.equals("") == false) {
-            if (path != null) {
-                if (path.length() > 0) {
-                    path = path + "@" + s + ".jpg";
-                } else {
-                    path = "http://www.test.youwandao.com/image/20140917/0937405418e5e4cf01b1.jpg@"
-                            + s + ".jpg";
-                }
-            } else {
-                path = "http://www.test.youwandao.com/image/20140917/0937405418e5e4cf01b1.jpg@"
-                        + s + ".jpg";
-            }
-        }
         return Create(context, Uri.parse(path), is);
     }
 
-    public static RequestCreator Create(Context context, String path,
-                                        int width, int height, int retina, int quality, boolean is, String type) {
-
-        String s = "";
-        if (width != 0) {
-            s += "_" + width + "w";
-        }
-        if (height != 0) {
-            s += "_" + height + "h";
-        }
-        if (retina > 1 && retina < 4) {
-            s += "_" + retina + "x";
-        }
-        if (quality > 20 && quality < 100) {
-            s += "_" + quality + "q";
-        } else if (quality == 0) {
-            s += "_30q";
-        } else {
-            s += "";
-        }
-        if (s.startsWith("_")) {
-            s = s.substring(1);
-        }
-        if (s.equals("") == false) {
-            if (path != null) {
-                if (path.length() > 0) {
-                    path = path + "@" + s + ".jpg";
-                } else {
-                    path = "http://www.test.youwandao.com/image/20140917/0937405418e5e4cf01b1.jpg@"
-                            + s + ".jpg";
-                }
-            } else {
-                path = "http://www.test.youwandao.com/image/20140917/0937405418e5e4cf01b1.jpg@"
-                        + s + ".jpg";
-            }
-        }
-        return Create(context, Uri.parse(path), is, type);
-    }
 
     public static RequestCreator Create(Context context, String path) {
         return Create(context, path, 0, 0, 0, 0, false);

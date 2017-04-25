@@ -307,7 +307,4 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         KLog.e(aMapLocation.getCity());
         KLog.e(aMapLocation.getAddress());
     }
-
-
-
 }

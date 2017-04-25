@@ -19,10 +19,14 @@ import android.widget.TextView;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.callback.StringDialogCallback;
+import com.fubang.live.entities.UserInfoEntity;
+import com.fubang.live.util.FBImage;
 import com.fubang.live.util.FileUtils;
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.SystemStatusManager;
 import com.fubang.live.util.ToastUtil;
+import com.google.gson.Gson;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoActivity;
 import com.jph.takephoto.model.CropOptions;
@@ -61,12 +65,17 @@ public class UserInfoActivity extends TakePhotoActivity {
     RelativeLayout rlUserInfoGender;
     @BindView(R.id.rl_user_info_sign)
     RelativeLayout rlUserInfoSign;
+    @BindView(R.id.tv_user_info_name)
+    TextView tvUserInfoName;
+    @BindView(R.id.tv_user_info_gender)
+    TextView tvUserInfoGender;
     private Context context;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
     Uri imageUri;
     private String name;
     private String sign;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,31 +87,40 @@ public class UserInfoActivity extends TakePhotoActivity {
         initdate();
     }
 
-
-
     private void initview() {
-        tvTitle.setText("编辑资料");
+        tvTitle.setText("个人中心");
     }
+
+    private UserInfoEntity userInfoEntity;
+
     private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_USER_INFO;
-        OkGo.get(url)//
-                .tag(this)//
-                .params("nuserid", StartUtil.getUserId(context))
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(String s, Call call, Response response) {
-                        KLog.json(s);
-                    }
+        userInfoEntity = getIntent().getParcelableExtra(AppConstant.CONTENT);
+        if (userInfoEntity.getStatus().equals("success")) {
+            //头像
+            if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getCphoto())) {
+                FBImage.Create(context, AppConstant.BASE_IMG_URL + userInfoEntity.getInfo().getCphoto()).into(ivUserInfoPic);
+            }
+            //名字
+            tvUserInfoName.setText(userInfoEntity.getInfo().getCalias() + " ");
+            //性别
+            if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getGender())) {
+                if (userInfoEntity.getInfo().getGender().equals("1")) {
+                    tvUserInfoGender.setText(R.string.male);
+                } else {
+                    tvUserInfoGender.setText(R.string.female);
+                }
 
-                    @Override
-                    public void onError(Call call, Response response, Exception e) {
-                        super.onError(call, response, e);
-                        e.printStackTrace();
-                    }
-                });
+            } else {
+                tvUserInfoGender.setText(R.string.unknow);
+            }
+        }
     }
 
-    @OnClick({R.id.rl_user_info_pic, R.id.iv_back,R.id.rl_user_info_name,
+    private final int MSG_MODIFY_INFO_NAME = 0X0011;
+    private final int MSG_MODIFY_INFO_GENDER = 0X0012;
+    private final int MSG_MODIFY_INFO_SIGN = 0X0013;
+
+    @OnClick({R.id.rl_user_info_pic, R.id.iv_back, R.id.rl_user_info_name,
             R.id.rl_user_info_gender, R.id.rl_user_info_sign})
     public void onViewClicked(View v) {
         Intent intent;
@@ -114,21 +132,22 @@ public class UserInfoActivity extends TakePhotoActivity {
                 finish();
                 break;
             case R.id.rl_user_info_name:
-                intent = new Intent(context,EditInfoctivity.class);
-                intent.putExtra("type","name");
-                intent.putExtra("content",name);
-                startActivity(intent);
+                intent = new Intent(context, EditInfoctivity.class);
+                intent.putExtra("type", "name");
+                intent.putExtra("content", userInfoEntity.getInfo().getCalias());
+                startActivityForResult(intent, MSG_MODIFY_INFO_NAME);
                 break;
             case R.id.rl_user_info_gender:
-                intent = new Intent(context,EditInfoctivity.class);
-                intent.putExtra("type","gender");
-                startActivity(intent);
+                intent = new Intent(context, EditInfoctivity.class);
+                intent.putExtra("type", "gender");
+                intent.putExtra("content", userInfoEntity.getInfo().getGender());
+                startActivityForResult(intent, MSG_MODIFY_INFO_GENDER);
                 break;
             case R.id.rl_user_info_sign:
-                intent = new Intent(context,EditInfoctivity.class);
-                intent.putExtra("type","sign");
-                intent.putExtra("content",sign);
-                startActivity(intent);
+                intent = new Intent(context, EditInfoctivity.class);
+                intent.putExtra("type", "sign");
+                intent.putExtra("content", userInfoEntity.getInfo().getCidiograph());
+                startActivityForResult(intent, MSG_MODIFY_INFO_SIGN);
                 break;
         }
     }
@@ -138,6 +157,7 @@ public class UserInfoActivity extends TakePhotoActivity {
     /**
      * 处理拍照弹窗
      */
+
     private void ShowPopAction() {
         final View popupView = getLayoutInflater().inflate(R.layout.pop_user_pic, null);
         pop_pic = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
@@ -215,14 +235,14 @@ public class UserInfoActivity extends TakePhotoActivity {
                     .execute(new StringDialogCallback(this) {
                         @Override
                         public void onSuccess(String s, Call call, Response response) {
-                            ToastUtil.show(context, R.string.up_auth_info_success);
+                            ToastUtil.show(context, R.string.up_auth_pic_success);
                         }
 
                         @Override
                         public void onError(Call call, Response response, Exception e) {
                             super.onError(call, response, e);
                             e.printStackTrace();
-                            ToastUtil.show(context, R.string.up_auth_info_failure);
+                            ToastUtil.show(context, R.string.up_auth_pic_failure);
                         }
                     });
             OkGo.post(url)//上传直播背景
@@ -247,8 +267,8 @@ public class UserInfoActivity extends TakePhotoActivity {
     }
 
     private CropOptions getCropOptions() {
-        int height = Integer.parseInt("1000");
-        int width = Integer.parseInt("1000");
+        int height = Integer.parseInt("500");
+        int width = Integer.parseInt("600");
         CropOptions.Builder builder = new CropOptions.Builder();
         builder.setAspectX(width).setAspectY(height);
         builder.setOutputX(width).setOutputY(height);
@@ -272,4 +292,36 @@ public class UserInfoActivity extends TakePhotoActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == MSG_MODIFY_INFO_NAME) {
+                String name = data.getStringExtra("name");
+                if (!StringUtil.isEmptyandnull(name)) {
+                    tvUserInfoName.setText(name);
+                    userInfoEntity.getInfo().setCalias(name);
+                }
+                KLog.e(name);
+            } else if (requestCode == MSG_MODIFY_INFO_GENDER) {
+                String gender = data.getStringExtra("gender");
+
+                if (!StringUtil.isEmptyandnull(gender)) {
+                    if (gender.equals("0")) {
+                        tvUserInfoGender.setText(R.string.female);
+                    } else if (gender.equals("1")) {
+                        tvUserInfoGender.setText(R.string.male);
+                    }
+                    userInfoEntity.getInfo().setGender(gender);
+                }
+                KLog.e(gender);
+            } else if (requestCode == MSG_MODIFY_INFO_SIGN) {
+                String sign = data.getStringExtra("sign");
+                if (!StringUtil.isEmptyandnull(sign)) {
+                    userInfoEntity.getInfo().setCidiograph(sign);
+                }
+                KLog.e(sign);
+            }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.fubang.live.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -12,18 +13,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
+import com.fubang.live.callback.StringDialogCallback;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +61,8 @@ public class EditInfoctivity extends BaseActivity {
     RadioButton rbFemale;
     @BindView(R.id.ll_select_content)
     LinearLayout llSelectContent;
+    @BindView(R.id.rg_gender)
+    RadioGroup rgGender;
     private Context context;
     private boolean is_male = true;
     private int intent_type = 0;
@@ -75,6 +82,7 @@ public class EditInfoctivity extends BaseActivity {
         tvSubmit.setVisibility(View.VISIBLE);
         String type = getIntent().getStringExtra("type");
         String content = getIntent().getStringExtra("content");
+        KLog.e(type + " " + content);
         if (type.equals("name")) {
             rllInputContent.setVisibility(View.VISIBLE);
             llSelectContent.setVisibility(View.GONE);
@@ -95,6 +103,17 @@ public class EditInfoctivity extends BaseActivity {
             rllInputContent.setVisibility(View.GONE);
             llSelectContent.setVisibility(View.VISIBLE);
             intent_type = 3;
+            if (!StringUtil.isEmptyandnull(content)) {
+                KLog.e(content);
+                if (content.equals("0")) {
+                    rbFemale.setChecked(true);
+                    is_male = false;
+                } else if (content.equals("1")) {
+                    rbMale.setChecked(true);
+                    is_male = true;
+                }
+            }
+
             rbMale.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -107,7 +126,6 @@ public class EditInfoctivity extends BaseActivity {
                     is_male = !isChecked;
                 }
             });
-
         }
 
         etEditContent.addTextChangedListener(new TextWatcher() {
@@ -144,8 +162,8 @@ public class EditInfoctivity extends BaseActivity {
         }
     }
 
-    private void doSubmit(int intent_type) {
-        String content = etEditContent.getText().toString().toString();
+    private void doSubmit(final int intent_type) {
+        final String content = etEditContent.getText().toString().toString();
 
         if (content.length() == 0 && intent_type != 3) {
             ToastUtil.show(context, R.string.content_not_null);
@@ -158,7 +176,6 @@ public class EditInfoctivity extends BaseActivity {
             KLog.e(content);
             params.put("calias", content);
         } else if (intent_type == 2) {
-            KLog.e(content);
             params.put("cidiograph", content);
         } else if (intent_type == 3) {
             if (is_male) {
@@ -173,10 +190,36 @@ public class EditInfoctivity extends BaseActivity {
         OkGo.post(url)
                 .tag(this)
                 .params(params)
-                .execute(new StringCallback() {
+                .execute(new StringDialogCallback(this) {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
-                        KLog.json(s);
+                        try {
+                            JSONObject object = new JSONObject(s);
+                            String states = object.getString("status");
+                            if (states.equals("success")) {
+                                ToastUtil.show(context, R.string.modify_success);
+                                if (intent_type == 1) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("name", content);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else if (intent_type == 3) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("gender", is_male ? "1" : "0");
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else if (intent_type == 2) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("sign", content);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                }
+                            } else {
+                                ToastUtil.show(context, R.string.modify_failed);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
