@@ -14,6 +14,25 @@ public class RoomListEntity {
     private String roompwd;
     private String rscount;
     private String gateway;
+    /**
+     * nuserid : 103921876
+     * cphoto : 20170424043324_43.jpg
+     * bphoto : 20170424043324_989.jpg
+     * calias : 曹佳琪
+     * cidiograph : 是回家简陋哈哈哈
+     * guanzhunum : 0
+     * state : 1
+     * ngender : 0
+     */
+
+    private String nuserid;
+    private String cphoto;
+    private String bphoto;
+    private String calias;
+    private String cidiograph;
+    private String guanzhunum;
+    private String state;
+    private String ngender;
 
     public RoomListEntity() {
     }
@@ -97,4 +116,67 @@ public class RoomListEntity {
         this.gateway = gateway;
     }
 
+    public String getNuserid() {
+        return nuserid;
+    }
+
+    public void setNuserid(String nuserid) {
+        this.nuserid = nuserid;
+    }
+
+    public String getCphoto() {
+        return cphoto;
+    }
+
+    public void setCphoto(String cphoto) {
+        this.cphoto = cphoto;
+    }
+
+    public String getBphoto() {
+        return bphoto;
+    }
+
+    public void setBphoto(String bphoto) {
+        this.bphoto = bphoto;
+    }
+
+    public String getCalias() {
+        return calias;
+    }
+
+    public void setCalias(String calias) {
+        this.calias = calias;
+    }
+
+    public String getCidiograph() {
+        return cidiograph;
+    }
+
+    public void setCidiograph(String cidiograph) {
+        this.cidiograph = cidiograph;
+    }
+
+    public String getGuanzhunum() {
+        return guanzhunum;
+    }
+
+    public void setGuanzhunum(String guanzhunum) {
+        this.guanzhunum = guanzhunum;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getNgender() {
+        return ngender;
+    }
+
+    public void setNgender(String ngender) {
+        this.ngender = ngender;
+    }
 }

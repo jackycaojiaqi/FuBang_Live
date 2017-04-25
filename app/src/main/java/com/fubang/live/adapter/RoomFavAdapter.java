@@ -1,9 +1,14 @@
 package com.fubang.live.adapter;
 
+import android.widget.ImageView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.entities.RoomListEntity;
+import com.fubang.live.util.FBImage;
+import com.fubang.live.util.StringUtil;
 
 import java.util.List;
 
@@ -42,10 +47,12 @@ public class RoomFavAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHol
 
     @Override
     protected void convert(BaseViewHolder helper, RoomListEntity item) {
-        helper.setText(R.id.tv_anchor_name, item.getRoomname())
+        helper.setText(R.id.tv_anchor_name, item.getCalias())
                 .setText(R.id.tv_anchor_audience_num, helper.getLayoutPosition() + 1 + " ");
-//        if (item.get() >= 0) {
-//            helper.setImageResource(R.id.iv_mic_people_pic, R.drawable.head0);
-//        }
+        if (!StringUtil.isEmptyandnull(item.getCphoto()))
+            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getCphoto()).into((ImageView) helper.getView(R.id.civ_anchor_pic));
+
+        if (!StringUtil.isEmptyandnull(item.getBphoto()))
+            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getBphoto()).into((ImageView) helper.getView(R.id.tv_anchor_bg));
     }
 }

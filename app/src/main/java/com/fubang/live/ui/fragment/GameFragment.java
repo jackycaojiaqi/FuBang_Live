@@ -95,6 +95,8 @@ public class GameFragment extends BaseFragment implements RoomListView, SwipeRef
                 startActivity(intent);
             }
         });
+        roomFavAdapter.bindToRecyclerView(rvFollow);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
         rvFollow.setAdapter(roomFavAdapter);
         //水平分割线
         rvFollow.addItemDecoration(new DividerItemDecoration(
@@ -124,8 +126,8 @@ public class GameFragment extends BaseFragment implements RoomListView, SwipeRef
 
     @Override
     public void faidedRoomList() {
-        srlRoom.setRefreshing(false);
-        Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+        srlRoom.setRefreshing(false);  list.clear();
+        roomFavAdapter.notifyDataSetChanged();
     }
 
     @Override

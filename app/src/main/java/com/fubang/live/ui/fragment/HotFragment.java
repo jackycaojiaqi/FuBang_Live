@@ -104,6 +104,8 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
                 startActivity(intent);
             }
         });
+        roomFavAdapter.bindToRecyclerView(rvhot);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
         rvhot.setAdapter(roomFavAdapter);
         //水平分割线
         rvhot.addItemDecoration(new DividerItemDecoration(
@@ -149,8 +151,8 @@ public class HotFragment extends BaseFragment implements RoomListView, SwipeRefr
 
     @Override
     public void faidedRoomList() {
-        srlRoom.setRefreshing(false);
-        Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+        srlRoom.setRefreshing(false);  list.clear();
+        roomFavAdapter.notifyDataSetChanged();
     }
 
     @Override

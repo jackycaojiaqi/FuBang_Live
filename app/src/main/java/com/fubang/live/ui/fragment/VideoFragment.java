@@ -98,6 +98,8 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
                 startActivity(intent);
             }
         });
+        roomFavAdapter.bindToRecyclerView(rvNear);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
         rvNear.setAdapter(roomFavAdapter);
 //        //水平分割线
 //        rvNear.addItemDecoration(new DividerItemDecoration(
@@ -138,7 +140,8 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
     @Override
     public void faidedRoomList() {
         srlNear.setRefreshing(false);
-        Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+        list.clear();
+        roomFavAdapter.notifyDataSetChanged();
     }
 
     @Override

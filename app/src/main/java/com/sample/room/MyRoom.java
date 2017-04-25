@@ -170,12 +170,9 @@ public class MyRoom implements RoomHandler {
         EventBus.getDefault().post(obj, "userList");
         for (int i = 0; i < obj.length - 1; i++) {
             Tools.PrintObject(obj[i]);
-            if (0 != (obj[i].getUserstate() & FT_ROOMUSER_STATUS_PUBLIC_MIC)) {
+            if (0 != (obj[i].getUserstate())) {
                 EventBus.getDefault().post(obj[i], "onMicUser");
                 videoUID = obj[i].getUserid();
-                KLog.e("===================: find mic: " + videoUID);
-                mNotify.onMic(videoIP, videoPort, videoRand, videoUID);
-//				}
             }
         }
     }

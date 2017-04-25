@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
@@ -162,7 +163,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private int roomId, port;
     private List<RoomUserInfo> list_audience = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
-
+    private   PowerManager.WakeLock mWakeLock;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -255,7 +256,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        initEmotionMainFragment();
         //爱心赛贝尔曲线
         initDivergeView();
-        //禁止listview滑动
+        //屏幕常亮
+        PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
 
     }
 
@@ -289,7 +292,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 case SEND_LIKE_ANIM:
                     DivergeView.startDiverges(0);
                     break;
-
             }
         }
     };
@@ -370,20 +372,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void KickOutRoom(RoomKickoutUserInfo obj) {
         KLog.e(obj.getReasonid());
         if (obj.getReasonid() == 522) {
-            ToastUtil.show(getActivity().getApplicationContext(), R.string.kickout);
+//            ToastUtil.show(getActivity().getApplicationContext(), R.string.kickout);
 //            getActivity().finish();
         } else if (obj.getReasonid() == 701) {
-            ToastUtil.show(getActivity().getApplicationContext(), R.string.in_room_time_out);
-//            getActivity().finish();
+//            ToastUtil.show(getActivity().getApplicationContext(), R.string.in_room_time_out);
+//            getActivity().finish();、
         }
-
     }
 
     //接收主播信息
     @Subscriber(tag = "onMicUser")
     public void AnchorInfo(RoomUserInfo obj) {
         KLog.e(obj.getUserid());
-        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
+//        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
         tvAnchorId.setText(obj.getUserid());//主播ID
         tvAnchorKbiNum.setText(obj.getNk() + " ");//主播K币
     }
@@ -404,6 +405,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void onPause() {
         super.onPause();
         mToast = null;
+        mWakeLock.release();
         mVideoView.pause();
         mIsActivityPaused = true;
     }
@@ -411,6 +413,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @Override
     public void onResume() {
         super.onResume();
+        mWakeLock.acquire();
         mIsActivityPaused = false;
         mVideoView.start();
     }

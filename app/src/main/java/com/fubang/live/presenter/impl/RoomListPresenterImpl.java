@@ -37,6 +37,7 @@ public class RoomListPresenterImpl implements RoomListPresenter {
 
             @Override
             public void onFailure(Call<RoomEntity> call, Throwable t) {
+                t.printStackTrace();
                 roomListView.faidedRoomList();
             }
         }, count, page, group);

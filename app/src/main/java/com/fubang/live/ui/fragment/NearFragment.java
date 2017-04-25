@@ -98,6 +98,8 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
                 startActivity(intent);
             }
         });
+        roomFavAdapter.bindToRecyclerView(rvNear);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
         rvNear.setAdapter(roomFavAdapter);
         //=====================下拉刷新
         srlNear.setOnRefreshListener(this);
@@ -133,8 +135,8 @@ public class NearFragment extends BaseFragment implements RoomListView, SwipeRef
 
     @Override
     public void faidedRoomList() {
-        srlNear.setRefreshing(false);
-        Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+        srlNear.setRefreshing(false);  list.clear();
+        roomFavAdapter.notifyDataSetChanged();
     }
 
     @Override

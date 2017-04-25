@@ -100,6 +100,8 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
                 startActivity(intent);
             }
         });
+        roomFavAdapter.bindToRecyclerView(rvFollow);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
         rvFollow.setAdapter(roomFavAdapter);
         //水平分割线
         rvFollow.addItemDecoration(new DividerItemDecoration(
@@ -120,9 +122,7 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
     @Override
     public void successRoomList(RoomEntity entity) {
         srlRoom.setRefreshing(false);
-        if (page == 1) {
-            list.clear();
-        }
+        list.clear();
         List<RoomListEntity> roomListEntities = entity.getRoomlist();
         list.addAll(roomListEntities);
         roomFavAdapter.notifyDataSetChanged();
@@ -132,7 +132,8 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
     @Override
     public void faidedRoomList() {
         srlRoom.setRefreshing(false);
-        Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+        list.clear();
+        roomFavAdapter.notifyDataSetChanged();
     }
 
     @Override
