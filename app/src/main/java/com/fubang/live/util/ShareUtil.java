@@ -66,12 +66,12 @@ public class ShareUtil {
     public void showShareNew(final Context context, Platform platform) {
         Platform.ShareParams sp = new Platform.ShareParams();
         sp.setTitle("富邦直播");
-        sp.setTitleUrl("www.baidu.com"); // 标题的超链接
+        sp.setTitleUrl("http://61.153.104.118:9418/download/fbzb.apk"); // 标题的超链接
         sp.setText("富邦直播，你值得拥有！");
         sp.setImageUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492651940&di=66d41148d98384b03f7297bfce9442bd&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.bjxifu.cn%2Ftupian%2Fbd9977330.jpg.jpg");
         sp.setSite("富邦直播");
         sp.setSiteUrl("富邦直播");
-        sp.setUrl("www.baidu.com");
+        sp.setUrl("http://61.153.104.118:9418/download/fbzb.apk");
         sp.setShareType(Platform.SHARE_WEBPAGE);
         // 设置分享事件回调（注：回调放在不能保证在主线程调用，不可以在里面直接处理UI操作）
         platform.setPlatformActionListener(new PlatformActionListener() {
