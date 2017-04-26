@@ -45,8 +45,7 @@ import me.kaelaela.verticalviewpager.transforms.ZoomOutTransformer;
  * Created by jacky on 17/3/27.
  */
 public class RoomActivity extends BaseActivity implements RtmpUrlView {
-    @BindView(R.id.vp_room)
-    VerticalViewPager dvpRoom;
+    public static VerticalViewPager dvpRoom;
     private Context context;
     public static boolean is_emoticon_show = false;
     private RtmpUrlPresenterImpl presenter;
@@ -60,6 +59,8 @@ public class RoomActivity extends BaseActivity implements RtmpUrlView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
         ButterKnife.bind(this);
+        dvpRoom = (VerticalViewPager) findViewById(R.id.vp_room);
+
         roomId = getIntent().getStringExtra(AppConstant.ROOMID);
         context = this;
         Bundle bundle = new Bundle();

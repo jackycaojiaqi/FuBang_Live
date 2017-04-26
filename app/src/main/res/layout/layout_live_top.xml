@@ -2,9 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_live_control"
     android:layout_width="match_parent"
+    android:visibility="gone"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:visibility="gone">
+   >
 
     <RelativeLayout
         android:layout_width="130dp"
@@ -14,6 +15,7 @@
         android:background="@drawable/ic_room_anchor_info_bg">
 
         <ImageView
+            android:id="@+id/iv_live_anchor_pic"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
@@ -30,6 +32,7 @@
             android:textSize="12dp" />
 
         <TextView
+            android:id="@+id/tv_live_audince_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"

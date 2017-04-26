@@ -120,9 +120,8 @@ public class MineFragment extends BaseFragment {
                             //直播背景图片
                             if (!StringUtil.isEmptyandnull(userEntity.getInfo().getBphoto())) {
                                 KLog.e(AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
+                                StartUtil.putUserPic(context,AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
                                 FBImage.Create(context, AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto()).into(ivMineBg);
-//                                Glide.with(context).load(AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto()).into(ivMineBg);
-//                                Picasso.with(context).load("http://120.26.127.210:9419/user_pic/20170421044201_430.jpg").into(ivMineBg);
                             }
                         }
                     }

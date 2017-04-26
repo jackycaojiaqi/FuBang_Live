@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -102,6 +103,7 @@ public class BaseStreamingActivity extends BaseActivity implements
     ImageView ivLiveExit;
     @BindView(R.id.iv_live_chat)
     ImageView ivLiveChat;
+
     //礼物聊天列表
     @BindView(R.id.lv_room_message)
     protected ListView lvRoomMessage;

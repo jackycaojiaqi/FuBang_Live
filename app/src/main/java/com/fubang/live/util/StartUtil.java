@@ -35,6 +35,7 @@ public class StartUtil {
     public static final String DEVICEID = "deviceid";
     public static final String DEVICE = "device";
     public static final String CITY = "city";
+    public static final String USERPIC = "userpic";
     public static void putCity(Context context, String city){
         SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
         preferences.edit().putString(CVALUE,city).commit();
@@ -42,6 +43,15 @@ public class StartUtil {
     public static String getCity(Context context){
         SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
         String city = preferences.getString(CVALUE,"TaiZhou");
+        return city;
+    }
+    public static void putUserPic(Context context, String city){
+        SharedPreferences preferences = context.getSharedPreferences(USERPIC,Context.MODE_PRIVATE);
+        preferences.edit().putString(CVALUE,city).commit();
+    }
+    public static String getUserPic(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(USERPIC,Context.MODE_PRIVATE);
+        String city = preferences.getString(CVALUE,"null");
         return city;
     }
     public static void putIpPort(Context context, String ip){

@@ -4,6 +4,7 @@ package com.fubang.live.ui.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -15,6 +16,7 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -22,6 +24,7 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -52,6 +55,7 @@ import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
@@ -60,6 +64,7 @@ import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
+import com.fubang.live.widget.DetectTouchGestureLayout;
 import com.fubang.live.widget.DivergeView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
@@ -126,6 +131,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     ListView lvRoomGift;
     @BindView(R.id.rv_room_audience)
     RecyclerView rvRoomAudience;
+    //============================
+    @BindView(R.id.rll_content_view)
+    RelativeLayout rllContentView;
     //============================底部输入栏
     @BindView(R.id.room_new_chat_send)
     Button roomChatSend;
@@ -143,7 +151,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     RelativeLayout emotionNewLayout;
     @BindView(R.id.divergeView)
     com.fubang.live.widget.DivergeView DivergeView;
-
+    @BindView(R.id.iv_room_content_clear)
+    ImageView ivRoomContentClear;
 
     private MediaController mMediaController;
     private PLVideoTextureView mVideoView;
@@ -163,7 +172,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private int roomId, port;
     private List<RoomUserInfo> list_audience = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
-    private   PowerManager.WakeLock mWakeLock;
+    private PowerManager.WakeLock mWakeLock;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -253,13 +263,25 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             }
         });
         rvRoomAudience.setAdapter(roomUserAdapter);
-//        initEmotionMainFragment();
         //爱心赛贝尔曲线
         initDivergeView();
         //屏幕常亮
         PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
-         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
-
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
+        //听众列表和viewpager滑动冲突
+        rvRoomAudience.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    KLog.e("UP");
+                    RoomActivity.dvpRoom.requestDisallowInterceptTouchEvent(false);
+                } else {
+                    KLog.e("OTHER");
+                    RoomActivity.dvpRoom.requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+        });
     }
 
     private ArrayList<Bitmap> mList;
@@ -387,6 +409,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
         tvAnchorId.setText(obj.getUserid());//主播ID
         tvAnchorKbiNum.setText(obj.getNk() + " ");//主播K币
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))) {
+            FBImage.Create(context, StartUtil.getUserPic(context)).into(ivRoomAnchorSmallPic);
+        }
     }
 
     //接收观众列表信息
@@ -395,6 +420,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         list_audience.clear();
         for (int i = 0; i < obj.length - 1; i++) {
             list_audience.add(obj[i]);
+            KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
             KLog.e(list_audience.get(i).getUserid());
         }
         roomUserAdapter.notifyDataSetChanged();
@@ -543,10 +569,11 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         }
     };
     private InputMethodManager imm;
+    private boolean is_show_content_view = true;
 
     @OnClick({R.id.ib_change_orientation, R.id.ib_change_screen, R.id.iv_room_add_favorite,
             R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat
-            , R.id.room_new_chat_send, R.id.tv_room_input_close})
+            , R.id.room_new_chat_send, R.id.tv_room_input_close, R.id.iv_room_content_clear})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
@@ -634,6 +661,17 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     }
                 }).start();
 //                Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
+                break;
+            //清除房间的页面
+            case R.id.iv_room_content_clear:
+                is_show_content_view = !is_show_content_view;
+                if (is_show_content_view) {
+                    ivRoomContentClear.setImageResource(R.drawable.ic_room_content_show);
+                    rllContentView.setVisibility(View.VISIBLE);
+                } else {
+                    ivRoomContentClear.setImageResource(R.drawable.ic_room_centent_clear);
+                    rllContentView.setVisibility(View.GONE);
+                }
                 break;
         }
     }

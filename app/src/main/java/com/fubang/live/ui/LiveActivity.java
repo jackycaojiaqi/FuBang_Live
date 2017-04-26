@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -20,18 +22,23 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
+import com.fubang.live.adapter.RoomAudienceAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.presenter.impl.UpMicPresenterImpl;
+import com.fubang.live.util.DialogFactory;
+import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
@@ -57,6 +64,7 @@ import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomUserInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +74,7 @@ import org.simple.eventbus.Subscriber;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.ShareSDK;
@@ -77,6 +86,7 @@ import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
 
+import static android.widget.LinearLayout.HORIZONTAL;
 import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
 /**
@@ -87,6 +97,14 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private RoomMain roomMain = new RoomMain(this);
     private EmotionInputDetector mDetector;
     private UpMicPresenterImpl presenter;
+    private List<RoomUserInfo> list_audience = new ArrayList<>();
+    private BaseQuickAdapter roomUserAdapter;
+    @BindView(R.id.rv_room_audience)
+    RecyclerView rvRoomAudience;
+    @BindView(R.id.tv_live_audince_num)
+    TextView tvLiveAudinceNum;
+    @BindView(R.id.iv_live_anchor_pic)
+    ImageView ivLiveAnchorPic;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,7 +171,18 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
 
-
+        roomUserAdapter = new RoomAudienceAdapter(R.layout.item_audience_room, list_audience);
+        rvRoomAudience.setLayoutManager(new LinearLayoutManager(context, HORIZONTAL, false));
+        roomUserAdapter.openLoadAnimation();
+        roomUserAdapter.setAutoLoadMoreSize(5);
+        roomUserAdapter.setEnableLoadMore(true);
+        roomUserAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                KLog.e(position);
+            }
+        });
+        rvRoomAudience.setAdapter(roomUserAdapter);
     }
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
@@ -265,6 +294,26 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         EventBus.getDefault().unregister(this);
     }
 
+    //接收主播信息
+    @Subscriber(tag = "onMicUser")
+    public void AnchorInfo(RoomUserInfo obj) {
+        KLog.e(AppConstant.BASE_IMG_URL + obj.getCphoto());
+        FBImage.Create(context, AppConstant.BASE_IMG_URL + obj.getCphoto()).into(ivLiveAnchorPic);
+    }
+
+    //接收观众列表信息
+    @Subscriber(tag = "userList")
+    public void AudienceInfo(RoomUserInfo[] obj) {
+        list_audience.clear();
+        for (int i = 0; i < obj.length - 1; i++) {
+            list_audience.add(obj[i]);
+            KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
+            KLog.e(list_audience.get(i).getUserid());
+        }
+        roomUserAdapter.notifyDataSetChanged();
+        tvLiveAudinceNum.setText(list_audience.size());//房间观众数量
+    }
+
     @Override
     public void onStateChanged(StreamingState streamingState, Object o) {
         switch (streamingState) {
@@ -275,6 +324,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        DialogFactory.hideRequestDialog();
                         rl_live_control.setVisibility(View.VISIBLE);
                         llLiveStart.setVisibility(View.GONE);
                     }
@@ -318,6 +368,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         switch (view.getId()) {
             case R.id.iv_live_start:
                 if (mIsReady) {
+                    DialogFactory.showRequestDialog(context);
                     //上麦presenter
                     presenter = new UpMicPresenterImpl(new UpMicView() {
                         @Override
