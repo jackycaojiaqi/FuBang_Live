@@ -77,6 +77,11 @@ public class VideoFragment extends BaseFragment implements RoomListView, SwipeRe
         context = getActivity();
         presenter = new RoomListPresenterImpl(this, count, page, group);
         initview();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initdate();
     }
 

@@ -74,6 +74,12 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
         context = getActivity();
         presenter = new RoomListPresenterImpl(this, count, page, group);
         initview();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initdate();
     }
 

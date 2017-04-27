@@ -62,8 +62,10 @@ import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
 
 import org.json.JSONException;
@@ -183,6 +185,11 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             }
         });
         rvRoomAudience.setAdapter(roomUserAdapter);
+
+        //设置自己的头像
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))){
+            FBImage.Create(context, StartUtil.getUserPic(context)).into(ivLiveAnchorPic);
+        }
     }
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
@@ -294,12 +301,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         EventBus.getDefault().unregister(this);
     }
 
-    //接收主播信息
-    @Subscriber(tag = "onMicUser")
-    public void AnchorInfo(RoomUserInfo obj) {
-        KLog.e(AppConstant.BASE_IMG_URL + obj.getCphoto());
-        FBImage.Create(context, AppConstant.BASE_IMG_URL + obj.getCphoto()).into(ivLiveAnchorPic);
+    //主播加入房间后上麦
+    @Subscriber(tag = "JoinRoomResponse")
+    public void JoinRoomResponse(JoinRoomResponse obj) {
+        KLog.e("JoinRoomResponse");
+        roomMain.getRoom().getChannel().sendUpMic();
     }
+
 
     //接收观众列表信息
     @Subscriber(tag = "userList")
@@ -312,6 +320,27 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
         roomUserAdapter.notifyDataSetChanged();
         tvLiveAudinceNum.setText(list_audience.size());//房间观众数量
+    }
+
+    //用户离开房间回调
+    @Subscriber(tag = "RoomKickoutUserInfo")
+    public void RoomKickoutUserInfo(RoomKickoutUserInfo obj) {
+        int to_id = obj.getToid();
+        for (int i = 0; i < list_audience.size(); i++) {
+            if (list_audience.get(i).getUserid() == to_id) {
+                list_audience.remove(i);
+            }
+        }
+        roomUserAdapter.notifyDataSetChanged();
+        tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
+    }
+
+    //用户加入房间回调
+    @Subscriber(tag = "onRoomUserNotify")
+    public void onRoomUserNotify(RoomUserInfo obj) {
+        list_audience.add(obj);
+        roomUserAdapter.notifyDataSetChanged();
+        tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
     @Override

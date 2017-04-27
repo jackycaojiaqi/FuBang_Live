@@ -120,7 +120,7 @@ public class MyRoom implements RoomHandler {
 
         KLog.e("onRoomUserNotify: ");
         Tools.PrintObject(obj);
-        EventBus.getDefault().post(obj, "userList");
+        EventBus.getDefault().post(obj, "onRoomUserNotify");
     }
 
     @Override
@@ -165,12 +165,11 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onGetRoomUserListResponse(int g1, RoomUserInfo[] obj) {
-
         KLog.e("onGetRoomUserListResponse: " + obj.length);
         EventBus.getDefault().post(obj, "userList");
         for (int i = 0; i < obj.length - 1; i++) {
             Tools.PrintObject(obj[i]);
-            if (0 != (obj[i].getUserstate())) {
+            if (-1 != (obj[i].getMicindex())) {
                 EventBus.getDefault().post(obj[i], "onMicUser");
                 videoUID = obj[i].getUserid();
             }
@@ -178,7 +177,6 @@ public class MyRoom implements RoomHandler {
     }
 
     private void PrintUnknown(String string) {
-
         KLog.e("==============================:" + string);
     }
 

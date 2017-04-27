@@ -51,23 +51,23 @@ public class RoomUserInfo {
 //    private long nexpend;        //上月消费额
 //    @StructOrder(22)
 //    private long nexpend2;        //当月消费额
-    @StructOrder(23)
+    @StructOrder(21)
     private short micindex;            //在1麦还是2麦
-    @StructOrder(24)
+    @StructOrder(22)
     private long micendtime;             //麦时结束时间
-    @StructOrder(25)
+    @StructOrder(23)
     private long micnowtime;           // 现在麦时过了多久
-    @StructOrder(26)
+    @StructOrder(24)
     private byte[] carname = new byte[32];              //座驾的名字
-    @StructOrder(27)
+    @StructOrder(25)
     private int isallowupmic;            //是否允许抱麦
-    @StructOrder(28)
+    @StructOrder(26)
     private int headid;                    //头像id
-    @StructOrder(29)
+    @StructOrder(27)
     private int kingmic;                //金麦克
-    @StructOrder(30)
+    @StructOrder(28)
     private byte[] clastloginmac = new byte[40];//mac地址
-    @StructOrder(31)
+    @StructOrder(29)
     private byte[] cphoto = new byte[32];
 //	@StructOrder(31)
 //	private int				mateid;					//伴侣id

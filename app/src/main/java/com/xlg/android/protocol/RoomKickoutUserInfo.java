@@ -2,7 +2,7 @@ package com.xlg.android.protocol;
 
 public class RoomKickoutUserInfo {
 	@StructOrder(0)
-	private int	vcbid;
+	private int	vcbid;        //主播id
 	@StructOrder(1)
 	private int	srcid;				//发送者id
 	@StructOrder(2)

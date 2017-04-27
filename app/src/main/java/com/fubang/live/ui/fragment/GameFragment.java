@@ -70,9 +70,12 @@ public class GameFragment extends BaseFragment implements RoomListView, SwipeRef
         context = getActivity();
         presenter = new RoomListPresenterImpl(this, count, page, group);
         initview();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
         initdate();
     }
-
     @Override
     public void onStop() {
         super.onStop();

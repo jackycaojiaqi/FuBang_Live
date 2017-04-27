@@ -668,7 +668,7 @@ public class RoomChannel implements ClientSocketHandler {
 07-14 14:22:56.255 9493-17445/com.fubang.fubangzhibo I/System.out:     =>Toid: 1
 07-14 14:22:56.255 9493-17445/com.fubang.fubangzhibo I/System.out:     =>Vcbid: 123456*/
     //发送礼物
-    public void sendGiftRecord(int sendid ,int toid, int giftId, int count, String toName, String userName) {
+    public void sendGiftRecord(int sendid, int toid, int giftId, int count, String toName, String userName) {
         Header header = new Header();
         BigGiftRecord obj = new BigGiftRecord();
         header.setCmd1(Header.MessageType_mxpTradeGiftRequest);
@@ -725,7 +725,7 @@ public class RoomChannel implements ClientSocketHandler {
         header.setCmd1(Header.MessageType_mxpCollageRequest);
         obj.setVcbid(vcbid);
         obj.setUserid(userid);
-        KLog.e(vcbid+" "+userid);
+        KLog.e(vcbid + " " + userid);
         sendPack(header, obj);
     }
 
@@ -764,14 +764,15 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setRunnerid(mUserID);
         obj.setUserid(mUserID);
         obj.setChargemicgiftid((short) 0);
-        obj.setChargemicgiftcount((short)0);
-        obj.setReserve((short)0);
+        obj.setChargemicgiftcount((short) 0);
+        obj.setReserve((short) 0);
         obj.setMicendtime(0);
         obj.setMicnowtime(0);
-        obj.setMicindex((byte)0);
+        obj.setMicindex((byte) 1);
         obj.setMicstate((short) 0x00000008);
         obj.setIsallowupmic(0);
-        obj.setnIndex((byte)0);
-        sendPack(header,obj);
+        obj.setnIndex((byte) 1);
+        sendPack(header, obj);
     }
+
 }

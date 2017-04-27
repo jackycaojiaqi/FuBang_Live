@@ -82,6 +82,7 @@ import com.xlg.android.protocol.RoomUserInfo;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -272,13 +273,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         rvRoomAudience.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    KLog.e("UP");
-                    RoomActivity.dvpRoom.requestDisallowInterceptTouchEvent(false);
-                } else {
-                    KLog.e("OTHER");
-                    RoomActivity.dvpRoom.requestDisallowInterceptTouchEvent(true);
-                }
+                RoomActivity.dvpRoom.requestDisallowInterceptTouchEvent(true);
                 return false;
             }
         });
@@ -407,10 +402,22 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void AnchorInfo(RoomUserInfo obj) {
         KLog.e(obj.getUserid());
 //        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
-        tvAnchorId.setText(obj.getUserid());//主播ID
-        tvAnchorKbiNum.setText(obj.getNk() + " ");//主播K币
-        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))) {
-            FBImage.Create(context, StartUtil.getUserPic(context)).into(ivRoomAnchorSmallPic);
+        tvAnchorId.setText(obj.getUserid() + " ");//主播ID
+        if (obj.getNk() > 999999999) {//需要转成小数点
+            KLog.e(obj.getNk());
+            long nk = obj.getNk() / 1000000000;
+            KLog.e(nk);
+//            BigDecimal b = new BigDecimal(nk);
+//            float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+            tvAnchorKbiNum.setText(nk + "亿");//主播K币
+        } else if (obj.getNk() > 9999999) {
+            long nk = obj.getNk() / 10000000;
+            tvAnchorKbiNum.setText(nk + "百万");//主播K币
+        } else {
+            tvAnchorKbiNum.setText(obj.getNk() + "");//主播K币
+        }
+        if (!StringUtil.isEmptyandnull(obj.getCphoto())) {
+            FBImage.Create(context, AppConstant.BASE_IMG_URL + obj.getCphoto()).into(ivRoomAnchorSmallPic);
         }
     }
 
@@ -422,10 +429,34 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             list_audience.add(obj[i]);
             KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
             KLog.e(list_audience.get(i).getUserid());
+            KLog.e(list_audience.get(i).getUserstate());
+            KLog.e(list_audience.get(i).getMicindex());
         }
         roomUserAdapter.notifyDataSetChanged();
-        tvRoomAnchorOnlineNum.setText(list_audience.size());//房间观众数量
+        tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
+
+    //用户离开房间回调
+    @Subscriber(tag = "RoomKickoutUserInfo")
+    public void RoomKickoutUserInfo(RoomKickoutUserInfo obj) {
+        int to_id = obj.getToid();
+        for (int i = 0; i < list_audience.size(); i++) {
+            if (list_audience.get(i).getUserid() == to_id) {
+                list_audience.remove(i);
+            }
+        }
+        roomUserAdapter.notifyDataSetChanged();
+        tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
+    }
+
+    //用户加入房间回调
+    @Subscriber(tag = "onRoomUserNotify")
+    public void onRoomUserNotify(RoomUserInfo obj) {
+        list_audience.add(obj);
+        roomUserAdapter.notifyDataSetChanged();
+        tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
+    }
+
 
     @Override
     public void onPause() {
