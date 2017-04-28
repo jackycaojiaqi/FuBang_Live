@@ -106,6 +106,7 @@ public class RoomChannel implements ClientSocketHandler {
         if (0 == ret) {
             mHandler.onConnectSuccessed();
         } else {
+            KLog.e("error code :" + ret);
             mHandler.onConnectFailed();
         }
     }

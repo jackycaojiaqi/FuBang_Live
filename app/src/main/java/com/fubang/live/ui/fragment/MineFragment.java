@@ -20,6 +20,7 @@ import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.ui.AuthApplyActivity;
+import com.fubang.live.ui.HistoryActivity;
 import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.UserInfoActivity;
 import com.fubang.live.util.FBImage;
@@ -46,6 +47,8 @@ public class MineFragment extends BaseFragment {
     RelativeLayout rlSetting;
     @BindView(R.id.rll_mian_auth)
     RelativeLayout rllMianAuth;
+    @BindView(R.id.rll_mine_history)
+    RelativeLayout rllMineHistory;
     Unbinder unbinder;
     @BindView(R.id.iv_mine_bg)
     ImageView ivMineBg;
@@ -108,6 +111,9 @@ public class MineFragment extends BaseFragment {
                             if (userEntity.getInfo().getState().equals("0")) {
                                 tvMineAuth.setText("未实名认证");
                             } else if (userEntity.getInfo().getState().equals("1")) {
+                                tvMineAuth.setText("审核中");
+                                rllMianAuth.setClickable(false);//通过认证后不用点击
+                            } else if (userEntity.getInfo().getState().equals("2")) {
                                 tvMineAuth.setText("通过实名认证");
                                 rllMianAuth.setClickable(false);//通过认证后不用点击
                             }
@@ -120,7 +126,7 @@ public class MineFragment extends BaseFragment {
                             //直播背景图片
                             if (!StringUtil.isEmptyandnull(userEntity.getInfo().getBphoto())) {
                                 KLog.e(AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
-                                StartUtil.putUserPic(context,AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
+                                StartUtil.putUserPic(context, AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
                                 FBImage.Create(context, AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto()).into(ivMineBg);
                             }
                         }
@@ -141,7 +147,7 @@ public class MineFragment extends BaseFragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth})
+    @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_setting:
@@ -157,6 +163,9 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.rll_mian_auth:
                 startActivity(new Intent(context, AuthApplyActivity.class));
+                break;
+            case R.id.rll_mine_history:
+                startActivity(new Intent(context,HistoryActivity.class));
                 break;
         }
 

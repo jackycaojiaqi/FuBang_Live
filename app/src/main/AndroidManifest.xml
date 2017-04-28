@@ -59,6 +59,14 @@
             android:name=".ui.EditInfoctivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.UserInfoPageActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.HistoryActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"

@@ -17,6 +17,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -28,6 +29,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
@@ -40,6 +42,7 @@ import com.fubang.live.presenter.impl.UpMicPresenterImpl;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GlobalOnItemClickManager;
+import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
@@ -107,6 +110,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     TextView tvLiveAudinceNum;
     @BindView(R.id.iv_live_anchor_pic)
     ImageView ivLiveAnchorPic;
+    private CustomPopWindow pop_info;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -181,15 +185,66 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         roomUserAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                KLog.e(position);
+                View contentView = LayoutInflater.from(context).inflate(R.layout.pop_user_info, null);
+                //处理popWindow 显示内容
+                handleLogic(contentView, list_audience.get(position));
+                //创建并显示popWindow
+                pop_info = new CustomPopWindow.PopupWindowBuilder(context)
+                        .setView(contentView)
+                        .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                        .enableBackgroundDark(true) //弹出popWindow时，背景是否变暗
+                        .setBgDarkAlpha(0.5f) // 控制亮度
+                        .size(ViewGroup.LayoutParams.MATCH_PARENT, ScreenUtils.Dp2Px(context, 620))//显示大小
+                        .create()
+                        .showAtLocation(rvRoomAudience, Gravity.CENTER, 0, 0);
             }
         });
         rvRoomAudience.setAdapter(roomUserAdapter);
 
         //设置自己的头像
-        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))){
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))) {
             FBImage.Create(context, StartUtil.getUserPic(context)).into(ivLiveAnchorPic);
         }
+    }
+
+    private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
+        //设置pop监听事件
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pop_info != null) {
+                    pop_info.dissmiss();
+                }
+                switch (v.getId()) {
+                    case R.id.iv_pop_cancle:
+                        pop_info.dissmiss();
+                        break;
+                    case R.id.tv_pop_fav:
+                        //加入收藏操作
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().followRoom(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)));
+                            }
+                        }).start();
+                        ToastUtil.show(context, R.string.add_fav_success);
+                        break;
+                    case R.id.tv_pop_goto_user_info_page:
+                        Intent intent = new Intent(context, UserInfoPageActivity.class);
+                        intent.putExtra(AppConstant.CONTENT, roomUserInfo);
+                        startActivity(intent);
+                        break;
+                }
+            }
+        };
+        contentView.findViewById(R.id.iv_pop_cancle).setOnClickListener(listener);
+        contentView.findViewById(R.id.tv_pop_fav).setOnClickListener(listener);
+        contentView.findViewById(R.id.tv_pop_goto_user_info_page).setOnClickListener(listener);
+        //填充数据
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_id)).setText(roomUserInfo.getUserid() + " ");//用户id
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getUseralias() + " ");//用户名字
+        FBImage.Create(context, AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto())
+                .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
     }
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
@@ -295,8 +350,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     protected void onDestroy() {
         super.onDestroy();
         if (roomMain.getRoom() != null) {
-            roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
-            roomMain.getRoom().getChannel().Close();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
+                    roomMain.getRoom().getChannel().Close();
+                }
+            }).start();
         }
         EventBus.getDefault().unregister(this);
     }
@@ -305,7 +365,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     @Subscriber(tag = "JoinRoomResponse")
     public void JoinRoomResponse(JoinRoomResponse obj) {
         KLog.e("JoinRoomResponse");
-        roomMain.getRoom().getChannel().sendUpMic();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().sendUpMic();
+            }
+        }).start();
+
     }
 
 
@@ -459,7 +525,12 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             case R.id.room_new_chat_send:
                 final String msg = roomMessageEdit.getText().toString();
                 if (!StringUtil.isEmptyandnull(msg)) {
-                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
+                        }
+                    }).start();
                     roomMessageEdit.setText("");
                     rllRoomInput.setVisibility(View.GONE);
                     if (imm != null) {

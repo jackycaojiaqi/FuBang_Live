@@ -23,14 +23,22 @@ import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
+import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.listener.HidingScrollListener;
 import com.fubang.live.listener.OnVerticalScrollListener;
 import com.fubang.live.listener.UpDownScrollListener;
 import com.fubang.live.presenter.impl.RoomListPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.util.FBImage;
 import com.fubang.live.util.ScreenUtils;
+import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.fubang.live.view.RoomListView;
 import com.fubang.live.widget.DividerItemDecoration;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 import com.youth.banner.Banner;
@@ -43,18 +51,19 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FollowFragment extends BaseFragment implements RoomListView, SwipeRefreshLayout.OnRefreshListener {
+public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.rv_follow)
     RecyclerView rvFollow;
     @BindView(R.id.srl_room)
     SwipeRefreshLayout srlRoom;
     private Context context;
-    private RoomListPresenterImpl presenter;
-    private int count = 40;
+    private int count = 10;
     private int page = 1;
     private int group = 0;
     private List<RoomListEntity> list = new ArrayList<>();
@@ -72,7 +81,6 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
-        presenter = new RoomListPresenterImpl(this, count, page, group);
         initview();
 
     }
@@ -119,28 +127,44 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
 
     }
 
+    private RoomEntity roomEntity;
+
     private void initdate() {
-        presenter.getRoomList();
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
+        OkGo.get(url)//
+                .tag(this)//
+                .params(AppConstant.COUNT, count)
+                .params(AppConstant.PAGE, page)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        srlRoom.setRefreshing(false);
+                        try {
+                            roomEntity = new Gson().fromJson(s, RoomEntity.class);
+                            if (roomEntity.getStatus().equals("success")) {
 
+                                list.clear();
+                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                list.addAll(roomListEntities);
+                                roomFavAdapter.notifyDataSetChanged();
+                            }
+                        } catch (JsonSyntaxException e) {
+                            e.printStackTrace();
+                            list.clear();
+                            roomFavAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                        e.printStackTrace();
+                        srlRoom.setRefreshing(false);
+                    }
+                });
     }
 
-
-    @Override
-    public void successRoomList(RoomEntity entity) {
-        srlRoom.setRefreshing(false);
-        list.clear();
-        List<RoomListEntity> roomListEntities = entity.getRoomlist();
-        list.addAll(roomListEntities);
-        roomFavAdapter.notifyDataSetChanged();
-    }
-
-
-    @Override
-    public void faidedRoomList() {
-        srlRoom.setRefreshing(false);
-        list.clear();
-        roomFavAdapter.notifyDataSetChanged();
-    }
 
     @Override
     public void onDestroyView() {
@@ -149,13 +173,13 @@ public class FollowFragment extends BaseFragment implements RoomListView, SwipeR
 
     @Override
     public void onRefresh() {
-        presenter.getRoomList();
+        page = 1;
+        initdate();
     }
 
     public class GlideImageLoader extends ImageLoader {
         @Override
         public void displayImage(Context context, Object path, ImageView imageView) {
-
             //Picasso 加载图片简单用法
             Picasso.with(context).load((String) path).into(imageView);
         }

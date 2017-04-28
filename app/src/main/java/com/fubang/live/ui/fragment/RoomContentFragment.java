@@ -42,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.EmotionAdapter;
@@ -55,10 +56,12 @@ import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.ui.UserInfoPageActivity;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.NetUtils;
+import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
@@ -174,6 +177,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private List<RoomUserInfo> list_audience = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
     private PowerManager.WakeLock mWakeLock;
+    private CustomPopWindow pop_info;
 
     @Nullable
     @Override
@@ -260,7 +264,16 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         roomUserAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                KLog.e(position);
+                View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_user_info, null);
+                //处理popWindow 显示内容
+                handleLogic(contentView, list_audience.get(position));
+                //创建并显示popWindow
+                pop_info = new CustomPopWindow.PopupWindowBuilder(getActivity())
+                        .setView(contentView)
+                        .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                        .size(ViewGroup.LayoutParams.MATCH_PARENT, ScreenUtils.Dp2Px(context, 620))//显示大小
+                        .create()
+                        .showAtLocation(rvRoomAudience, Gravity.CENTER, 0, 0);
             }
         });
         rvRoomAudience.setAdapter(roomUserAdapter);
@@ -277,6 +290,46 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 return false;
             }
         });
+    }
+
+    private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
+        //设置pop监听事件
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pop_info != null) {
+                    pop_info.dissmiss();
+                }
+                switch (v.getId()) {
+                    case R.id.iv_pop_cancle:
+                        pop_info.dissmiss();
+                        break;
+                    case R.id.tv_pop_fav:
+                        //加入收藏操作
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                            }
+                        }).start();
+                        ToastUtil.show(context, R.string.add_fav_success);
+                        break;
+                    case R.id.tv_pop_goto_user_info_page:
+                        Intent intent = new Intent(context, UserInfoPageActivity.class);
+                        intent.putExtra(AppConstant.CONTENT, roomUserInfo);
+                        startActivity(intent);
+                        break;
+                }
+            }
+        };
+        contentView.findViewById(R.id.iv_pop_cancle).setOnClickListener(listener);
+        contentView.findViewById(R.id.tv_pop_fav).setOnClickListener(listener);
+        contentView.findViewById(R.id.tv_pop_goto_user_info_page).setOnClickListener(listener);
+        //填充数据
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_id)).setText(roomUserInfo.getUserid() + " ");//用户id
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getUseralias() + " ");//用户名字
+        FBImage.Create(getActivity(), AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto())
+                .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
     }
 
     private ArrayList<Bitmap> mList;
@@ -397,9 +450,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         }
     }
 
+    private RoomUserInfo userInfoAnchor;
+
     //接收主播信息
     @Subscriber(tag = "onMicUser")
     public void AnchorInfo(RoomUserInfo obj) {
+        userInfoAnchor = obj;
         KLog.e(obj.getUserid());
 //        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
         tvAnchorId.setText(obj.getUserid() + " ");//主播ID
@@ -604,7 +660,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     @OnClick({R.id.ib_change_orientation, R.id.ib_change_screen, R.id.iv_room_add_favorite,
             R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat
-            , R.id.room_new_chat_send, R.id.tv_room_input_close, R.id.iv_room_content_clear})
+            , R.id.room_new_chat_send, R.id.tv_room_input_close, R.id.iv_room_content_clear
+            , R.id.iv_room_anchor_small_pic})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
@@ -691,7 +748,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
-//                Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.add_fav_success, Toast.LENGTH_SHORT).show();
                 break;
             //清除房间的页面
             case R.id.iv_room_content_clear:
@@ -702,6 +759,23 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 } else {
                     ivRoomContentClear.setImageResource(R.drawable.ic_room_centent_clear);
                     rllContentView.setVisibility(View.GONE);
+                }
+                break;
+            //点击主播头像显示弹窗
+            case R.id.iv_room_anchor_small_pic:
+                if (userInfoAnchor != null) {
+                    View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_user_info, null);
+                    //处理popWindow 显示内容
+                    handleLogic(contentView, userInfoAnchor);
+                    //创建并显示popWindow
+                    pop_info = new CustomPopWindow.PopupWindowBuilder(getActivity())
+                            .setView(contentView)
+                            .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                            .enableBackgroundDark(true) //弹出popWindow时，背景是否变暗
+                            .setBgDarkAlpha(0.5f) // 控制亮度
+                            .size(ViewGroup.LayoutParams.MATCH_PARENT, ScreenUtils.Dp2Px(context, 620))//显示大小
+                            .create()
+                            .showAtLocation(rvRoomAudience, Gravity.CENTER, 0, 0);
                 }
                 break;
         }

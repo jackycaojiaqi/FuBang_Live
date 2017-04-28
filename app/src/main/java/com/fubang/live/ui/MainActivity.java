@@ -34,6 +34,7 @@ import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
+import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
@@ -227,7 +228,10 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
                 toSelectFm(3);
                 break;
             case R.id.iv_main_home_live:
-                ShowPopAction();
+                DialogFactory.showRequestDialog(context);
+                presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
+                presenter.getRtmpUrl();
+//                ShowPopAction();
                 break;
         }
     }
@@ -252,8 +256,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         iv_live.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
-                presenter.getRtmpUrl();
+
             }
         });
         iv_video.setOnClickListener(new View.OnClickListener() {
@@ -285,6 +288,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
 
     @Override
     public void success(RtmpUrlEntity entity) {
+        DialogFactory.hideRequestDialog();
         if (entity != null) {
             Intent intent = new Intent(context, LiveActivity.class);
             intent.putExtra(Config.EXTRA_KEY_PUB_URL,
@@ -292,12 +296,13 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
             startActivity(intent);
             KLog.e(entity.getPublishUrl());
             KLog.e(entity.getRTMPPlayURL());
-            pop_main.dismiss();
+//            pop_main.dismiss();
         }
     }
 
     @Override
     public void faided() {
+        DialogFactory.hideRequestDialog();
         ToastUtil.show(context, R.string.net_error);
     }
 

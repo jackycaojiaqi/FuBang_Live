@@ -174,8 +174,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:lines="2"
                 android:layout_marginTop="50dp"
+                android:lines="2"
                 android:text="TA好像忘记写签名了..."
                 android:textColor="@color/gray_a" />
         </RelativeLayout>
@@ -186,6 +186,7 @@
             android:background="@color/gray_dan" />
 
         <RelativeLayout
+            android:id="@+id/rll_mine_history"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
@@ -195,7 +196,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="视频"
+                android:text="观看历史"
                 android:textColor="@color/black_3a3a3a"
                 android:textSize="16dp" />
 
@@ -297,8 +298,8 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingLeft="10dp"
-            android:visibility="gone"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -347,6 +348,7 @@
                 android:text="实名认证"
                 android:textColor="@color/black_3a3a3a"
                 android:textSize="16dp" />
+
             <TextView
                 android:id="@+id/tv_mine_auth"
                 android:layout_width="wrap_content"
@@ -357,6 +359,7 @@
                 android:text="未实名认证"
                 android:textColor="@color/color_main"
                 android:textSize="14dp" />
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"

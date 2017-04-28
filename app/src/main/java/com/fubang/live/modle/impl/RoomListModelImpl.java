@@ -34,7 +34,6 @@ public class RoomListModelImpl extends BaseModel implements RoomListModel {
         ParamsMap map = ParamsMap.getInstance();
         map.put(AppConstant.COUNT,count);
         map.put(AppConstant.PAGE,page);
-        map.put(AppConstant.GROUP,groupId);
         service.getRoomEntity(map).enqueue(callback);
     }
 }

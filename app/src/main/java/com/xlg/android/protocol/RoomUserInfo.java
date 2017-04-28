@@ -1,8 +1,11 @@
 package com.xlg.android.protocol;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.xlg.android.utils.Tools;
 
-public class RoomUserInfo {
+public class RoomUserInfo implements Parcelable {
     @StructOrder(0)
     private int userid;
     @StructOrder(1)
@@ -338,4 +341,91 @@ public class RoomUserInfo {
     public void setCphoto(String cphoto) {
         Tools.String2ByteArrayGBK(this.cphoto, cphoto);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.userid);
+        dest.writeInt(this.vcbid);
+        dest.writeInt(this.level1);
+        dest.writeInt(this.levelid);
+        dest.writeInt(this.costlevel);
+        dest.writeInt(this.nfamilyid);
+        dest.writeInt(this.decocolor);
+        dest.writeInt(this.reserve);
+        dest.writeInt(this.sealid);
+        dest.writeLong(this.sealbringtime);
+        dest.writeInt(this.ipaddr);
+        dest.writeInt(this.userstate);
+        dest.writeInt(this.starflag);
+        dest.writeInt(this.activityflag);
+        dest.writeInt(this.chargemicgiftid);
+        dest.writeInt(this.chargemicgiftcount);
+        dest.writeByte(this.publicmixindex);
+        dest.writeByte(this.gender);
+        dest.writeInt(this.colorbarnum);
+        dest.writeByteArray(this.useralias);
+        dest.writeLong(this.nk);
+        dest.writeInt(this.micindex);
+        dest.writeLong(this.micendtime);
+        dest.writeLong(this.micnowtime);
+        dest.writeByteArray(this.carname);
+        dest.writeInt(this.isallowupmic);
+        dest.writeInt(this.headid);
+        dest.writeInt(this.kingmic);
+        dest.writeByteArray(this.clastloginmac);
+        dest.writeByteArray(this.cphoto);
+    }
+
+    public RoomUserInfo() {
+    }
+
+    protected RoomUserInfo(Parcel in) {
+        this.userid = in.readInt();
+        this.vcbid = in.readInt();
+        this.level1 = in.readInt();
+        this.levelid = in.readInt();
+        this.costlevel = in.readInt();
+        this.nfamilyid = in.readInt();
+        this.decocolor = in.readInt();
+        this.reserve = (short) in.readInt();
+        this.sealid = (short) in.readInt();
+        this.sealbringtime = in.readLong();
+        this.ipaddr = in.readInt();
+        this.userstate = in.readInt();
+        this.starflag = in.readInt();
+        this.activityflag = in.readInt();
+        this.chargemicgiftid = (short) in.readInt();
+        this.chargemicgiftcount = (short) in.readInt();
+        this.publicmixindex = in.readByte();
+        this.gender = in.readByte();
+        this.colorbarnum = (short) in.readInt();
+        this.useralias = in.createByteArray();
+        this.nk = in.readLong();
+        this.micindex = (short) in.readInt();
+        this.micendtime = in.readLong();
+        this.micnowtime = in.readLong();
+        this.carname = in.createByteArray();
+        this.isallowupmic = in.readInt();
+        this.headid = in.readInt();
+        this.kingmic = in.readInt();
+        this.clastloginmac = in.createByteArray();
+        this.cphoto = in.createByteArray();
+    }
+
+    public static final Parcelable.Creator<RoomUserInfo> CREATOR = new Parcelable.Creator<RoomUserInfo>() {
+        @Override
+        public RoomUserInfo createFromParcel(Parcel source) {
+            return new RoomUserInfo(source);
+        }
+
+        @Override
+        public RoomUserInfo[] newArray(int size) {
+            return new RoomUserInfo[size];
+        }
+    };
 }

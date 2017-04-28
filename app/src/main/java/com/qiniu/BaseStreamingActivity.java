@@ -247,7 +247,6 @@ public class BaseStreamingActivity extends BaseActivity implements
         }
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         if (Config.SCREEN_ORIENTATION == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             mIsEncOrientationPort = true;
         } else if (Config.SCREEN_ORIENTATION == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
@@ -256,7 +255,7 @@ public class BaseStreamingActivity extends BaseActivity implements
         setRequestedOrientation(Config.SCREEN_ORIENTATION);
         setContentView(R.layout.activity_camera_streaming);
         ButterKnife.bind(this);
-//
+
 //        SharedLibraryNameHelper.getInstance().renameSharedLibrary(
 //                SharedLibraryNameHelper.PLSharedLibraryType.PL_SO_TYPE_AAC,
 //                getApplicationInfo().nativeLibraryDir + "/libpldroid_streaming_aac_encoder_v7a.so");
