@@ -31,6 +31,7 @@ public final class StringUtil {
     public static boolean isEmpty(String s) {
         return s == null || s.trim().length() == 0;
     }
+
     /**
      * 判断字符串是否为空
      *
@@ -38,8 +39,11 @@ public final class StringUtil {
      * @return
      */
     public static boolean isEmptyandnull(String s) {
-        return s == null || s.trim().length() == 0||s.equals("null");
+        return s == null || s.trim().length() == 0 || s.equals("null");
     }
+
+
+
     /**
      * 判断是否为空的JSON字符串
      *
@@ -283,6 +287,7 @@ public final class StringUtil {
 
         return hex.toString();
     }
+
     /**
      * 把形如AABBCCDDEEFF的字符串，转换成AA:BB:CC:DD:EE:FF这样的MAC地址字符串
      *
@@ -314,7 +319,8 @@ public final class StringUtil {
         }
         return true;
     }
-    public static void xslength2(final EditText et ){
+
+    public static void xslength2(final EditText et) {
         et.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});//限定最长字符长度
         et.addTextChangedListener(new TextWatcher() {
 
@@ -382,18 +388,19 @@ public final class StringUtil {
 
     /**
      * key 在 str中出现的次数
+     *
      * @param str
      * @param key
      * @return
      */
     public static int getSubCount_2(String str, String key) {
-        int count = 0 ;
-        int index = 0 ;
+        int count = 0;
+        int index = 0;
         while ((index = str.indexOf(key)) != -1) {
             System.out.println(str);
-            str = str.substring(index+key.length());
+            str = str.substring(index + key.length());
             count++;
         }
-        return count ;
+        return count;
     }
 }

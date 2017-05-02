@@ -231,7 +231,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         break;
                     case R.id.tv_pop_goto_user_info_page:
                         Intent intent = new Intent(context, UserInfoPageActivity.class);
-                        intent.putExtra(AppConstant.CONTENT, roomUserInfo);
+                        intent.putExtra(AppConstant.ROOMID, roomUserInfo.getUserid());
                         startActivity(intent);
                         break;
                 }

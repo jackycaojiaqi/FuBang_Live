@@ -12,6 +12,7 @@ public class AppConstant {
     public static final String BASE_URL = "http://120.26.127.210:9419";//富邦直播
     public static final String BASE_IMG_URL = "http://120.26.127.210:9419/user_pic/";//图片服务器前缀地址
 
+    public static final String USER_ID = "userid";
     public static final String COUNT = "count";
     public static final String USERID = "nuserid";
     public static final String CONTENT = "content";
@@ -33,4 +34,6 @@ public class AppConstant {
     public static final String MSG_DELETE_ONE_HISTORY = "/index.php/app/delete_history?";//清除单个历史
     public static final String MSG_DELETE_ALL_HISTORY = "/index.php/app/clear_history?";//清除所有历史
     public static final String MSG_DELETE_ONE_FAV = "/index.php/app/delete_fav?";//清除单个关注
+    public static final String MSG_GET_FAV_LIST = "/index.php/app/room_fav?";//获取专注列表
+
 }

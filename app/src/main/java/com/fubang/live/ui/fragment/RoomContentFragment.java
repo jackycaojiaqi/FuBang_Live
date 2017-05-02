@@ -316,7 +316,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         break;
                     case R.id.tv_pop_goto_user_info_page:
                         Intent intent = new Intent(context, UserInfoPageActivity.class);
-                        intent.putExtra(AppConstant.CONTENT, roomUserInfo);
+                        intent.putExtra(AppConstant.ROOMID, String.valueOf(roomUserInfo.getUserid()));
+                        intent.putExtra(AppConstant.ROOMIP, roomIp);
+                        intent.putExtra(AppConstant.ROOMPWD, roomPwd);
                         startActivity(intent);
                         break;
                 }
@@ -372,6 +374,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         public Bitmap getBitmap(Object obj) {
             return mList == null ? null : mList.get((int) obj);
         }
+    }
+
+    //在用户信息界面发送的关注指令，在房间中操作
+    @Subscriber(tag = "add_fav")
+    private void addFav(final int user_id) {
+        //加入收藏操作
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                KLog.e("addFav");
+                roomMain.getRoom().getChannel().followRoom(user_id, Integer.parseInt(StartUtil.getUserId(context)));
+            }
+        }).start();
     }
 
     @Subscriber(tag = "room_url")

@@ -20,6 +20,7 @@ import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.ui.AuthApplyActivity;
+import com.fubang.live.ui.FavListActivity;
 import com.fubang.live.ui.HistoryActivity;
 import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.UserInfoActivity;
@@ -68,6 +69,9 @@ public class MineFragment extends BaseFragment {
     TextView tvMineMoney;
     @BindView(R.id.tv_mine_auth)
     TextView tvMineAuth;
+    @BindView(R.id.tv_mine_sign)
+    TextView tvMineSign;
+
     private Context context;
 
     @Nullable
@@ -117,6 +121,10 @@ public class MineFragment extends BaseFragment {
                                 tvMineAuth.setText("通过实名认证");
                                 rllMianAuth.setClickable(false);//通过认证后不用点击
                             }
+                            //签名
+                            if (!StringUtil.isEmptyandnull(userEntity.getInfo().getCidiograph())) {
+                                tvMineSign.setText(userEntity.getInfo().getCidiograph());
+                            }
                             //粉丝数
                             tvMineFans.setText("粉丝 " + userEntity.getInfo().getGuanzhunum());
                             //关注数
@@ -147,14 +155,16 @@ public class MineFragment extends BaseFragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history})
+    @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history
+            , R.id.tv_mine_fav})
     public void onViewClicked(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.rl_setting:
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.iv_mine_bg:
-                Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+                intent = new Intent(getActivity(), UserInfoActivity.class);
                 if (userEntity != null) {
                     intent.putExtra(AppConstant.CONTENT, userEntity);
                     startActivity(intent);
@@ -165,7 +175,12 @@ public class MineFragment extends BaseFragment {
                 startActivity(new Intent(context, AuthApplyActivity.class));
                 break;
             case R.id.rll_mine_history:
-                startActivity(new Intent(context,HistoryActivity.class));
+                startActivity(new Intent(context, HistoryActivity.class));
+                break;
+            case R.id.tv_mine_fav:
+                intent = new Intent(context, FavListActivity.class);
+                intent.putExtra(AppConstant.USER_ID, StartUtil.getUserId(context));
+                startActivity(intent);
                 break;
         }
 

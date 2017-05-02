@@ -67,6 +67,10 @@
             android:name=".ui.HistoryActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.FavListActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"
