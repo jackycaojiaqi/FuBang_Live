@@ -159,6 +159,8 @@ public class UserInfoPageActivity extends BaseActivity {
                 });
     }
 
+    private int scrollY_new;
+
     private void initview() {
         tvTitle.setText("用户信息");
         rl_top = findViewById(R.id.rl_top);
@@ -167,6 +169,7 @@ public class UserInfoPageActivity extends BaseActivity {
         sv_root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                KLog.e(scrollY + " " + oldScrollY);
                 if (scrollY >= 0) {//往上滑动
                     int height = rl_top.getHeight();
                     if (height != ll_content.getPaddingTop()) {//如果滑动时高度有误先矫正高度
@@ -174,23 +177,28 @@ public class UserInfoPageActivity extends BaseActivity {
                         layoutParams.height = ll_content.getPaddingTop();
                         rl_top.setLayoutParams(layoutParams);
                     }
-                    boolean overTitle = scrollY >= height;
-                    rl_top.setVisibility(overTitle ? View.GONE : VISIBLE);
+//                    boolean overTitle = scrollY >= height;
+//                    rl_top.setVisibility(overTitle ? View.GONE : VISIBLE);
                     rl_top.scrollTo(0, scrollY / 3);
                     //如果滑动到top布局一半 隐藏
-                    if (scrollY >= (height / 5 * 2)) {
+                    if (scrollY >= (height / 6 * 2)) {
                         llUserInfoGotoRoom.setVisibility(View.GONE);
                     }
                 } else {//下拉滑动
-                    rl_top.setVisibility(VISIBLE);
-                    if (is_up_mic) {
-                        llUserInfoGotoRoom.setVisibility(View.VISIBLE);
-                    }
+//                    rl_top.setVisibility(VISIBLE);
                     rl_top.scrollTo(0, 0);//不能有滑动偏移
                     ViewGroup.LayoutParams layoutParams = rl_top.getLayoutParams();
                     layoutParams.height = ll_content.getPaddingTop() - scrollY;
                     rl_top.setLayoutParams(layoutParams);
                 }
+                if (scrollY_new > scrollY) {//确保向下滑
+                    if (scrollY < 200) {
+                        if (is_up_mic) {//是否上麦
+                            llUserInfoGotoRoom.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+                scrollY_new = scrollY;
             }
         });
     }
