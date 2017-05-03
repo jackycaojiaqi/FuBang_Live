@@ -36,4 +36,6 @@ public class AppConstant {
     public static final String MSG_DELETE_ONE_FAV = "/index.php/app/delete_fav?";//清除单个关注
     public static final String MSG_GET_FAV_LIST = "/index.php/app/room_fav?";//获取专注列表
 
+    public static final String MSG_GET_ROOM_BY_KEY = "/index.php/app/ser_list?";//根据关键字模糊查询
+
 }

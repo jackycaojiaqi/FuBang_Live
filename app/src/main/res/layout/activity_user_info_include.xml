@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <!--顶部图片布局-->
+    <include layout="@layout/activity_user_info_top" />
+    <!--滚动布局-->
+    <include layout="@layout/activity_user_inf_scroll" />
+    <!--底部控件-->
+    <include layout="@layout/layout_userinfo_control" />
+
+    <LinearLayout
+        android:id="@+id/ll_user_info_goto_room"
+        android:layout_width="220dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="130dp"
+        android:background="@drawable/shap_rec_30dp_gift_trans_bg"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正在直播中,去围观"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </LinearLayout>
+</FrameLayout>

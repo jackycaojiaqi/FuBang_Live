@@ -19,8 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_bg"
-                android:visibility="gone" />
+                android:src="@drawable/ic_bg" />
 
             <ImageView
                 android:id="@+id/iv_mine_message"
@@ -31,7 +30,8 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="11dp"
                 android:padding="5dp"
-                android:src="@drawable/ic_message" />
+                android:src="@drawable/ic_message"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/iv_mine_edit"
