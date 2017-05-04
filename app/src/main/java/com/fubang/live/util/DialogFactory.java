@@ -43,11 +43,12 @@ public class DialogFactory {
     }
 
 
-
     public static void showRequestDialog(final Context context) {
         if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
+            if (mDialog.isShowing()){
+                mDialog.dismiss();
+                mDialog = null;
+            }
         }
         mDialog = DialogFactory.creatRequestDialog(context, "加载中...", false);
         mDialog.show();
@@ -55,8 +56,11 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, String tip) {
         if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
+            if (mDialog.isShowing()){
+                mDialog.dismiss();
+                mDialog = null;
+            }
+
         }
         mDialog = DialogFactory.creatRequestDialog(context, tip, false);
         mDialog.show();
@@ -64,8 +68,10 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, String tip, boolean isCancel) {
         if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
+            if (mDialog.isShowing()){
+                mDialog.dismiss();
+                mDialog = null;
+            }
         }
         mDialog = DialogFactory.creatRequestDialog(context, tip, isCancel);
         mDialog.show();
@@ -73,8 +79,10 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, boolean isCancel) {
         if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
+            if (mDialog.isShowing()){
+                mDialog.dismiss();
+                mDialog = null;
+            }
         }
         mDialog = DialogFactory.creatRequestDialog(context, "加载中...", isCancel);
         mDialog.show();
@@ -90,11 +98,11 @@ public class DialogFactory {
     }
 
 
-
     public static void hideRequestDialog() {
         if (mDialog != null) {
             if (mDialog.isShowing()) {
                 mDialog.dismiss();
+                mDialog = null;
             }
         }
     }

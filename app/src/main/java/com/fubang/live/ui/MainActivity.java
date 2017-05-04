@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +35,7 @@ import com.fubang.live.ui.fragment.HomeFragment;
 import com.fubang.live.ui.fragment.MineFragment;
 import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
+import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.ToastUtil;
@@ -229,9 +231,13 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
                 break;
             case R.id.iv_main_home_live:
                 DialogFactory.showRequestDialog(context);
-                presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
-                presenter.getRtmpUrl();
-//                ShowPopAction();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter = new RtmpUrlPresenterImpl(MainActivity.this, StartUtil.getUserId(context), StartUtil.getUserId(context));
+                        presenter.getRtmpUrl();
+                    }
+                }, 100);
                 break;
         }
     }
@@ -304,6 +310,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
     public void faided() {
         DialogFactory.hideRequestDialog();
         ToastUtil.show(context, R.string.net_error);
+
     }
 
     @Override

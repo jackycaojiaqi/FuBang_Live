@@ -59,4 +59,5 @@
     <color name="gray_edit_bg">#fdf8f5</color>
     <color name="yellow_dan">#FFFBDC</color>
     <color name="gray_bg">#f5fbfb</color>
+    <color name="red">#FF0000</color>
 </resources>

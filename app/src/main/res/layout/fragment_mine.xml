@@ -389,9 +389,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
-                android:text="设置"
-                android:textColor="@color/black_3a3a3a"
+                android:text="退出登录"
+                android:textColor="@color/red"
                 android:textSize="16dp" />
 
             <ImageView

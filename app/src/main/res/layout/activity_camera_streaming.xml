@@ -141,7 +141,25 @@
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_above="@+id/lv_room_message"
+            android:layout_marginTop="100dp"
+            android:orientation="vertical"
+            app:layout_heightPercent="25%"
+            app:layout_widthPercent="85%">
 
+            <org.dync.giftlibrary.widget.GiftFrameLayout
+                android:id="@+id/gift_layout1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <org.dync.giftlibrary.widget.GiftFrameLayout
+                android:id="@+id/gift_layout2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
         <ListView
             android:id="@+id/lv_room_gift"
             android:layout_above="@+id/lv_room_message"
@@ -149,6 +167,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="50dp"
             android:divider="#00000000"
+            android:visibility="gone"
             android:dividerHeight="10dp"
             android:scrollbars="none"
             android:stackFromBottom="true"

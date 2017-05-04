@@ -82,6 +82,9 @@ import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
 
+import org.dync.giftlibrary.widget.GiftControl;
+import org.dync.giftlibrary.widget.GiftFrameLayout;
+import org.dync.giftlibrary.widget.GiftModel;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
@@ -178,6 +181,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private BaseQuickAdapter roomUserAdapter;
     private PowerManager.WakeLock mWakeLock;
     private CustomPopWindow pop_info;
+    private GiftFrameLayout giftFrameLayout1;
+    private GiftFrameLayout giftFrameLayout2;
+    private GiftControl giftControl;
 
     @Nullable
     @Override
@@ -290,6 +296,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 return false;
             }
         });
+        //礼物连击
+        giftFrameLayout1 = (GiftFrameLayout) getView().findViewById(R.id.gift_layout1);
+        giftFrameLayout2 = (GiftFrameLayout) getView().findViewById(R.id.gift_layout2);
+        giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
     }
 
     private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
@@ -442,13 +452,20 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
-            if (list_gift.size() > 2) {
-                list_gift.clear();
+            for (RoomUserInfo roomUserInfo : list_audience) {
+                if (roomUserInfo.getUserid() == obj.getSrcid()) {//判断观众和发送者id是否一致   确定那一个人发的，从而去除头像
+                    giftControl.loadGift(new GiftModel(String.valueOf(obj.getGiftid()), "送出礼物：", obj.getCount(),
+                            String.valueOf(obj.getGiftid()), String.valueOf(obj.getSrcid()), obj.getSrcalias(),
+                            AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto(), System.currentTimeMillis()));
+                }
             }
-            list_gift.add(obj);
-            adapter_gift.notifyDataSetChanged();
-            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
-            setAnimaAlpha(lvRoomGift);
+//            if (list_gift.size() > 2) {
+//                list_gift.clear();
+//            }
+//            list_gift.add(obj);
+//            adapter_gift.notifyDataSetChanged();
+//            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
+//            setAnimaAlpha(lvRoomGift);
         }
     }
 
@@ -559,6 +576,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 }
             }
         }).start();
+        //销毁动画
+        if (giftControl != null) {
+            giftControl.cleanAll();
+        }
         handle.removeCallbacksAndMessages(null);
         EventBus.getDefault().unregister(this);
     }

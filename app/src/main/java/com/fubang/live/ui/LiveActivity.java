@@ -71,6 +71,9 @@ import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
 
+import org.dync.giftlibrary.widget.GiftControl;
+import org.dync.giftlibrary.widget.GiftFrameLayout;
+import org.dync.giftlibrary.widget.GiftModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.simple.eventbus.EventBus;
@@ -111,6 +114,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     @BindView(R.id.iv_live_anchor_pic)
     ImageView ivLiveAnchorPic;
     private CustomPopWindow pop_info;
+    private GiftFrameLayout giftFrameLayout1;
+    private GiftFrameLayout giftFrameLayout2;
+    private GiftControl giftControl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -205,6 +211,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))) {
             FBImage.Create(context, StartUtil.getUserPic(context)).into(ivLiveAnchorPic);
         }
+        //礼物连击
+        giftFrameLayout1 = (GiftFrameLayout) findViewById(R.id.gift_layout1);
+        giftFrameLayout2 = (GiftFrameLayout) findViewById(R.id.gift_layout2);
+        giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
     }
 
     private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
@@ -323,13 +333,20 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
-            if (list_gift.size() > 3) {
-                list_gift.clear();
+            for (RoomUserInfo roomUserInfo : list_audience) {
+                if (roomUserInfo.getUserid() == obj.getSrcid()) {//判断观众和发送者id是否一致   确定那一个人发的，从而去除头像
+                    giftControl.loadGift(new GiftModel(String.valueOf(obj.getGiftid()), "送出礼物：", obj.getCount(),
+                            String.valueOf(obj.getGiftid()), String.valueOf(obj.getSrcid()), obj.getSrcalias(),
+                            AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto(), System.currentTimeMillis()));
+                }
             }
-            list_gift.add(obj);
-            adapter_gift.notifyDataSetChanged();
-            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
-            setAnimaAlpha(lvRoomGift);
+//            if (list_gift.size() > 3) {
+//                list_gift.clear();
+//            }
+//            list_gift.add(obj);
+//            adapter_gift.notifyDataSetChanged();
+//            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
+//            setAnimaAlpha(lvRoomGift);
         }
     }
 
@@ -357,6 +374,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     roomMain.getRoom().getChannel().Close();
                 }
             }).start();
+        }
+        //销毁动画
+        if (giftControl != null) {
+            giftControl.cleanAll();
         }
         EventBus.getDefault().unregister(this);
     }
@@ -486,13 +507,19 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                                 }).start();
                                 startStreaming();
                             } else {
+                                DialogFactory.hideRequestDialog();
+                                startActivity(new Intent(context, AuthApplyActivity.class));
                                 ToastUtil.show(context, R.string.auth_upmic);
+                                finish();
                             }
                         }
 
                         @Override
                         public void faidedUpMic(Throwable e) {
+                            DialogFactory.hideRequestDialog();
+                            startActivity(new Intent(context, AuthApplyActivity.class));
                             ToastUtil.show(context, R.string.auth_upmic);
+                            finish();
                         }
                     }, Integer.parseInt(StartUtil.getUserId(context)));
                     presenter.getUpMicInfo();
