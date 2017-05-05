@@ -1,12 +1,15 @@
 package com.fubang.live.ui.fragment;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
@@ -28,7 +35,10 @@ import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.listener.HidingScrollListener;
 import com.fubang.live.listener.UpDownScrollListener;
 import com.fubang.live.presenter.impl.RoomListPresenterImpl;
+import com.fubang.live.ui.MainActivity;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.util.LocationUtil;
+import com.fubang.live.util.StartUtil;
 import com.fubang.live.view.RoomListView;
 import com.fubang.live.widget.DividerItemDecoration;
 import com.google.gson.Gson;
@@ -45,6 +55,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -67,6 +79,9 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     private int group = 0;
     private List<RoomListEntity> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
+    //声明mLocationOption对象
+    private AMapLocationClientOption mLocationOption = null;
+    private AMapLocationClient mlocationClient;
 
     @Nullable
     @Override
@@ -81,12 +96,69 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
         initview();
+        initpermission();
+    }
+
+    //定位权限请求成功
+    @PermissionSuccess(requestCode = 200)
+    public void doSomething() {
+        initlocation();
+    }
+
+    private void initpermission() {
+        //获取权限
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(getActivity())
+                    .addRequestCode(200)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+            initlocation();
+        }
+    }
+
+    private void initlocation() {
+        mlocationClient = new AMapLocationClient(getActivity());
+        //初始化定位参数
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位监听
+        mlocationClient.setLocationListener(new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation aMapLocation) {
+                if (aMapLocation != null) {
+                    StartUtil.putCity(context, aMapLocation.getCity());
+                    StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
+                    StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
+                    LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
+                            String.valueOf(aMapLocation.getLongitude()));
+                    initdate();
+                }
+            }
+        });
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //设置定位间隔,单位毫秒,默认为2000ms
+        mLocationOption.setOnceLocation(true);
+        //设置定位参数
+        mlocationClient.setLocationOption(mLocationOption);
+        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+        // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+        // 在定位结束后，在合适的生命周期调用onDestroy()方法
+        // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+        //启动定位
+        mlocationClient.startLocation();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initdate();
+        if (mlocationClient != null) {
+            mlocationClient.startLocation();
+        }
+
     }
 
     private void initview() {
@@ -158,6 +230,7 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_near_filter:
+
                 break;
         }
     }
@@ -166,7 +239,9 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         page = 1;
-        initdate();
+        if (mlocationClient != null) {
+            mlocationClient.startLocation();
+        }
     }
 
 }

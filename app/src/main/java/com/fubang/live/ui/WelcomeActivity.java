@@ -20,6 +20,11 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if((getIntent().getFlags()&Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)!=0){
+            //结束你的activity
+            finish();
+            return;
+        }
         setTranslucentStatus();
         setContentView(R.layout.activity_welcome);
         context = this;

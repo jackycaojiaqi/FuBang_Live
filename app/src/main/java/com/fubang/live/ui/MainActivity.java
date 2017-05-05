@@ -37,6 +37,7 @@ import com.fubang.live.ui.fragment.NearFragment;
 import com.fubang.live.util.Config;
 import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
+import com.fubang.live.util.LocationUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
@@ -315,8 +316,12 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        StartUtil.putCity(context, aMapLocation.getCity());
-        KLog.e(aMapLocation.getCity());
-        KLog.e(aMapLocation.getAddress());
+        if (aMapLocation != null) {
+            StartUtil.putCity(context, aMapLocation.getCity());
+            StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
+            StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
+            LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
+                    String.valueOf(aMapLocation.getLongitude()));
+        }
     }
 }

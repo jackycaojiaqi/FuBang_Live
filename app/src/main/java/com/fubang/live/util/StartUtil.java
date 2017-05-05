@@ -35,7 +35,29 @@ public class StartUtil {
     public static final String DEVICEID = "deviceid";
     public static final String DEVICE = "device";
     public static final String CITY = "city";
+    public static final String LAT = "lat";//纬度
+    public static final String LNG = "lng";//经度
     public static final String USERPIC = "userpic";
+
+    public static void putLNG(Context context, String city){
+        SharedPreferences preferences = context.getSharedPreferences(LNG,Context.MODE_PRIVATE);
+        preferences.edit().putString(CVALUE,city).commit();
+    }
+    public static String getLNG(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(LNG,Context.MODE_PRIVATE);
+        String city = preferences.getString(CVALUE,"116.40712");
+        return city;
+    }
+    public static void putLAT(Context context, String city){
+        SharedPreferences preferences = context.getSharedPreferences(LAT,Context.MODE_PRIVATE);
+        preferences.edit().putString(CVALUE,city).commit();
+    }
+    public static String getLAT(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(LAT,Context.MODE_PRIVATE);
+        String city = preferences.getString(CVALUE,"40.017349");
+        return city;
+    }
+
     public static void putCity(Context context, String city){
         SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
         preferences.edit().putString(CVALUE,city).commit();

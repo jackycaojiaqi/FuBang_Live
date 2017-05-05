@@ -38,4 +38,6 @@ public class AppConstant {
 
     public static final String MSG_GET_ROOM_BY_KEY = "/index.php/app/ser_list?";//根据关键字模糊查询
 
+    public static final String MSG_UPLOAD_LATLON = "/index.php/app/upload_place?";//根据关键字模糊查询
+
 }
