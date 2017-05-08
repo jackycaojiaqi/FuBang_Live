@@ -405,7 +405,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
             KLog.e(list_audience.get(i).getUserid());
         }
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData(list_audience);
         tvLiveAudinceNum.setText(list_audience.size());//房间观众数量
     }
 
@@ -418,7 +418,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 list_audience.remove(i);
             }
         }
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData(list_audience);
         tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -426,7 +426,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     @Subscriber(tag = "onRoomUserNotify")
     public void onRoomUserNotify(RoomUserInfo obj) {
         list_audience.add(obj);
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData(list_audience);
         tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -555,7 +555,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
+                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
                         }
                     }).start();
                     roomMessageEdit.setText("");

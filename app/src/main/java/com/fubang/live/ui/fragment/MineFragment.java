@@ -110,7 +110,7 @@ public class MineFragment extends BaseFragment {
                             //名字
                             tvMineName.setText(userEntity.getInfo().getCalias() + " ");
                             //用户id
-                            tvMineCityAndId.setText("常住地 台州" + "   " + "用户id " + StartUtil.getUserId(context));
+                            tvMineCityAndId.setText("常住地 " + StartUtil.getCity(context) + "   " + "用户id " + StartUtil.getUserId(context));
                             //是否实名认证
                             if (userEntity.getInfo().getState().equals("0")) {
                                 tvMineAuth.setText("未实名认证");

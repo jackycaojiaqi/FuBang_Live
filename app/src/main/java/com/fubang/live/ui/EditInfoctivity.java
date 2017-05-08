@@ -88,6 +88,7 @@ public class EditInfoctivity extends BaseActivity {
             llSelectContent.setVisibility(View.GONE);
             setEditTextMaxLength(8);
             tvEditContentLength.setText("0/8");
+            StartUtil.putUserName(context, content);
             if (!StringUtil.isEmptyandnull(content))
                 etEditContent.setText(content + " ");
             intent_type = 1;

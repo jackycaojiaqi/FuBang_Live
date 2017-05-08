@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.RoomFavAdapter;
@@ -38,6 +40,7 @@ import com.fubang.live.presenter.impl.RoomListPresenterImpl;
 import com.fubang.live.ui.MainActivity;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.util.LocationUtil;
+import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.view.RoomListView;
 import com.fubang.live.widget.DividerItemDecoration;
@@ -129,7 +132,6 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
                 if (aMapLocation != null) {
-                    StartUtil.putCity(context, aMapLocation.getCity());
                     StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
                     StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
                     LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
@@ -226,13 +228,64 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                 });
     }
 
+    private CustomPopWindow pop_info;
+
     @OnClick(R.id.rl_near_filter)
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_near_filter:
-
+                View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_filter_gender, null);
+                //处理popWindow 显示内容
+                handleLogic(contentView);
+                //创建并显示popWindow
+                pop_info = new CustomPopWindow.PopupWindowBuilder(getActivity())
+                        .setView(contentView)
+                        .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                        .enableBackgroundDark(true) //弹出popWindow时，背景是否变暗
+                        .setBgDarkAlpha(0.5f) // 控制亮度
+                        .size(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)//显示大小
+                        .create()
+                        .showAtLocation(rlNearFilter, Gravity.CENTER, 0, 0);
                 break;
         }
+    }
+
+    private int gender_type = 0;// 0全部  1、女性、 2 男性
+
+    private void handleLogic(View contentView) {
+        TextView tv_all = (TextView) contentView.findViewById(R.id.pop_filter_tv_all);
+        TextView tv_female = (TextView) contentView.findViewById(R.id.pop_filter_tv_female);
+        TextView tv_male = (TextView) contentView.findViewById(R.id.pop_filter_tv_male);
+
+        TextView tv_cancle = (TextView) contentView.findViewById(R.id.pop_filter_cancle);
+        tv_cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pop_info.dissmiss();
+            }
+        });
+        tv_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gender_type = 0;
+                pop_info.dissmiss();
+            }
+        });
+        tv_female.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gender_type = 1;
+                pop_info.dissmiss();
+            }
+        });
+        tv_male.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gender_type = 2;
+                pop_info.dissmiss();
+            }
+        });
+
     }
 
 

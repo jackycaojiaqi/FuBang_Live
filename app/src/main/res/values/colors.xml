@@ -60,4 +60,6 @@
     <color name="yellow_dan">#FFFBDC</color>
     <color name="gray_bg">#f5fbfb</color>
     <color name="red">#FF0000</color>
+    <color name="female_red">#d37ba3</color>
+    <color name="male_rblue">#758ae7</color>
 </resources>

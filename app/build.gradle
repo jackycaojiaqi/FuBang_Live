@@ -103,4 +103,8 @@ dependencies {
     //roundedimageview
     compile 'com.makeramen:roundedimageview:2.3.0'
     compile project(':giftlibrary')
+    compile('cn.qqtheme.framework:WheelPicker:1.5.1') {
+        exclude group: 'com.android.support'
+    }
+    compile 'com.alibaba:fastjson:1.1.55.android'
 }

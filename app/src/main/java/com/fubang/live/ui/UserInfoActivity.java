@@ -1,5 +1,6 @@
 package com.fubang.live.ui;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,7 +27,7 @@ import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.SystemStatusManager;
 import com.fubang.live.util.ToastUtil;
-import com.google.gson.Gson;
+import com.fubang.live.widget.addrpicker.AddressPickTask;
 import com.jph.takephoto.app.TakePhoto;
 import com.jph.takephoto.app.TakePhotoActivity;
 import com.jph.takephoto.model.CropOptions;
@@ -34,7 +35,6 @@ import com.jph.takephoto.model.InvokeParam;
 import com.jph.takephoto.model.TImage;
 import com.jph.takephoto.model.TResult;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +44,9 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.qqtheme.framework.entity.City;
+import cn.qqtheme.framework.entity.County;
+import cn.qqtheme.framework.entity.Province;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -69,6 +72,14 @@ public class UserInfoActivity extends TakePhotoActivity {
     TextView tvUserInfoName;
     @BindView(R.id.tv_user_info_gender)
     TextView tvUserInfoGender;
+    @BindView(R.id.tv_user_info_id)
+    TextView tvUserInfoId;
+    @BindView(R.id.rl_user_info_id)
+    RelativeLayout rlUserInfoId;
+    @BindView(R.id.tv_user_info_addr)
+    TextView tvUserInfoAddr;
+    @BindView(R.id.rl_user_info_addr)
+    RelativeLayout rlUserInfoAddr;
     private Context context;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
@@ -113,6 +124,10 @@ public class UserInfoActivity extends TakePhotoActivity {
             } else {
                 tvUserInfoGender.setText(R.string.unknow);
             }
+            //富邦号
+            tvUserInfoId.setText(StartUtil.getUserId(context) + " ");
+            //地址
+            tvUserInfoAddr.setText(StartUtil.getCity(context) + " ");
         }
     }
 
@@ -121,7 +136,8 @@ public class UserInfoActivity extends TakePhotoActivity {
     private final int MSG_MODIFY_INFO_SIGN = 0X0013;
 
     @OnClick({R.id.rl_user_info_pic, R.id.iv_back, R.id.rl_user_info_name,
-            R.id.rl_user_info_gender, R.id.rl_user_info_sign})
+            R.id.rl_user_info_gender, R.id.rl_user_info_sign, R.id.rl_user_info_id
+            , R.id.rl_user_info_addr})
     public void onViewClicked(View v) {
         Intent intent;
         switch (v.getId()) {
@@ -148,6 +164,30 @@ public class UserInfoActivity extends TakePhotoActivity {
                 intent.putExtra("type", "sign");
                 intent.putExtra("content", userInfoEntity.getInfo().getCidiograph());
                 startActivityForResult(intent, MSG_MODIFY_INFO_SIGN);
+                break;
+            case R.id.rl_user_info_id:
+                // 得到剪贴板管理器
+                ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                cmb.setText(StartUtil.getUserId(context));
+                ToastUtil.show(context, R.string.copy_success);
+                break;
+            case R.id.rl_user_info_addr:
+                //选择地址组件
+                AddressPickTask task = new AddressPickTask(this);
+                task.setHideCounty(true);
+                task.setCallback(new AddressPickTask.Callback() {
+                    @Override
+                    public void onAddressInitFailed() {
+                        ToastUtil.show(context, "数据初始化失败");
+                    }
+
+                    @Override
+                    public void onAddressPicked(Province province, City city, County county) {
+                        tvUserInfoAddr.setText(city.getAreaName());
+                        StartUtil.putCity(context, city.getAreaName());
+                    }
+                });
+                task.execute("浙江", "台州");
                 break;
         }
     }

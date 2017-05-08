@@ -270,7 +270,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="账户"
+                android:text="富邦票"
                 android:textColor="@color/black_3a3a3a"
                 android:textSize="16dp" />
 
@@ -280,7 +280,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="30dp"
-                android:text="0 钻石"
+                android:text="0 票"
                 android:textColor="@color/color_main"
                 android:textSize="14dp" />
 

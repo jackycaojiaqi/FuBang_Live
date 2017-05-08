@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="60dp"
-    android:layout_height="45dp"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp">
+    android:layout_width="35dp"
+    android:layout_height="35dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="45dp"
-        android:layout_height="45dp">
+        android:layout_width="35dp"
+        android:layout_height="35dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/civ_audience_pic"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:src="@drawable/ic_user_pic" />
 
     </RelativeLayout>

@@ -64,7 +64,7 @@ public class StartUtil {
     }
     public static String getCity(Context context){
         SharedPreferences preferences = context.getSharedPreferences(CITY,Context.MODE_PRIVATE);
-        String city = preferences.getString(CVALUE,"TaiZhou");
+        String city = preferences.getString(CVALUE,"绍兴");
         return city;
     }
     public static void putUserPic(Context context, String city){
@@ -151,6 +151,10 @@ public class StartUtil {
         SharedPreferences preferences = context.getSharedPreferences(USER_INFO,Context.MODE_PRIVATE);
         String userIcon = preferences.getString(USER_ICON,"");
         return userIcon;
+    }
+    public static void putUserName(Context context,String content){
+        SharedPreferences preferences = context.getSharedPreferences(DOWN_COUNT,Context.MODE_PRIVATE);
+        preferences.edit().putString(USER_NAME,content).commit();
     }
     public static String getUserName(Context context){
         SharedPreferences preferences = context.getSharedPreferences(USER_INFO,Context.MODE_PRIVATE);

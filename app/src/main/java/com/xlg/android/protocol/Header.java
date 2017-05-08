@@ -33,7 +33,9 @@ public class Header {
 	public static final byte MessageType_mxpTradeGiftNotify = (byte)(6 + 17); // 23
 	public static final byte MessageType_mxpUserPayResponse = (byte)(6 + 19); // 25
 	public static final byte MessageType_mxpSetUserProfileResponse = (byte)(6 + 24); // 30
+	public static final byte MessageType_mxpSetRoomBaseInfoRequest  = (byte)(32); // 32
 	public static final byte MessageType_mxpSetRoomBaseInfoResponse = (byte)(6 + 27); // 33
+	public static final byte MessageType_mxpSetRoomBaseInfoError = (byte)(34); // 33
 	public static final byte MessageType_mxpSetRoomBaseInfoNotify = (byte)(6 + 29); // 35
 	public static final byte MessageType_mxpUpdateRoomBaseInfoNotify = (byte)(6 + 30); // 36
 	public static final byte MessageType_mxpSetRoomManagersResponse = (byte)(6 + 32); // 38

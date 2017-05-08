@@ -156,7 +156,6 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onRoomNoticeNotify(RoomNotice[] obj) {
-
         KLog.e("onRoomNoticeNotify: ");
         for (int i = 0; i < obj.length; i++) {
             Tools.PrintObject(obj[i]);

@@ -675,21 +675,11 @@ public class RoomChannel implements ClientSocketHandler {
         header.setCmd1(Header.MessageType_mxpTradeGiftRequest);
         obj.setVcbid(mRoomID);
         obj.setSrcid(sendid);//发送者id
-        obj.setDstplatformid((short) 0);
-        obj.setToid(toid);
+        obj.setSrcalias(userName);//发送者昵称
+        obj.setToid(toid);//接受者id
+        obj.setToalias(toName);//接受者昵称
         obj.setGiftid(giftId);
         obj.setCount(count);
-        obj.setAction((byte) 2);
-        obj.setServertype((byte) 0);
-        obj.setBanonymous((byte) 0);
-        obj.setCasttype((byte) 1);
-        obj.setTime(System.currentTimeMillis());
-        obj.setOldcount(0);
-        obj.setFlyid((short) -1);
-        obj.setSrcalias(userName);
-//		obj.setToalias(toid+"");
-        obj.setToalias(toName);
-        obj.setSztext("");
         sendPack(header, obj);
     }
 

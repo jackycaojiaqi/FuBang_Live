@@ -6,13 +6,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="35dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
@@ -22,27 +22,27 @@
 
             <ImageView
                 android:id="@+id/iv_room_gift"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginLeft="10dp"
                 android:src="@drawable/ic_room_gift" />
 
             <ImageView
                 android:id="@+id/iv_room_share"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginLeft="10dp"
                 android:src="@drawable/ic_room_share" />
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginLeft="10dp"
                 android:visibility="invisible" />
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginLeft="10dp"
                 android:visibility="invisible" />
 
@@ -50,8 +50,8 @@
 
         <ImageView
             android:id="@+id/iv_room_chat"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
             android:src="@drawable/ic_room_chat" />

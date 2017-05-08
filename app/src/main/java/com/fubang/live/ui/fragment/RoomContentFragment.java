@@ -4,7 +4,6 @@ package com.fubang.live.ui.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -16,7 +15,6 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -49,7 +47,6 @@ import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
 import com.fubang.live.adapter.RoomAudienceAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
-import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
@@ -67,7 +64,6 @@ import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
-import com.fubang.live.widget.DetectTouchGestureLayout;
 import com.fubang.live.widget.DivergeView;
 import com.fubang.live.widget.MediaController;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
@@ -88,7 +84,6 @@ import org.dync.giftlibrary.widget.GiftModel;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -258,8 +253,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         presenter = new RtmpUrlPresenterImpl(this, String.valueOf(roomId), String.valueOf(roomId));
         presenter.getRtmpUrl();
         //设置listadapter
-        adapter = new RoomChatAdapter(list_msg, context);
-        lvRoomMessage.setAdapter(adapter);
+        adapter_message = new RoomChatAdapter(list_msg, context);
+        lvRoomMessage.setAdapter(adapter_message);
         adapter_gift = new RoomGiftAdapter(list_gift, context);
         lvRoomGift.setAdapter(adapter_gift);
         roomUserAdapter = new RoomAudienceAdapter(R.layout.item_audience_room, list_audience);
@@ -410,7 +405,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     private List<RoomChatMsg> list_msg = new ArrayList<>();
     private List<BigGiftRecord> list_gift = new ArrayList<>();
-    private RoomChatAdapter adapter;
+    private RoomChatAdapter adapter_message;
     private RoomGiftAdapter adapter_gift;
 
     //接收服务器发送的消息更新列表
@@ -427,7 +422,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     list_msg.clear();
                 }
                 list_msg.add(msg);//以后消息过多会有问题
-                adapter.notifyDataSetChanged();
+                adapter_message.notifyDataSetChanged();
                 lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
                 setAnimaAlpha(lvRoomMessage);
             }
@@ -520,7 +515,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             KLog.e(list_audience.get(i).getUserstate());
             KLog.e(list_audience.get(i).getMicindex());
         }
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData
+                (list_audience);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -533,7 +529,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 list_audience.remove(i);
             }
         }
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData(list_audience);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -541,7 +537,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @Subscriber(tag = "onRoomUserNotify")
     public void onRoomUserNotify(RoomUserInfo obj) {
         list_audience.add(obj);
-        roomUserAdapter.notifyDataSetChanged();
+        roomUserAdapter.setNewData(list_audience);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -766,7 +762,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserId(context), 0);
+                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
                         }
                     }).start();
                     roomMessageEdit.setText("");
@@ -913,7 +909,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, String.valueOf(roomId), StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getUseralias(), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");

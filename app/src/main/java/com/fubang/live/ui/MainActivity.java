@@ -39,6 +39,7 @@ import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.LocationUtil;
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.view.RtmpUrlView;
 import com.socks.library.KLog;
@@ -317,7 +318,9 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null) {
-            StartUtil.putCity(context, aMapLocation.getCity());
+            if (StringUtil.isEmptyandnull(StartUtil.getCity(context))) {//为空表示用户没有手动设置区域，则定位填充数据，如果有数据，则不填充
+                StartUtil.putCity(context, aMapLocation.getCity());
+            }
             StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
             StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
             LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),

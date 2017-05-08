@@ -38,7 +38,7 @@ import com.fubang.live.ui.fragment.VideoFragment;
  */
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     public final int COUNT = 7;
-    private String[] titles = new String[]{"关注", "热门", "附近", "才艺", "好声音"};
+    private String[] titles = new String[]{"关注", "热门", "附近", "才艺", "好声音","帅哥","美女"};
     private Context context;
 
     public MyFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -57,6 +57,10 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         } else if (position == 3) {
             return new GameFragment();
         } else if (position == 4) {
+            return new FollowFragment();
+        } else if (position == 5) {
+            return new FollowFragment();
+        } else if (position == 6) {
             return new FollowFragment();
         }
         return new FollowFragment();
