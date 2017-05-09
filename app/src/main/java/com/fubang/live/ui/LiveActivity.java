@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -39,6 +40,7 @@ import com.fubang.live.adapter.RoomGiftAdapter;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.presenter.impl.UpMicPresenterImpl;
+import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GlobalOnItemClickManager;
@@ -113,7 +115,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     TextView tvLiveAudinceNum;
     @BindView(R.id.iv_live_anchor_pic)
     ImageView ivLiveAnchorPic;
+    @BindView(R.id.content)
+    FrameLayout FlContent;
     private CustomPopWindow pop_info;
+    private CustomPopWindow pop_setting;
     private GiftFrameLayout giftFrameLayout1;
     private GiftFrameLayout giftFrameLayout2;
     private GiftControl giftControl;
@@ -257,6 +262,81 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
     }
 
+    /**
+     * 处理setting弹窗
+     *
+     * @param contentView
+     */
+    private boolean is_mirror = false;
+
+    private void handleSettingView(View contentView) {
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.ll_pop_setting_title://修改标题操作
+                        rllLiveChangeTitle.setVisibility(View.VISIBLE);
+                        etLiveChangeTitle.setFocusable(true);
+                        tvLiveChangeTitleSubmit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                room_title = etLiveChangeTitle.getText().toString().trim();
+                                tvLiveTitle.setText("直播标题：" + room_title);
+                                rllLiveChangeTitle.setVisibility(View.GONE);
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        roomMain.getRoom().getChannel().forTitle(room_title);
+                                    }
+                                }).start();
+                                etLiveChangeTitle.setText("");
+                            }
+                        });
+                        ivLiveChangeTitleCancle.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rllLiveChangeTitle.setVisibility(View.GONE);
+                            }
+                        });
+                        pop_setting.dissmiss();
+                        break;
+                    case R.id.ll_pop_setting_share:
+                        doShareAction();
+                        pop_setting.dissmiss();
+                        break;
+                    case R.id.ll_pop_setting_camera_change:
+                        mHandler.removeCallbacks(mSwitcher);
+                        mHandler.postDelayed(mSwitcher, 100);
+                        pop_setting.dissmiss();
+                        break;
+                    case R.id.ll_pop_setting_beautify:
+                        if (!mHandler.hasMessages(MSG_FB)) {
+                            mHandler.sendEmptyMessage(MSG_FB);
+                        }
+                        pop_setting.dissmiss();
+                        break;
+                    case R.id.ll_pop_setting_mirror:
+                        is_mirror = !is_mirror;
+                        if (!is_mirror) {
+                            ToastUtil.show(context, R.string.mirror_same);
+                        } else {
+                            ToastUtil.show(context, R.string.mirror_not_same);
+                        }
+                        if (!mHandler.hasMessages(MSG_PREVIEW_MIRROR)) {
+                            mHandler.sendEmptyMessage(MSG_PREVIEW_MIRROR);
+                        }
+                        pop_setting.dissmiss();
+                        break;
+                }
+            }
+        };
+        contentView.findViewById(R.id.ll_pop_setting_title).setOnClickListener(listener);
+        contentView.findViewById(R.id.ll_pop_setting_share).setOnClickListener(listener);
+        contentView.findViewById(R.id.ll_pop_setting_camera_change).setOnClickListener(listener);
+        contentView.findViewById(R.id.ll_pop_setting_beautify).setOnClickListener(listener);
+        contentView.findViewById(R.id.ll_pop_setting_mirror).setOnClickListener(listener);
+    }
+
     private List<RoomChatMsg> list_msg = new ArrayList<>();
     private List<BigGiftRecord> list_gift = new ArrayList<>();
     private RoomChatAdapter adapter;
@@ -356,10 +436,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         mMediaStreamingManager.resume();
     }
 
+    private boolean is_pause = false;
+
     @Override
     protected void onPause() {
         super.onPause();
         // You must invoke pause here.
+        is_pause = true;
         mMediaStreamingManager.pause();
     }
 
@@ -382,14 +465,16 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         EventBus.getDefault().unregister(this);
     }
 
-    //主播加入房间后上麦
+    private String room_title;
+
+    //主播加入房间后上麦、并且发送标题
     @Subscriber(tag = "JoinRoomResponse")
     public void JoinRoomResponse(JoinRoomResponse obj) {
-        KLog.e("JoinRoomResponse");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 roomMain.getRoom().getChannel().sendUpMic();
+                roomMain.getRoom().getChannel().forTitle(room_title);
             }
         }).start();
 
@@ -450,6 +535,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             case READY:
                 KLog.e("READY");
                 mIsReady = true;
+                if (is_pause) {//如果是调用onpause  再onresume，需要重新上传视频流
+                    startStreaming();
+                    is_pause = false;
+                }
                 break;
             case STREAMING:
                 KLog.e("STREAMING");
@@ -476,13 +565,20 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private InputMethodManager imm;
     private String ip;
     private int port;
+    private View contentView_setting;
+    private int windowPos[];
 
     @OnClick({R.id.iv_live_start, R.id.iv_live_share, R.id.iv_live_exit, R.id.iv_live_chat
-            , R.id.tv_room_input_close, R.id.room_new_chat_send})
+            , R.id.tv_room_input_close, R.id.room_new_chat_send, R.id.iv_live_music
+            , R.id.iv_live_cancle_top, R.id.iv_live_setting})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
             case R.id.iv_live_start:
+                room_title = etLiveTitle.getText().toString().trim();
+                if (!StringUtil.isEmptyandnull(room_title)) {
+                    tvLiveTitle.setText("直播标题：" + room_title);
+                }
                 if (mIsReady) {
                     DialogFactory.showRequestDialog(context);
                     //上麦presenter
@@ -565,6 +661,36 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     }
                 }
                 break;
+            case R.id.iv_live_music:
+                startActivity(new Intent(context, LivePickMusicActivity.class));
+                break;
+            case R.id.iv_live_cancle_top:
+                finish();
+                break;
+            case R.id.iv_live_setting:
+                if (contentView_setting != null) {
+                    if (pop_setting != null) {
+                        pop_setting.dissmiss();
+                        pop_setting.showAtLocation(contentView_setting, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+                    }
+                } else {
+                    contentView_setting = LayoutInflater.from(context).inflate(R.layout.pop_live_setting, null);
+                    windowPos = ConfigUtils.calculatePopWindowPos(ivLiveSetting, contentView_setting);
+//                    int xOff = 20;// 可以自己调整偏移
+//                    windowPos[0] -= xOff;
+                    //处理popWindow 显示内容
+                    handleSettingView(contentView_setting);
+                    //创建并显示popWindow
+                    pop_setting = new CustomPopWindow.PopupWindowBuilder(context)
+                            .setView(contentView_setting)
+                            .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                            .enableBackgroundDark(false) //弹出popWindow时，背景是否变暗
+                            .create()
+                            .showAtLocation(contentView_setting, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+                }
+
+
+                break;
         }
     }
 
@@ -573,6 +699,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     /**
      * 处理分享弹窗
      */
+
     private void doShareAction() {
         View popupView = getLayoutInflater().inflate(R.layout.pop_share, null);
         pop_share = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);

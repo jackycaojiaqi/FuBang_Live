@@ -109,8 +109,12 @@ public class MineFragment extends BaseFragment {
                         if (userEntity.getStatus().equals("success")) {
                             //名字
                             tvMineName.setText(userEntity.getInfo().getCalias() + " ");
-                            //用户id
-                            tvMineCityAndId.setText("常住地 " + StartUtil.getCity(context) + "   " + "用户id " + StartUtil.getUserId(context));
+                            //城市+id
+                            if (StringUtil.isEmptyandnull(userEntity.getInfo().getLocation())) {
+                                tvMineCityAndId.setText("常住地 " + StartUtil.getCity(context) + "   " + "用户id " + StartUtil.getUserId(context));
+                            } else {
+                                tvMineCityAndId.setText("常住地 " + userEntity.getInfo().getLocation() + "   " + "用户id " + StartUtil.getUserId(context));
+                            }
                             //是否实名认证
                             if (userEntity.getInfo().getState().equals("0")) {
                                 tvMineAuth.setText("未实名认证");
@@ -137,6 +141,7 @@ public class MineFragment extends BaseFragment {
                                 StartUtil.putUserPic(context, AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto());
                                 FBImage.Create(context, AppConstant.BASE_IMG_URL + userEntity.getInfo().getBphoto()).into(ivMineBg);
                             }
+
                         }
                     }
 

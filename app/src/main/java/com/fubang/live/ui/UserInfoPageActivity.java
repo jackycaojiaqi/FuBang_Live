@@ -118,8 +118,12 @@ public class UserInfoPageActivity extends BaseActivity {
                             if (userEntity.getInfo() != null) {
                                 //名字
                                 tvUserInfoName.setText(userEntity.getInfo().getCalias() + " ");
-                                //用户id
-//                                tvUserInfoCityAndId.setText("常住地 台州" + "   " + "用户id " + userEntity.getInfo().g);
+                                //城市+id
+                                if (StringUtil.isEmptyandnull(userEntity.getInfo().getLocation())) {
+                                    tvUserInfoCityAndId.setText("常住地 " + StartUtil.getCity(context) + "   " + "用户id " + StartUtil.getUserId(context));
+                                } else {
+                                    tvUserInfoCityAndId.setText("常住地 " + userEntity.getInfo().getLocation() + "   " + "用户id " + StartUtil.getUserId(context));
+                                }
                                 //签名
                                 if (!StringUtil.isEmptyandnull(userEntity.getInfo().getCidiograph())) {
                                     tvUserInfoSign.setText(userEntity.getInfo().getCidiograph());

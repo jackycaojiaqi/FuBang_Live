@@ -38,8 +38,13 @@ import com.lzy.okgo.OkGo;
 import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -127,7 +132,12 @@ public class UserInfoActivity extends TakePhotoActivity {
             //富邦号
             tvUserInfoId.setText(StartUtil.getUserId(context) + " ");
             //地址
-            tvUserInfoAddr.setText(StartUtil.getCity(context) + " ");
+            if (StringUtil.isEmptyandnull(userInfoEntity.getInfo().getLocation())) {
+                tvUserInfoAddr.setText(StartUtil.getCity(context) + " ");
+            } else {
+                tvUserInfoAddr.setText(userInfoEntity.getInfo().getLocation() + " ");
+            }
+
         }
     }
 
@@ -185,11 +195,34 @@ public class UserInfoActivity extends TakePhotoActivity {
                     public void onAddressPicked(Province province, City city, County county) {
                         tvUserInfoAddr.setText(city.getAreaName());
                         StartUtil.putCity(context, city.getAreaName());
+                        doSubmit(city.getAreaName());
                     }
                 });
                 task.execute("浙江", "台州");
                 break;
         }
+    }
+
+    private void doSubmit(final String city) {
+        String url = AppConstant.BASE_URL + AppConstant.MSG_MODIFY_USER_INFO;
+        Map<String, String> params = new HashMap<>();
+        params.put("nuserid", StartUtil.getUserId(context));
+        params.put("location", city);
+        OkGo.post(url)
+                .tag(this)
+                .params(params)
+                .execute(new StringDialogCallback(UserInfoActivity.this) {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        KLog.e("上传城市成功");
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                        e.printStackTrace();
+                    }
+                });
     }
 
     private PopupWindow pop_pic;

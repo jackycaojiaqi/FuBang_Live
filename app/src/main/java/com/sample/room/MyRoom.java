@@ -289,7 +289,13 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onSetRoomBaseInfoResponse() {
 
-        PrintUnknown("onSetRoomBaseInfoResponse: ");
+        PrintUnknown("onSetRoomBaseInfoResponse: 标题修改成功");
+    }
+
+
+    @Override
+    public void onSetRoomBaseInfoError() {
+        PrintUnknown("onSetRoomBaseInfoError:  标题修改失败");
     }
 
     @Override

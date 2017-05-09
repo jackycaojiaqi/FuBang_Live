@@ -75,4 +75,7 @@
     <string name="delete_sucess">删除成功</string>
     <string name="delete_fail">删除失败</string>
     <string name="copy_success">富邦号复制成功</string>
+    <string name="live_auth_info">直播既代表你同意主播协议</string>
+    <string name="mirror_same">当前图像和观众一致</string>
+    <string name="mirror_not_same">当前图像和观众相反</string>
 </resources>

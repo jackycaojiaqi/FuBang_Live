@@ -86,4 +86,13 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_bg" />
 
+    <TextView
+        android:id="@+id/tv_anchor_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:textSize="18dp"
+        android:textColor="@color/gray_dan"
+         />
 </RelativeLayout>

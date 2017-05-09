@@ -26,10 +26,6 @@ public class RoomBaseInfo {
         this.userid = userid;
     }
 
-    public void setTheme(byte[] theme) {
-        this.theme = theme;
-    }
-
     public String getTheme() {
         return Tools.ByteArray2StringGBK(theme);
     }

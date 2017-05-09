@@ -317,6 +317,10 @@ public class RoomChannel implements ClientSocketHandler {
                     mHandler.onSetRoomBaseInfoResponse();
                 }
                 break;
+                case Header.MessageType_mxpSetRoomBaseInfoError: {
+                    mHandler.onSetRoomBaseInfoError();
+                }
+                break;
                 //TODO:
                 case Header.MessageType_mxpSetRoomBaseInfoNotify:
                 case Header.MessageType_mxpUpdateRoomBaseInfoNotify: {
@@ -766,4 +770,14 @@ public class RoomChannel implements ClientSocketHandler {
         sendPack(header, obj);
     }
 
+    //修改标题
+    public void forTitle(String title) {
+        Header header = new Header();
+        RoomBaseInfo obj = new RoomBaseInfo();
+        header.setCmd1(Header.MessageType_mxpSetRoomBaseInfoRequest);
+        obj.setVcbid(mRoomID);
+        obj.setUserid(mUserID);
+        obj.setTheme(title);
+        sendPack(header, obj);
+    }
 }

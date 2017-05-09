@@ -1,6 +1,5 @@
 package com.qiniu;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -11,7 +10,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +17,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -31,6 +28,7 @@ import android.widget.Toast;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.util.Config;
+import com.fubang.live.widget.ClearableEditText;
 import com.qiniu.android.dns.DnsManager;
 import com.qiniu.android.dns.IResolver;
 import com.qiniu.android.dns.NetworkInfo;
@@ -69,7 +67,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class BaseStreamingActivity extends BaseActivity implements
         StreamStatusCallback,
@@ -84,25 +81,33 @@ public class BaseStreamingActivity extends BaseActivity implements
 
     private static final int ZOOM_MINIMUM_WAIT_MILLIS = 33; //ms
 
-    private static final int MSG_START_STREAMING = 0;
-    private static final int MSG_STOP_STREAMING = 1;
-    private static final int MSG_SET_ZOOM = 2;
-    private static final int MSG_MUTE = 3;
-    private static final int MSG_FB = 4;
-    private static final int MSG_PREVIEW_MIRROR = 5;
-    private static final int MSG_ENCODING_MIRROR = 6;
+    protected static final int MSG_START_STREAMING = 0;
+    protected static final int MSG_STOP_STREAMING = 1;
+    protected static final int MSG_SET_ZOOM = 2;
+    protected static final int MSG_MUTE = 3;
+    protected static final int MSG_FB = 4;
+    protected static final int MSG_PREVIEW_MIRROR = 5;
+    protected static final int MSG_ENCODING_MIRROR = 6;
     @BindView(R.id.et_live_title)
-    EditText etLiveTitle;
+    protected EditText etLiveTitle;
     @BindView(R.id.iv_live_start)
     protected ImageView ivLiveStart;
     @BindView(R.id.ll_live_start)
-    protected LinearLayout llLiveStart;
+    protected RelativeLayout llLiveStart;
     @BindView(R.id.iv_live_share)
-    ImageView ivLiveShare;
+    protected ImageView ivLiveShare;
     @BindView(R.id.iv_live_exit)
-    ImageView ivLiveExit;
+    protected ImageView ivLiveExit;
+    @BindView(R.id.iv_live_cancle_top)
+    protected ImageView ivLiveCancleTop;
     @BindView(R.id.iv_live_chat)
-    ImageView ivLiveChat;
+    protected ImageView ivLiveChat;
+    @BindView(R.id.iv_live_music)
+    protected ImageView ivLiveMusic;
+    @BindView(R.id.iv_live_setting)
+    protected ImageView ivLiveSetting;
+    @BindView(R.id.tv_live_title)
+    protected TextView tvLiveTitle;
 
     //礼物聊天列表
     @BindView(R.id.lv_room_message)
@@ -124,6 +129,15 @@ public class BaseStreamingActivity extends BaseActivity implements
     protected ImageView emotionButton;
     @BindView(R.id.emotion_new_layout)
     protected RelativeLayout emotionNewLayout;
+    //===============改变标题布局
+    @BindView(R.id.et_live_change_title)
+    protected ClearableEditText etLiveChangeTitle;
+    @BindView(R.id.tv_live_change_title_submit)
+    protected TextView tvLiveChangeTitleSubmit;
+    @BindView(R.id.rll_live_change_title)
+    protected RelativeLayout rllLiveChangeTitle;
+    @BindView(R.id.iv_live_change_title_cancle)
+    protected ImageView ivLiveChangeTitleCancle;
 
     protected RelativeLayout rl_live_control;
 
@@ -168,7 +182,7 @@ public class BaseStreamingActivity extends BaseActivity implements
     private FBO mFBO = new FBO();
 
     private ScreenShooter mScreenShooter = new ScreenShooter();
-    private Switcher mSwitcher = new Switcher();
+    protected Switcher mSwitcher = new Switcher();
     private EncodingOrientationSwitcher mEncodingOrientationSwitcher = new EncodingOrientationSwitcher();
 
     private int mCurrentCamFacingIndex;
@@ -224,12 +238,10 @@ public class BaseStreamingActivity extends BaseActivity implements
                 case MSG_PREVIEW_MIRROR:
                     mIsPreviewMirror = !mIsPreviewMirror;
                     mMediaStreamingManager.setPreviewMirror(mIsPreviewMirror);
-                    Toast.makeText(mContext, "镜像成功", Toast.LENGTH_SHORT).show();
                     break;
                 case MSG_ENCODING_MIRROR:
                     mIsEncodingMirror = !mIsEncodingMirror;
                     mMediaStreamingManager.setEncodingMirror(mIsEncodingMirror);
-                    Toast.makeText(mContext, "镜像成功", Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     Log.e(TAG, "Invalid message");
@@ -345,7 +357,6 @@ public class BaseStreamingActivity extends BaseActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-
         mIsReady = false;
         mShutterButtonPressed = false;
         mHandler.removeCallbacksAndMessages(null);

@@ -1,11 +1,16 @@
 package com.fubang.live.adapter;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.fubang.live.R;
-import com.fubang.live.entities.RoomListEntity;
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
-import java.util.List;
+import com.fubang.live.ui.fragment.FollowFragment;
+import com.fubang.live.ui.fragment.GameFragment;
+import com.fubang.live.ui.fragment.HotFragment;
+import com.fubang.live.ui.fragment.MusicHotFragment;
+import com.fubang.live.ui.fragment.MusicMineFragment;
+import com.fubang.live.ui.fragment.NearFragment;
 
 /**
  * 　　　　　　　　┏┓　　　┏┓
@@ -30,22 +35,37 @@ import java.util.List;
  * 　　　　　　　　　　┃┫┫　┃┫┫
  * 　　　　　　　　　　┗┻┛　┗┻┛
  * ━━━━━━神兽出没━━━━━━
- * Created by jacky on 17/3/10.
+ * Created by jacky on 17/3/17.
  */
-public class RoomVideoAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHolder> {
-    private List<RoomListEntity> list;
+public class MyMusicPagerAdapter extends FragmentPagerAdapter {
+    public final int COUNT = 2;
+    private String[] titles = new String[]{"我的", "精选"};
+    private Context context;
 
-    public RoomVideoAdapter(int layoutResId, List data) {
-        super(layoutResId, data);
-        list = data;
+    public MyMusicPagerAdapter(FragmentManager fm, Context context) {
+        super(fm);
+        this.context = context;
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, RoomListEntity item) {
-        helper.setText(R.id.tv_room_video_name, item.getRoomname());
-
-//        if (item.get() >= 0) {
-//            helper.setImageResource(R.id.iv_mic_people_pic, R.drawable.head0);
-//        }
+    public Fragment getItem(int position) {
+        if (position == 0) {
+            return new MusicMineFragment();
+        } else if (position == 1) {
+            return new MusicHotFragment();
+        }
+        return new MusicMineFragment();
     }
+
+
+    @Override
+    public int getCount() {
+        return COUNT;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return titles[position];
+    }
+
 }

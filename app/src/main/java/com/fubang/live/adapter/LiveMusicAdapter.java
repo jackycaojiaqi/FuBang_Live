@@ -1,14 +1,9 @@
 package com.fubang.live.adapter;
 
-import android.widget.ImageView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.entities.RoomListEntity;
-import com.fubang.live.util.FBImage;
-import com.fubang.live.util.StringUtil;
 
 import java.util.List;
 
@@ -37,25 +32,23 @@ import java.util.List;
  * ━━━━━━神兽出没━━━━━━
  * Created by jacky on 17/3/10.
  */
-public class RoomFavAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHolder> {
+public class LiveMusicAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHolder> {
     private List<RoomListEntity> list;
 
-    public RoomFavAdapter(int layoutResId, List data) {
+    public LiveMusicAdapter(int layoutResId, List data) {
         super(layoutResId, data);
         list = data;
     }
 
     @Override
     protected void convert(BaseViewHolder helper, RoomListEntity item) {
-        helper.setText(R.id.tv_anchor_name, item.getCalias())
-                .setText(R.id.tv_anchor_audience_num, item.getRscount() + " ")
-                .setText(R.id.tv_anchor_title, item.getCtheme() + " ");
-        if (!StringUtil.isEmptyandnull(item.getCphoto()))
-            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getCphoto()).into((ImageView) helper.getView(R.id.civ_anchor_pic));
+        helper.setText(R.id.tv_music_name, item.getRoomname())
+                .setText(R.id.tv_music_singer, item.getCalias())
+                .setText(R.id.tv_music_time, item.getRscount())
+                .addOnClickListener(R.id.tv_music_pick);
 
-        if (!StringUtil.isEmptyandnull(item.getBphoto()))
-            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getBphoto()).into((ImageView) helper.getView(R.id.tv_anchor_bg));
-
-
+//        if (item.get() >= 0) {
+//            helper.setImageResource(R.id.iv_mic_people_pic, R.drawable.head0);
+//        }
     }
 }

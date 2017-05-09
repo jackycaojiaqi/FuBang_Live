@@ -100,7 +100,9 @@ public interface RoomHandler {
 	public void onSetRoomBKgroupNotify(RoomBKGround obj);
 	
 	public void onSetRoomBaseInfoResponse();
-	
+
+	public void onSetRoomBaseInfoError();
+
 	public void onRoomBaseInfoNotify(RoomBaseInfo obj);
 	
 	public void onSetRoomManagersResponse();

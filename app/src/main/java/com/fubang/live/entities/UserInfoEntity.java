@@ -53,6 +53,15 @@ public class UserInfoEntity implements Parcelable {
         private String nk;
         private String ngender = "1";
         private String micstate;
+        private String location;
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
 
         public String getNgender() {
             return ngender;
@@ -153,6 +162,7 @@ public class UserInfoEntity implements Parcelable {
             dest.writeString(this.nk);
             dest.writeString(this.ngender);
             dest.writeString(this.micstate);
+            dest.writeString(this.location);
         }
 
         protected InfoBean(Parcel in) {
@@ -165,6 +175,7 @@ public class UserInfoEntity implements Parcelable {
             this.nk = in.readString();
             this.ngender = in.readString();
             this.micstate = in.readString();
+            this.location = in.readString();
         }
 
         public static final Creator<InfoBean> CREATOR = new Creator<InfoBean>() {

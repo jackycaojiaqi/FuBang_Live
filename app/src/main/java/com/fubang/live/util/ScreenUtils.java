@@ -18,11 +18,7 @@ public class ScreenUtils {
      * @return
      */
     public static int getScreenWidth(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.widthPixels;
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 
     /**
@@ -32,11 +28,7 @@ public class ScreenUtils {
      * @return
      */
     public static int getScreenHeight(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.heightPixels;
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     /**
