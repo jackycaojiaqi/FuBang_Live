@@ -67,6 +67,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.wcy.lrcview.LrcView;
 
 public class BaseStreamingActivity extends BaseActivity implements
         StreamStatusCallback,
@@ -138,6 +139,14 @@ public class BaseStreamingActivity extends BaseActivity implements
     protected RelativeLayout rllLiveChangeTitle;
     @BindView(R.id.iv_live_change_title_cancle)
     protected ImageView ivLiveChangeTitleCancle;
+    //====================歌词布局
+    @BindView(R.id.rll_live_lrc)
+    protected RelativeLayout rllLiveLrc;
+    @BindView(R.id.lrc_live)
+    protected LrcView lrcLive;
+    @BindView(R.id.tv_live_lrc_cancle)
+    protected TextView tvLiveLrcCancle;
+
 
     protected RelativeLayout rl_live_control;
 

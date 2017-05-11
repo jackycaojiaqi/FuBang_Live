@@ -22,12 +22,12 @@ import com.xlg.android.protocol.RedPagerRequest;
 import com.xlg.android.protocol.RoomBKGround;
 import com.xlg.android.protocol.RoomBaseInfo;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomInfoList;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomManagerInfo;
 import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
-import com.xlg.android.protocol.RoomUserInfo;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -53,7 +53,7 @@ public interface RoomHandler {
 	// 加入房间回调
 	public void onJoinRoomResponse(JoinRoomResponse obj);
 	
-	public void onRoomUserNotify(RoomUserInfo obj);
+	public void onRoomUserNotify(String obj,int roomID);
 	
 	public void onGetOpenChestInfoResponse(OpenChestInfo obj);
 	
@@ -67,7 +67,7 @@ public interface RoomHandler {
 	
 	public void onRoomNoticeNotify(RoomNotice[] obj);
 	
-	public void onGetRoomUserListResponse(int g1, RoomUserInfo[] userList);
+	public void onGetRoomUserListResponse( String userList ,int roomID);
 	
 	public void onGetRoomMicListResponse(UseridList obj);
 	

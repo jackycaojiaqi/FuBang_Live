@@ -3,6 +3,7 @@ package com.fubang.live.adapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fubang.live.R;
+import com.fubang.live.entities.MusicListEntity;
 import com.fubang.live.entities.RoomListEntity;
 
 import java.util.List;
@@ -32,8 +33,8 @@ import java.util.List;
  * ━━━━━━神兽出没━━━━━━
  * Created by jacky on 17/3/10.
  */
-public class LiveMusicAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHolder> {
-    private List<RoomListEntity> list;
+public class LiveMusicAdapter extends BaseQuickAdapter<MusicListEntity.ListBean, BaseViewHolder> {
+    private List<MusicListEntity.ListBean> list;
 
     public LiveMusicAdapter(int layoutResId, List data) {
         super(layoutResId, data);
@@ -41,10 +42,10 @@ public class LiveMusicAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewH
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, RoomListEntity item) {
-        helper.setText(R.id.tv_music_name, item.getRoomname())
-                .setText(R.id.tv_music_singer, item.getCalias())
-                .setText(R.id.tv_music_time, item.getRscount())
+    protected void convert(BaseViewHolder helper, MusicListEntity.ListBean item) {
+        helper.setText(R.id.tv_music_name, item.getTitle())
+                .setText(R.id.tv_music_singer, item.getName())
+                .setText(R.id.tv_music_time, item.getAll_time())
                 .addOnClickListener(R.id.tv_music_pick);
 
 //        if (item.get() >= 0) {

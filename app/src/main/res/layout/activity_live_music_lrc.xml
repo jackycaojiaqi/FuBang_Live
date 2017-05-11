@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rll_live_lrc"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:visibility="gone"
+    android:paddingRight="10dp">
+
+
+    <me.wcy.lrcview.LrcView
+        android:id="@+id/lrc_live"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_centerInParent="true"
+        app:lrcAnimationDuration="1000"
+        app:lrcCurrentTextColor="?attr/colorPrimary"
+        app:lrcDividerHeight="24dp"
+        app:lrcLabel="找不到歌词(&gt;_&lt;)"
+        app:lrcNormalTextColor="@android:color/darker_gray"
+        app:lrcPadding="16dp"
+        app:lrcTextSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_live_lrc_cancle"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/lrc_live"
+        android:background="@drawable/shap_rec_10dp_userinfo_trans_ee_white_bg"
+        android:gravity="center"
+        android:text="关闭音乐" />
+
+</RelativeLayout>

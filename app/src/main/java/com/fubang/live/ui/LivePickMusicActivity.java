@@ -5,10 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -20,12 +24,21 @@ import com.fubang.live.adapter.MyFragmentPagerAdapter;
 import com.fubang.live.adapter.MyMusicPagerAdapter;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.util.ConfigUtils;
+import com.fubang.live.util.FileUtils;
 import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.widget.ClearableEditText;
+import com.socks.library.KLog;
+
+import org.simple.eventbus.EventBus;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 
 /**
  * Created by jacky on 2017/5/8.
@@ -43,11 +56,12 @@ public class LivePickMusicActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ConfigUtils.setStatusBarColor(this,getResources().getColor(R.color.color_music_title));
+        ConfigUtils.setStatusBarColor(this, getResources().getColor(R.color.color_music_title));
         setContentView(R.layout.activity_live_pick_music);
         ButterKnife.bind(this);
         initview();
     }
+
 
     private void initview() {
         //Fragment+ViewPager+FragmentViewPager组合的使用
@@ -72,7 +86,25 @@ public class LivePickMusicActivity extends BaseActivity {
         });
         tlLiveMusic.setTabMode(TabLayout.MODE_FIXED);
         tlLiveMusic.setupWithViewPager(vpLiveMusic);
+        etSearchMusicContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                EventBus.getDefault().post(s.toString(), "music_key");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
+
     @OnClick(R.id.tv_search_music_cancle)
     public void onViewClicked(View v) {
         switch (v.getId()) {

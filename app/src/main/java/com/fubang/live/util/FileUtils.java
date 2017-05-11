@@ -21,6 +21,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,6 +33,10 @@ import java.math.BigDecimal;
 public class FileUtils {
     private static final String Files = android.os.Environment
             .getExternalStorageDirectory().getAbsolutePath() + "/live/";
+    private static final String Files_Music = android.os.Environment
+            .getExternalStorageDirectory().getAbsolutePath() + "/live/music/";
+    private static final String Files_Lrc = android.os.Environment
+            .getExternalStorageDirectory().getAbsolutePath() + "/live/lrc/";
     private static final String Files_Temp = android.os.Environment
             .getExternalStorageDirectory().getAbsolutePath() + "/live/" + "temp/";
     private static String map_icons = FileUtils.getFiles() + "icons/";
@@ -48,6 +56,22 @@ public class FileUtils {
             file.mkdirs();
         }
         return Files_Temp;
+    }
+
+    public static String getMusicFiles() {
+        File file = new File(Files_Music);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return Files_Music;
+    }
+
+    public static String getLrcFiles() {
+        File file = new File(Files_Lrc);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return Files_Lrc;
     }
 
     /**
@@ -390,5 +414,66 @@ public class FileUtils {
             e.printStackTrace();
         }
         return "";
+    }
+
+    //扫描实现mp3
+    static ArrayList<String> list = new ArrayList<>();
+
+    public static ArrayList<String> searchMp3Infos(File file) {
+        if (file != null) {
+            list.clear();
+            File[] list_file = file.listFiles();
+            return getMusicFileName(list_file);
+        }
+        return list;
+    }
+
+    public static ArrayList<String> getMusicFileName(File[] files) {
+        if (files != null)// 先判断目录是否为空，否则会报空指针
+        {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getMusicFileName(file.listFiles());
+                } else {
+                    String fileName = file.getName();
+                    if (fileName.endsWith(".mp3")) {
+                        String s = fileName;
+                        list.add(s);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+
+    //扫描实现lrc
+    static ArrayList<String> list_lrc = new ArrayList<>();
+
+    public static ArrayList<String> searchLrcInfos(File file) {
+        if (file != null) {
+            list_lrc.clear();
+            File[] list_file = file.listFiles();
+            return getLrcFileName(list_file);
+        }
+        return list_lrc;
+    }
+
+    public static ArrayList<String> getLrcFileName(File[] files) {
+        if (files != null)// 先判断目录是否为空，否则会报空指针
+        {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getLrcFileName(file.listFiles());
+                } else {
+                    String fileName = file.getName();
+                    if (fileName.endsWith(".lrc")) {
+                        String s = fileName;
+                        list_lrc.add(s);
+                    }
+                }
+            }
+        }
+        return list_lrc;
     }
 }

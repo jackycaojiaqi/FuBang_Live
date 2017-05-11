@@ -3,6 +3,12 @@ package com.sample.room;
 
 import android.util.Log;
 
+import com.fubang.live.ui.LiveActivity;
+import com.fubang.live.ui.MainActivity;
+import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.socks.library.KLog;
 import com.xlg.android.RoomChannel;
 import com.xlg.android.RoomHandler;
@@ -33,7 +39,7 @@ import com.xlg.android.protocol.RoomManagerInfo;
 import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
-import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomUserInfoNew;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -51,6 +57,9 @@ import com.xlg.android.protocol.UseridList;
 import com.xlg.android.utils.Tools;
 
 import org.simple.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MyRoom implements RoomHandler {
@@ -115,13 +124,6 @@ public class MyRoom implements RoomHandler {
         videoRand = obj.getReserve1();
     }
 
-    @Override
-    public void onRoomUserNotify(RoomUserInfo obj) {
-
-        KLog.e("onRoomUserNotify: ");
-        Tools.PrintObject(obj);
-        EventBus.getDefault().post(obj, "onRoomUserNotify");
-    }
 
     @Override
     public void onGetOpenChestInfoResponse(OpenChestInfo obj) {
@@ -162,17 +164,46 @@ public class MyRoom implements RoomHandler {
         }
     }
 
+    private List<RoomUserInfoNew> list_user_new = new ArrayList<>();
+
     @Override
-    public void onGetRoomUserListResponse(int g1, RoomUserInfo[] obj) {
-        KLog.e("onGetRoomUserListResponse: " + obj.length);
-        EventBus.getDefault().post(obj, "userList");
-        for (int i = 0; i < obj.length - 1; i++) {
-            Tools.PrintObject(obj[i]);
-            if (-1 != (obj[i].getMicindex())) {
-                EventBus.getDefault().post(obj[i], "onMicUser");
-                videoUID = obj[i].getUserid();
+    public void onGetRoomUserListResponse(String obj, int roomid) {
+        list_user_new.clear();
+        if (!StringUtil.isEmptyandnull(obj)) {
+            list_user_new = new Gson().fromJson(obj, new TypeToken<List<RoomUserInfoNew>>() {
+            }.getType());
+            for (int i = 0; i < list_user_new.size(); i++) {
+                //因为主播进房间早于上麦，所以获取列表micindex是-1,所以判断是否是主播
+                if (roomid == list_user_new.get(i).getUserid()) {
+                    EventBus.getDefault().post(list_user_new.get(i), "onMicUser");
+                    list_user_new.remove(i);
+                } else {
+                    if (-1 != (list_user_new.get(i).getMicindex())) {
+                        EventBus.getDefault().post(list_user_new.get(i), "onMicUser");
+                    }
+                }
+            }
+            KLog.e("onGetRoomUserListResponse: " + list_user_new.size());
+            EventBus.getDefault().post(list_user_new, "userList");
+        }
+
+    }
+
+    private List<RoomUserInfoNew> list_user_one = new ArrayList<>();
+
+    @Override
+    public void onRoomUserNotify(String obj, int roomid) {
+        list_user_one.clear();
+        if (!StringUtil.isEmptyandnull(obj)) {
+            list_user_one = new Gson().fromJson(obj, new TypeToken<List<RoomUserInfoNew>>() {
+            }.getType());
+            KLog.e("onGetRoomUserListResponse: " + list_user_new.size());
+            if (list_user_one.size() > 0) {
+                if (roomid != list_user_one.get(0).getUserid())//如果是直播自己，则不去发送事件
+                    EventBus.getDefault().post(list_user_one.get(0), "onRoomUserNotify");
             }
         }
+
     }
 
     private void PrintUnknown(String string) {

@@ -76,7 +76,7 @@ import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
-import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomUserInfoNew;
 
 import org.dync.giftlibrary.widget.GiftControl;
 import org.dync.giftlibrary.widget.GiftFrameLayout;
@@ -84,6 +84,7 @@ import org.dync.giftlibrary.widget.GiftModel;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,7 +173,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private RtmpUrlPresenterImpl presenter;
     private String roomIp, ip, roomPwd;
     private int roomId, port;
-    private List<RoomUserInfo> list_audience = new ArrayList<>();
+    private List<RoomUserInfoNew> list_audience = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
     private PowerManager.WakeLock mWakeLock;
     private CustomPopWindow pop_info;
@@ -297,7 +298,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
     }
 
-    private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
+    private void handleLogic(View contentView, final RoomUserInfoNew roomUserInfo) {
         //设置pop监听事件
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -334,7 +335,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         contentView.findViewById(R.id.tv_pop_goto_user_info_page).setOnClickListener(listener);
         //填充数据
         ((TextView) contentView.findViewById(R.id.tv_pop_user_id)).setText(roomUserInfo.getUserid() + " ");//用户id
-        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getUseralias() + " ");//用户名字
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getAlias() + " ");//用户名字
         FBImage.Create(getActivity(), AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto())
                 .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
     }
@@ -447,7 +448,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
-            for (RoomUserInfo roomUserInfo : list_audience) {
+            for (RoomUserInfoNew roomUserInfo : list_audience) {
                 if (roomUserInfo.getUserid() == obj.getSrcid()) {//判断观众和发送者id是否一致   确定那一个人发的，从而去除头像
                     giftControl.loadGift(new GiftModel(String.valueOf(obj.getGiftid()), "送出礼物：", obj.getCount(),
                             String.valueOf(obj.getGiftid()), String.valueOf(obj.getSrcid()), obj.getSrcalias(),
@@ -477,27 +478,29 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         }
     }
 
-    private RoomUserInfo userInfoAnchor;
+    private RoomUserInfoNew userInfoAnchor;
 
     //接收主播信息
     @Subscriber(tag = "onMicUser")
-    public void AnchorInfo(RoomUserInfo obj) {
+    public void AnchorInfo(RoomUserInfoNew obj) {
         userInfoAnchor = obj;
         KLog.e(obj.getUserid());
 //        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
         tvAnchorId.setText(obj.getUserid() + " ");//主播ID
-        if (obj.getNk() > 999999999) {//需要转成小数点
-            KLog.e(obj.getNk());
-            long nk = obj.getNk() / 1000000000;
-            KLog.e(nk);
-//            BigDecimal b = new BigDecimal(nk);
-//            float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
-            tvAnchorKbiNum.setText(nk + "亿");//主播K币
-        } else if (obj.getNk() > 9999999) {
-            long nk = obj.getNk() / 10000000;
-            tvAnchorKbiNum.setText(nk + "百万");//主播K币
-        } else {
-            tvAnchorKbiNum.setText(obj.getNk() + "");//主播K币
+        if (!StringUtil.isEmptyandnull(obj.getNb())) {
+            if (Double.parseDouble(obj.getNb()) > 999999999) {//需要转成小数点
+                KLog.e(obj.getNb());
+                double nk = Double.parseDouble(obj.getNb()) / 1000000000;
+                KLog.e(nk);
+                BigDecimal b = new BigDecimal(nk);
+                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+                tvAnchorKbiNum.setText(f1 + "亿");//主播K币
+            } else if (Double.parseDouble(obj.getNb()) > 9999999) {
+                double nk = Double.parseDouble(obj.getNb()) / 10000000;
+                tvAnchorKbiNum.setText(nk + "百万");//主播K币
+            } else {
+                tvAnchorKbiNum.setText(obj.getNb() + "");//主播K币
+            }
         }
         if (!StringUtil.isEmptyandnull(obj.getCphoto())) {
             FBImage.Create(context, AppConstant.BASE_IMG_URL + obj.getCphoto()).into(ivRoomAnchorSmallPic);
@@ -506,10 +509,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     //接收观众列表信息
     @Subscriber(tag = "userList")
-    public void AudienceInfo(RoomUserInfo[] obj) {
+    public void AudienceInfo(List<RoomUserInfoNew> obj) {
         list_audience.clear();
-        for (int i = 0; i < obj.length - 1; i++) {
-            list_audience.add(obj[i]);
+        for (int i = 0; i < obj.size(); i++) {
+            list_audience.add(obj.get(i));
             KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
             KLog.e(list_audience.get(i).getUserid());
             KLog.e(list_audience.get(i).getUserstate());
@@ -535,12 +538,11 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     //用户加入房间回调
     @Subscriber(tag = "onRoomUserNotify")
-    public void onRoomUserNotify(RoomUserInfo obj) {
+    public void onRoomUserNotify(RoomUserInfoNew obj) {
         list_audience.add(obj);
         roomUserAdapter.setNewData(list_audience);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
-
 
     @Override
     public void onPause() {
@@ -909,7 +911,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getUseralias(), StartUtil.getUserName(context));
+                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");

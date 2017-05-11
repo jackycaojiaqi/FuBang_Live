@@ -4,6 +4,7 @@ package com.fubang.live.ui.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -22,16 +23,24 @@ import com.fubang.live.R;
 import com.fubang.live.adapter.LiveMusicAdapter;
 import com.fubang.live.adapter.RoomVideoAdapter;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.entities.MusicListEntity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.util.FileUtils;
+import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.widget.DividerItemDecoration;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.socks.library.KLog;
 
+import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +50,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import okhttp3.Call;
 import okhttp3.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,10 +63,10 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
     @BindView(R.id.srl_near)
     SwipeRefreshLayout srlNear;
     private Context context;
-    private int count = 10;
+    private int count = 20;
     private int page = 1;
     private int group = 0;
-    private List<RoomListEntity> list = new ArrayList<>();
+    private List<MusicListEntity.ListBean> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
 
     @Nullable
@@ -70,13 +81,20 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
+        EventBus.getDefault().register(this);
         initview();
+        initdate("");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initdate();
+    }
+
+    //在用户信息界面发送的关注指令，在房间中操作
+    @Subscriber(tag = "music_key")
+    private void addFav(final String key) {
+        initdate(key);
     }
 
     private void initview() {
@@ -90,7 +108,13 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
         roomFavAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                ToastUtil.show(context,position+" ");
+                Intent resultIntent = new Intent();
+                if (localMusicList.size() > 0)
+                    resultIntent.putStringArrayListExtra("music", localMusicList);
+                if (localLrcList.size() > 0)
+                    resultIntent.putStringArrayListExtra("lrc", localLrcList);
+                getActivity().setResult(RESULT_OK, resultIntent);
+                getActivity().finish();
             }
         });
         roomFavAdapter.bindToRecyclerView(rvNear);
@@ -103,26 +127,47 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
         srlNear.setOnRefreshListener(this);
         //设置样式刷新显示的位置
         srlNear.setProgressViewOffset(true, -10, 50);
+
     }
 
-    private RoomEntity roomEntity;
+    private MusicListEntity musicListEntity;
 
-    private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
+    private ArrayList<String> localMusicList = new ArrayList<>();
+    private ArrayList<String> localLrcList = new ArrayList<>();
+
+    private void initdate(String key) {
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_MP3;
         OkGo.get(url)//
                 .tag(this)//
                 .params(AppConstant.COUNT, count)
                 .params(AppConstant.PAGE, page)
+                .params("title", key)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         srlNear.setRefreshing(false);
                         try {
-                            roomEntity = new Gson().fromJson(s, RoomEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
+                            musicListEntity = new Gson().fromJson(s, MusicListEntity.class);
+                            //扫描本地音乐
+                            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            localMusicList.clear();
+                                            localLrcList.clear();
+                                            File file_music = new File(FileUtils.getMusicFiles());
+                                            localMusicList = FileUtils.searchMp3Infos(file_music);
+                                            File file_lrc = new File(FileUtils.getLrcFiles());
+                                            localLrcList = FileUtils.searchLrcInfos(file_lrc);
+                                        } catch (Exception e) {
+                                        }
+                                    }
+                                }.start();
+                            }
+                            if (musicListEntity.getStatus().equals("success")) {
                                 list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                list.addAll(roomListEntities);
+                                list.addAll(musicListEntity.getList());
                                 roomFavAdapter.notifyDataSetChanged();
                             }
                         } catch (JsonSyntaxException e) {
@@ -145,7 +190,12 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     public void onRefresh() {
         page = 1;
-        initdate();
+        initdate("");
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

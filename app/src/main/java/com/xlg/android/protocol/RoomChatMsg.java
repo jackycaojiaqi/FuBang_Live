@@ -119,6 +119,7 @@ public class RoomChatMsg {
 	public void setToalias(String toalias) {
 		Tools.String2ByteArrayGBK(this.toalias, toalias);
 	}
+
 	public String getContent() {
 		return content.toStringGBK();
 	}

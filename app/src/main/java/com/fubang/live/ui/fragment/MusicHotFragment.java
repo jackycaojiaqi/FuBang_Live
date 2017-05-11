@@ -22,6 +22,7 @@ import com.fubang.live.R;
 import com.fubang.live.adapter.LiveMusicAdapter;
 import com.fubang.live.adapter.RoomVideoAdapter;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.entities.MusicListEntity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.ui.RoomActivity;
@@ -31,6 +32,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+
+import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +59,7 @@ public class MusicHotFragment extends BaseFragment implements SwipeRefreshLayout
     private int count = 10;
     private int page = 1;
     private int group = 0;
-    private List<RoomListEntity> list = new ArrayList<>();
+    private List<MusicListEntity.ListBean> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
 
     @Nullable
@@ -70,13 +74,14 @@ public class MusicHotFragment extends BaseFragment implements SwipeRefreshLayout
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
+        EventBus.getDefault().register(this);
         initview();
+        initdate("");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initdate();
     }
 
     private void initview() {
@@ -103,12 +108,13 @@ public class MusicHotFragment extends BaseFragment implements SwipeRefreshLayout
         srlNear.setOnRefreshListener(this);
         //设置样式刷新显示的位置
         srlNear.setProgressViewOffset(true, -10, 50);
+
     }
 
-    private RoomEntity roomEntity;
+    private MusicListEntity musicListEntity;
 
-    private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
+    private void initdate(String key) {
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_MP3;
         OkGo.get(url)//
                 .tag(this)//
                 .params(AppConstant.COUNT, count)
@@ -118,11 +124,10 @@ public class MusicHotFragment extends BaseFragment implements SwipeRefreshLayout
                     public void onSuccess(String s, Call call, Response response) {
                         srlNear.setRefreshing(false);
                         try {
-                            roomEntity = new Gson().fromJson(s, RoomEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
+                            musicListEntity = new Gson().fromJson(s, MusicListEntity.class);
+                            if (musicListEntity.getStatus().equals("success")) {
                                 list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                list.addAll(roomListEntities);
+                                list.addAll(musicListEntity.getList());
                                 roomFavAdapter.notifyDataSetChanged();
                             }
                         } catch (JsonSyntaxException e) {
@@ -145,7 +150,12 @@ public class MusicHotFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onRefresh() {
         page = 1;
-        initdate();
+        initdate("");
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

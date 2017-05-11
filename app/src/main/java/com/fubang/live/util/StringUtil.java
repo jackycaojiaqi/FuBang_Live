@@ -10,8 +10,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 
+import com.xlg.android.utils.ByteBuffer;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
@@ -403,4 +408,5 @@ public final class StringUtil {
         }
         return count;
     }
+
 }

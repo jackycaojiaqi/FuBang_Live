@@ -107,4 +107,8 @@ dependencies {
         exclude group: 'com.android.support'
     }
     compile 'com.alibaba:fastjson:1.1.55.android'
+
+    compile 'me.wcy:lrcview:1.4.1'
+
+    compile 'com.afollestad.material-dialogs:core:0.9.4.4'
 }

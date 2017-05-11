@@ -21,6 +21,7 @@ import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.widget.NestedScrollView;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
@@ -113,7 +114,11 @@ public class UserInfoPageActivity extends BaseActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
-                        userEntity = new Gson().fromJson(s, UserInfoEntity.class);
+                        try {
+                            userEntity = new Gson().fromJson(s, UserInfoEntity.class);
+                        } catch (JsonSyntaxException e) {
+                            e.printStackTrace();
+                        }
                         if (userEntity.getStatus().equals("success")) {
                             if (userEntity.getInfo() != null) {
                                 //名字

@@ -78,4 +78,7 @@
     <string name="live_auth_info">直播既代表你同意主播协议</string>
     <string name="mirror_same">当前图像和观众一致</string>
     <string name="mirror_not_same">当前图像和观众相反</string>
+    <string name="sure_to_quit_live">确认退出直播？</string>
+    <string name="sure">确认</string>
+    <string name="cancle">取消</string>
 </resources>

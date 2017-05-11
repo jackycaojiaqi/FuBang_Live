@@ -3,6 +3,7 @@ package com.xlg.android;
 import android.util.Log;
 
 import com.fubang.live.util.StartUtil;
+import com.fubang.live.util.StringUtil;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.ActWaitMicUserInfo;
 import com.xlg.android.protocol.AddClosedFriendInfo;
@@ -28,12 +29,13 @@ import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.OpenChestInfo;
 import com.xlg.android.protocol.RoomBaseInfo;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomInfoList;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomManagerInfo;
 import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
-import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomUserInfoNew;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -50,6 +52,8 @@ import com.xlg.android.protocol.UserPriority;
 import com.xlg.android.protocol.UseridList;
 import com.xlg.android.utils.ByteBuffer;
 import com.xlg.android.utils.Tools;
+
+import java.io.UnsupportedEncodingException;
 
 public class RoomChannel implements ClientSocketHandler {
     private int mRoomID; // 房间id
@@ -129,13 +133,14 @@ public class RoomChannel implements ClientSocketHandler {
                 case Header.MessageType_mxpJoinRoomResponse: {
                     JoinRoomResponse obj = new JoinRoomResponse();
                     Message.DecodeObject(mBuffer, obj);
+
                     mHandler.onJoinRoomResponse(obj);
                 }
                 break;
                 case Header.MessageType_mxpRoomUserNotify: {
-                    RoomUserInfo obj = new RoomUserInfo();
+                    RoomInfoList obj = new RoomInfoList();
                     Message.DecodeObject(mBuffer, obj);
-                    mHandler.onRoomUserNotify(obj);
+                    mHandler.onRoomUserNotify(obj.getContent(),mRoomID);
                 }
                 break;
                 case Header.MessageType_mxpGetOpenChestInfoResponse: {
@@ -168,6 +173,7 @@ public class RoomChannel implements ClientSocketHandler {
                     mHandler.onJoinRoomError(buf.getInt(0));
                 }
                 break;
+                //单个用户加入房间返回单个或几个用户信息
                 case Header.MessageType_mxpUpdateRoomNoticeNotify:
                 case Header.MessageType_mxpSetRoomNoticeNotify: {
                     RoomNotice[] obj = new RoomNotice[head.getCmd3()];
@@ -190,24 +196,14 @@ public class RoomChannel implements ClientSocketHandler {
 
                         index += by.length; // 一个包长度
                     }
-
                     mHandler.onRoomNoticeNotify(obj);
                 }
                 break;
+                //用户第一次加入房间返回观众列表
                 case Header.MessageType_mxpGetRoomUserListResponse: {
-                    RoomUserInfo[] obj = new RoomUserInfo[head.getCmd3()];
-                    int index = Header.SIZE_HEADER;
-
-                    // 解析出其中的几项
-                    for (int i = 0; i < head.getCmd3(); i++) {
-                        obj[i] = new RoomUserInfo();
-
-                        if (Message.UnserializeObject(mBuffer, index, obj[i])) {
-                            index += Message.SizeOfObject(obj[i]); // 一个包长度
-                        }
-                    }
-
-                    mHandler.onGetRoomUserListResponse(head.getCmd2(), obj);
+                    RoomInfoList roomInfoList = new RoomInfoList();
+                    Message.DecodeObject(mBuffer, roomInfoList);
+                    mHandler.onGetRoomUserListResponse(roomInfoList.getContent(),mRoomID);
                 }
                 break;
                 case Header.MessageType_mxpGetRoomMicListResponse: {

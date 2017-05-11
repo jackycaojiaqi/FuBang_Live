@@ -11,7 +11,8 @@ public class AppConstant {
     public static final String BASE_RTMP_URL = "http://120.26.10.198:88/";//获取rtmp地址
     public static final String BASE_URL = "http://120.26.127.210:9419";//富邦直播
     public static final String BASE_IMG_URL = "http://120.26.127.210:9419/user_pic/";//图片服务器前缀地址
-
+    public static final String BASE_DOWNLOAD_MUSIC = "http://120.26.127.210:333/mp3_ge/";//音乐下载链接前缀
+    public static final String BASE_DOWNLOAD_LRC = "http://120.26.127.210:333/mp3_lrc/";//音乐下载链接前缀
     public static final String USER_ID = "userid";
     public static final String COUNT = "count";
     public static final String USERID = "nuserid";
@@ -38,6 +39,6 @@ public class AppConstant {
 
     public static final String MSG_GET_ROOM_BY_KEY = "/index.php/app/ser_list?";//根据关键字模糊查询
 
-    public static final String MSG_UPLOAD_LATLON = "/index.php/app/upload_place?";//根据关键字模糊查询
-
+    public static final String MSG_UPLOAD_LATLON = "/index.php/app/upload_place?";//上传位置信息
+    public static final String MSG_GET_MP3 = "/index.php/app/get_mp3?";//获取Mp3列表
 }

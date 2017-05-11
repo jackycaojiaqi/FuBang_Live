@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -29,6 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
@@ -43,6 +48,7 @@ import com.fubang.live.presenter.impl.UpMicPresenterImpl;
 import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.FBImage;
+import com.fubang.live.util.FileUtils;
 import com.fubang.live.util.GlobalOnItemClickManager;
 import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.util.ShareUtil;
@@ -55,6 +61,7 @@ import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
 import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
 import com.qiniu.BaseStreamingActivity;
 import com.qiniu.CameraPreviewFrameView;
+import com.qiniu.filter.IFilter;
 import com.qiniu.pili.droid.streaming.AVCodecType;
 import com.qiniu.pili.droid.streaming.CameraStreamingSetting;
 import com.qiniu.pili.droid.streaming.MediaStreamingManager;
@@ -71,7 +78,7 @@ import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
-import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomUserInfoNew;
 
 import org.dync.giftlibrary.widget.GiftControl;
 import org.dync.giftlibrary.widget.GiftFrameLayout;
@@ -81,6 +88,8 @@ import org.json.JSONObject;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,7 +116,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private RoomMain roomMain = new RoomMain(this);
     private EmotionInputDetector mDetector;
     private UpMicPresenterImpl presenter;
-    private List<RoomUserInfo> list_audience = new ArrayList<>();
+    private List<RoomUserInfoNew> list_audience = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
     @BindView(R.id.rv_room_audience)
     RecyclerView rvRoomAudience;
@@ -122,6 +131,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private GiftFrameLayout giftFrameLayout1;
     private GiftFrameLayout giftFrameLayout2;
     private GiftControl giftControl;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -212,17 +222,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         });
         rvRoomAudience.setAdapter(roomUserAdapter);
 
-        //设置自己的头像
-        if (!StringUtil.isEmptyandnull(StartUtil.getUserPic(context))) {
-            FBImage.Create(context, StartUtil.getUserPic(context)).into(ivLiveAnchorPic);
-        }
         //礼物连击
         giftFrameLayout1 = (GiftFrameLayout) findViewById(R.id.gift_layout1);
         giftFrameLayout2 = (GiftFrameLayout) findViewById(R.id.gift_layout2);
         giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
     }
 
-    private void handleLogic(View contentView, final RoomUserInfo roomUserInfo) {
+    private void handleLogic(View contentView, final RoomUserInfoNew roomUserInfo) {
         //设置pop监听事件
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -246,7 +252,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         break;
                     case R.id.tv_pop_goto_user_info_page:
                         Intent intent = new Intent(context, UserInfoPageActivity.class);
-                        intent.putExtra(AppConstant.ROOMID, roomUserInfo.getUserid());
+                        intent.putExtra(AppConstant.ROOMID, String.valueOf(roomUserInfo.getUserid()));
                         startActivity(intent);
                         break;
                 }
@@ -257,7 +263,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         contentView.findViewById(R.id.tv_pop_goto_user_info_page).setOnClickListener(listener);
         //填充数据
         ((TextView) contentView.findViewById(R.id.tv_pop_user_id)).setText(roomUserInfo.getUserid() + " ");//用户id
-        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getUseralias() + " ");//用户名字
+        ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getAlias() + " ");//用户名字
         FBImage.Create(context, AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto())
                 .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
     }
@@ -373,6 +379,17 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
     }
 
+    private RoomUserInfoNew userInfoAnchor;
+
+    //接收主播信息
+    @Subscriber(tag = "onMicUser")
+    public void AnchorInfo(RoomUserInfoNew obj) {
+        userInfoAnchor = obj;
+        if (!StringUtil.isEmptyandnull(obj.getCphoto())) {
+            FBImage.Create(context, AppConstant.BASE_IMG_URL + userInfoAnchor.getCphoto()).into(ivLiveAnchorPic);
+        }
+    }
+
     //接收服务器发送的消息更新列表
     @Subscriber(tag = "RoomChatMsg")
     public void getRoomChatMsg(RoomChatMsg msg) {
@@ -413,7 +430,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     public void getGiftRecord(BigGiftRecord obj) {
         int count = obj.getCount();
         if (count != 0) {
-            for (RoomUserInfo roomUserInfo : list_audience) {
+            for (RoomUserInfoNew roomUserInfo : list_audience) {
                 if (roomUserInfo.getUserid() == obj.getSrcid()) {//判断观众和发送者id是否一致   确定那一个人发的，从而去除头像
                     giftControl.loadGift(new GiftModel(String.valueOf(obj.getGiftid()), "送出礼物：", obj.getCount(),
                             String.valueOf(obj.getGiftid()), String.valueOf(obj.getSrcid()), obj.getSrcalias(),
@@ -462,6 +479,11 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         if (giftControl != null) {
             giftControl.cleanAll();
         }
+        //音乐播放销毁
+        handler.removeCallbacks(runnable);
+        mediaPlayer.reset();
+        mediaPlayer.release();
+        mediaPlayer = null;
         EventBus.getDefault().unregister(this);
     }
 
@@ -473,8 +495,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 roomMain.getRoom().getChannel().sendUpMic();
                 roomMain.getRoom().getChannel().forTitle(room_title);
+
             }
         }).start();
 
@@ -483,10 +507,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
 
     //接收观众列表信息
     @Subscriber(tag = "userList")
-    public void AudienceInfo(RoomUserInfo[] obj) {
+    public void AudienceInfo(List<RoomUserInfoNew> obj) {
         list_audience.clear();
-        for (int i = 0; i < obj.length - 1; i++) {
-            list_audience.add(obj[i]);
+        for (int i = 0; i < obj.size(); i++) {
+            list_audience.add(obj.get(i));
             KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
             KLog.e(list_audience.get(i).getUserid());
         }
@@ -509,7 +533,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
 
     //用户加入房间回调
     @Subscriber(tag = "onRoomUserNotify")
-    public void onRoomUserNotify(RoomUserInfo obj) {
+    public void onRoomUserNotify(RoomUserInfoNew obj) {
         list_audience.add(obj);
         roomUserAdapter.setNewData(list_audience);
         tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
@@ -567,10 +591,12 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private int port;
     private View contentView_setting;
     private int windowPos[];
+    private int REQUEST_CODE_MUSIC = 0X008;
+    private MaterialDialog dialog;
 
     @OnClick({R.id.iv_live_start, R.id.iv_live_share, R.id.iv_live_exit, R.id.iv_live_chat
             , R.id.tv_room_input_close, R.id.room_new_chat_send, R.id.iv_live_music
-            , R.id.iv_live_cancle_top, R.id.iv_live_setting})
+            , R.id.iv_live_cancle_top, R.id.iv_live_setting, R.id.tv_live_lrc_cancle})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
@@ -626,8 +652,28 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 doShareAction();
                 break;
             case R.id.iv_live_exit:
-                startActivity(new Intent(context, LiveDoneActivity.class));
-                finish();
+                MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                        .title(R.string.sure_to_quit_live)
+                        .positiveText(R.string.sure)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                startActivity(new Intent(context, LiveDoneActivity.class));
+                                finish();
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                if (dialog != null) {
+                                    dialog.dismiss();
+                                }
+                            }
+                        })
+                        .negativeText(R.string.cancle);
+                dialog = builder.build();
+                dialog.show();
+
                 break;
             case R.id.iv_live_chat:
                 rllRoomInput.setVisibility(View.VISIBLE);
@@ -662,7 +708,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 }
                 break;
             case R.id.iv_live_music:
-                startActivity(new Intent(context, LivePickMusicActivity.class));
+                startActivityForResult(new Intent(context, LivePickMusicActivity.class), REQUEST_CODE_MUSIC);
                 break;
             case R.id.iv_live_cancle_top:
                 finish();
@@ -688,8 +734,11 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                             .create()
                             .showAtLocation(contentView_setting, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
                 }
-
-
+                break;
+            case R.id.tv_live_lrc_cancle:
+                mediaPlayer.pause();
+                lrcLive.onDrag(0);
+                rllLiveLrc.setVisibility(View.GONE);
                 break;
         }
     }
@@ -774,4 +823,61 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         GlobalOnItemClickManager globalOnItemClickListener = GlobalOnItemClickManager.getInstance();
         globalOnItemClickListener.attachToEditText((EditText) findViewById(R.id.edit_new_text));
     }
+
+    private ArrayList<String> localMusicList = new ArrayList<>();
+    private ArrayList<String> localLrcList = new ArrayList<>();
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_MUSIC) {
+                rllLiveLrc.setVisibility(View.VISIBLE);
+                localMusicList = data.getStringArrayListExtra("music");
+                localLrcList = data.getStringArrayListExtra("lrc");
+                File file_lrc = new File(FileUtils.getLrcFiles() + localLrcList.get(0));
+                if (file_lrc.exists()) {
+                    lrcLive.loadLrc(file_lrc);//设置歌词资源
+                }
+                File file_music = new File(FileUtils.getMusicFiles() + localMusicList.get(0));
+
+                if (file_music.exists()) {
+                    try {
+                        mediaPlayer.reset();
+                        String path = file_music.getAbsolutePath();
+                        KLog.e(path);
+                        mediaPlayer.setDataSource(path);//设置MP3路径
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                KLog.e("1212");
+                                mediaPlayer.start();
+                                handler.post(runnable);
+                            }
+                        });
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }
+    }
+
+    private Handler handler = new Handler();
+    /**
+     * 根据MP3播放进度时事同步歌词组件
+     */
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer.isPlaying()) {
+                long time = mediaPlayer.getCurrentPosition();
+                lrcLive.updateTime(time);
+            }
+            handler.postDelayed(this, 200);
+        }
+    };
 }

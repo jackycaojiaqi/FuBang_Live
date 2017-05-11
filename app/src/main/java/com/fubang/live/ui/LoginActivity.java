@@ -18,6 +18,7 @@ import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
+import com.qiniu.filter.IFilter;
 import com.sample.login.LoginMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
@@ -113,16 +114,18 @@ public class LoginActivity extends BaseActivity implements PlatformActionListene
                 DialogFactory.showRequestDialog(context);
                 break;
             case R.id.rl_login_phone:
-                flag = 0;
-                username = Integer.parseInt(etLoginUsername.getText().toString().trim());
-                pwd = etLoginUserpwd.getText().toString().trim();
-                if (!StringUtil.isEmptyandnull(String.valueOf(username)) && !TextUtils.isEmpty(pwd)) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new LoginMain(username, pwd, "", flag, 0, LoginActivity.this).start(username, pwd, 0, "", flag, LoginActivity.this);
-                        }
-                    }).start();
+                if (!StringUtil.isEmptyandnull(etLoginUsername.getText().toString().trim())) {
+                    flag = 0;
+                    username = Integer.parseInt(etLoginUsername.getText().toString().trim());
+                    pwd = etLoginUserpwd.getText().toString().trim();
+                    if (!StringUtil.isEmptyandnull(String.valueOf(username)) && !TextUtils.isEmpty(pwd)) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new LoginMain(username, pwd, "", flag, 0, LoginActivity.this).start(username, pwd, 0, "", flag, LoginActivity.this);
+                            }
+                        }).start();
+                    }
                 } else {
                     Toast.makeText(LoginActivity.this, "账号密码不能为空", Toast.LENGTH_SHORT).show();
                 }
