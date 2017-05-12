@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -57,40 +58,57 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
         this.list = list;
     }
 
-    public void addData(RoomChatMsg msg){
-        if (list.size()>=100){
+    public void addData(RoomChatMsg msg) {
+        if (list.size() >= 100) {
             list.remove(0);
         }
         list.add(msg);
         notifyDataSetChanged();
 
     }
+
     @Override
     public View getItemView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if (convertView == null){
-            convertView = inflater.inflate(R.layout.item_room_message,parent,false);
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.item_room_message, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }
         holder = (ViewHolder) convertView.getTag();
-        if (list.get(position).getIsprivate()==1){
-            holder.userTv.setText(list.get(position).getSrcalias()+":悄悄的说");
-        }else{
-            holder.userTv.setText(list.get(position).getSrcalias()+":");
+        //等级
+        holder.userLevel.setText(String.valueOf(list.get(position).getUser_level()));
+        //等级背景
+        if (list.get(position).getUser_level() >= 1 && list.get(position).getUser_level() <= 14) {
+            holder.userLevel.setBackgroundResource(R.drawable.ic_user_level_star);
+        } else if (list.get(position).getUser_level() >= 15 && list.get(position).getUser_level() <= 29) {
+            holder.userLevel.setBackgroundResource(R.drawable.ic_user_level_moon);
+        } else if (list.get(position).getUser_level() >= 31 && list.get(position).getUser_level() <= 49) {
+            holder.userLevel.setBackgroundResource(R.drawable.ic_user_level_sun);
+        } else if (list.get(position).getUser_level() >= 50 && list.get(position).getUser_level() <= 79) {
+            holder.userLevel.setBackgroundResource(R.drawable.ic_user_level_crown_small);
+        } else if (list.get(position).getUser_level() >= 80 && list.get(position).getUser_level() <= 100) {
+            holder.userLevel.setBackgroundResource(R.drawable.ic_user_level_crown_big);
         }
 
-        if (list.get(position).getToid() == -1){
+
+        if (list.get(position).getIsprivate() == 1) {
+            holder.userTv.setText(list.get(position).getSrcalias() + ":悄悄的说");
+        } else {
+            holder.userTv.setText(list.get(position).getSrcalias() + ":");
+        }
+
+        if (list.get(position).getToid() == -1) {
             holder.simpleDraweeView.setVisibility(View.VISIBLE);
-            Uri uri =Uri.parse("res://"+context.getPackageName()+"/" + getResourceId(list.get(position).getContent()));
+            Uri uri = Uri.parse("res://" + context.getPackageName() + "/" + getResourceId(list.get(position).getContent()));
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setUri(uri)
                     .setAutoPlayAnimations(true)
                     .build();
 //            Log.d("123", list.get(position).getContent());
             holder.simpleDraweeView.setController(controller);
-            holder.messageTv.setText("   X"+list.get(position).getDstvcbid());
-        }else {
+            holder.messageTv.setText("   X" + list.get(position).getDstvcbid());
+        } else {
             holder.simpleDraweeView.setVisibility(View.GONE);
             String spanned = String.valueOf(Html.fromHtml(list.get(position).getContent()));
             StringBuilder stringBuilder = new StringBuilder();
@@ -135,18 +153,25 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
         return convertView;
     }
 
-    static class ViewHolder{
+    static class ViewHolder {
         TextView userTv;
         TextView messageTv;
+        TextView userLevel;
         SimpleDraweeView simpleDraweeView;
-        public ViewHolder(View itemView){
+        ImageView userFans;
+
+        public ViewHolder(View itemView) {
             //显示聊天室消息发送人和消息
-            simpleDraweeView = (SimpleDraweeView)itemView.findViewById(R.id.item_chat_gift);
+            simpleDraweeView = (SimpleDraweeView) itemView.findViewById(R.id.item_chat_gift);
             userTv = (TextView) itemView.findViewById(R.id.item_chat_user);
             messageTv = (TextView) itemView.findViewById(R.id.item_chat_message);
+
+            userLevel = (TextView) itemView.findViewById(R.id.tv_chat_level);
+            userFans = (ImageView) itemView.findViewById(R.id.iv_chat_is_fans);
         }
     }
-    public int getResourceId(String name){
+
+    public int getResourceId(String name) {
         try {
             Field field = R.drawable.class.getField(name);
             return Integer.parseInt(field.get(null).toString());

@@ -25,6 +25,7 @@ import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.fubang.live.widget.DividerItemDecoration;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
@@ -153,7 +154,11 @@ public class FavListActivity extends BaseActivity {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         if (!StringUtil.isEmptyandnull(s)) {
-                            roomFavEntity = new Gson().fromJson(s, RoomFavEntity.class);
+                            try {
+                                roomFavEntity = new Gson().fromJson(s, RoomFavEntity.class);
+                            } catch (JsonSyntaxException e) {
+                                e.printStackTrace();
+                            }
                             if (roomFavEntity.getDatalist() != null) {
                                 if (roomFavEntity.getDatalist().size() > 0) {
                                     list_fav.clear();

@@ -58,6 +58,8 @@ import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+
 public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocationListener {
     @BindView(R.id.iv_main_home_page)
     ImageView ivMainHomePage;
@@ -142,13 +144,13 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         initlocation();
     }
 
-    @PermissionFail(requestCode = 200)
-    public void requareLocal() {
+    private void initview() {
         //获取权限
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             PermissionGen.with(MainActivity.this)
                     .addRequestCode(200)
                     .permissions(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.READ_PHONE_STATE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -156,10 +158,6 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         } else {
             initlocation();
         }
-    }
-
-
-    private void initview() {
         //获取权限
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             PermissionGen.with(MainActivity.this)
@@ -171,19 +169,7 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
                     .request();
         } else {
         }
-        //获取权限
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            PermissionGen.with(MainActivity.this)
-                    .addRequestCode(200)
-                    .permissions(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.ACCESS_COARSE_LOCATION)
-                    .request();
-        } else {
-            initlocation();
-        }
+
         fragments.add(0, new HomeFragment());
         fragments.add(1, new NearFragment());
         fragments.add(2, new FollowFragment());

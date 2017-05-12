@@ -7,13 +7,16 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rll_audience_ranking_bg"
         android:layout_width="35dp"
-        android:layout_height="35dp">
+        android:layout_height="35dp"
+        android:background="@drawable/ic_room_user_no1"
+        android:padding="2dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/civ_audience_pic"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
             android:src="@drawable/ic_user_pic" />
 
     </RelativeLayout>

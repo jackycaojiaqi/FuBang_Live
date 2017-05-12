@@ -255,19 +255,27 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
                 });
     }
 
+    private boolean is_list_has_local = false;
+
     /**
-     * 扫描本地音乐，并且设置list中匹配了本地的音乐state状态
+     * 扫描本地音乐，并且设置list中匹配了本地的音乐state状态  如果本地有  list没有则加入本地歌曲到list
      */
     private void ScaneLocalMusic() {
         List<MusicListEntity.MusicBean> list_local = LiteOrmDBUtil.getQueryAll(MusicListEntity.MusicBean.class);
         for (MusicListEntity.MusicBean bean : list_local) {
             for (int i = 0; i < list.size(); i++) {
-                if (bean.getNid().equals(list.get(i).getNid())) {
+                if (bean.getNid().equals(list.get(i).getNid())) {//如果本地有该首歌，则状态置2
                     list.get(i).setState(2);
+                    is_list_has_local = true;//置true状态表示本地有
                 }
             }
-
+            if (!is_list_has_local) {//如果本地没有 则加入list
+                bean.setState(2);
+                list.add(bean);
+            }
+            is_list_has_local = false;//重置false
         }
+
     }
 
 

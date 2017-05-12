@@ -205,7 +205,6 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                         try {
                             roomEntity = new Gson().fromJson(s, RoomEntity.class);
                             if (roomEntity.getStatus().equals("success")) {
-
                                 list.clear();
                                 List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
                                 list.addAll(roomListEntities);

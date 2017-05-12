@@ -9,7 +9,6 @@
     android:visibility="gone"
     android:paddingRight="10dp">
 
-
     <me.wcy.lrcview.LrcView
         android:id="@+id/lrc_live"
         android:layout_width="match_parent"

@@ -33,6 +33,15 @@ public class RoomUserInfoNew implements Parcelable {
     private int reserve;
     private int userid;
     private int userstate;
+    private int user_level;
+
+    public int getUser_level() {
+        return user_level;
+    }
+
+    public void setUser_level(int user_level) {
+        this.user_level = user_level;
+    }
 
     public String getAlias() {
         return alias;
@@ -130,6 +139,9 @@ public class RoomUserInfoNew implements Parcelable {
         this.userstate = userstate;
     }
 
+    public RoomUserInfoNew() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -149,9 +161,7 @@ public class RoomUserInfoNew implements Parcelable {
         dest.writeInt(this.reserve);
         dest.writeInt(this.userid);
         dest.writeInt(this.userstate);
-    }
-
-    public RoomUserInfoNew() {
+        dest.writeInt(this.user_level);
     }
 
     protected RoomUserInfoNew(Parcel in) {
@@ -167,9 +177,10 @@ public class RoomUserInfoNew implements Parcelable {
         this.reserve = in.readInt();
         this.userid = in.readInt();
         this.userstate = in.readInt();
+        this.user_level = in.readInt();
     }
 
-    public static final Parcelable.Creator<RoomUserInfoNew> CREATOR = new Parcelable.Creator<RoomUserInfoNew>() {
+    public static final Creator<RoomUserInfoNew> CREATOR = new Creator<RoomUserInfoNew>() {
         @Override
         public RoomUserInfoNew createFromParcel(Parcel source) {
             return new RoomUserInfoNew(source);

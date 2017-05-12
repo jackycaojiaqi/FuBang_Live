@@ -184,8 +184,12 @@ public class HistoryActivity extends BaseActivity {
                     public void onSuccess(String s, Call call, Response response) {
                         if (!StringUtil.isEmptyandnull(s)) {
                             tvSubmit.setVisibility(View.VISIBLE);
-                            list_history = new Gson().fromJson(s, new TypeToken<List<RoomHistoryEntity>>() {
-                            }.getType());
+                            try {
+                                list_history = new Gson().fromJson(s, new TypeToken<List<RoomHistoryEntity>>() {
+                                }.getType());
+                            } catch (JsonSyntaxException e) {
+                                e.printStackTrace();
+                            }
                             roomHistoryAdapter.setNewData(list_history);
                         } else {
                             tvSubmit.setVisibility(View.GONE);

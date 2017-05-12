@@ -140,7 +140,7 @@ public class RoomChannel implements ClientSocketHandler {
                 case Header.MessageType_mxpRoomUserNotify: {
                     RoomInfoList obj = new RoomInfoList();
                     Message.DecodeObject(mBuffer, obj);
-                    mHandler.onRoomUserNotify(obj.getContent(),mRoomID);
+                    mHandler.onRoomUserNotify(obj.getContent(), mRoomID);
                 }
                 break;
                 case Header.MessageType_mxpGetOpenChestInfoResponse: {
@@ -203,7 +203,7 @@ public class RoomChannel implements ClientSocketHandler {
                 case Header.MessageType_mxpGetRoomUserListResponse: {
                     RoomInfoList roomInfoList = new RoomInfoList();
                     Message.DecodeObject(mBuffer, roomInfoList);
-                    mHandler.onGetRoomUserListResponse(roomInfoList.getContent(),mRoomID);
+                    mHandler.onGetRoomUserListResponse(roomInfoList.getContent(), mRoomID);
                 }
                 break;
                 case Header.MessageType_mxpGetRoomMicListResponse: {
@@ -717,6 +717,16 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setVcbid(vcbid);
         obj.setUserid(userid);
         KLog.e(vcbid + " " + userid);
+        sendPack(header, obj);
+    }
+
+    //关注主播
+    public void followAnchor(int vcbid, int userid) {
+        Header header = new Header();
+        CollageRequest obj = new CollageRequest();
+        header.setCmd1(Header.MessageType_mxpAddVcbToFavoriteRequest);
+        obj.setVcbid(vcbid);
+        obj.setUserid(userid);
         sendPack(header, obj);
     }
 

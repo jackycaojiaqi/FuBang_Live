@@ -63,6 +63,7 @@ public class Header {
     public static final byte MessageType_mxpSendSealNotify = (byte) (6 + 84); // 90
     public static final byte MessageType_mxpForbidUserChatRequest = (byte) (6 + 85); // 91
     public static final byte MessageType_mxpForbidUserChatNotify = (byte) (6 + 86); // 92
+    public static final byte MessageType_mxpAddVcbToFavoriteRequest = (byte) (93); // 93
     public static final byte MessageType_mxpSetRoomBKgroupNotify = (byte) (6 + 90); // 96
     public static final byte MessageType_mxpGetRoomMicListResponse = (byte) (6 + 101); // 107
     public static final byte MessageType_mxpSetUserPwdRepsonse = (byte) (6 + 105); // 111

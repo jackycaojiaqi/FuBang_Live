@@ -53,10 +53,17 @@ public class RoomAudienceAdapter extends BaseQuickAdapter<RoomUserInfoNew, BaseV
 //        helper.setText(R.id.tv_anchor_name, item.getRoomname())
 //                .setText(R.id.tv_anchor_audience_num, helper.getLayoutPosition() + 1 + " ");
         if (!StringUtil.isEmptyandnull(item.getCphoto())) {//有头像
-            KLog.e(AppConstant.BASE_IMG_URL+item.getCphoto());
-            FBImage.Create(mContext, AppConstant.BASE_IMG_URL+item.getCphoto()).into((ImageView) helper.getView(R.id.civ_audience_pic));
+            KLog.e(AppConstant.BASE_IMG_URL + item.getCphoto());
+            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getCphoto()).into((ImageView) helper.getView(R.id.civ_audience_pic));
         } else {                            //没有头像
             helper.setImageResource(R.id.civ_audience_pic, R.drawable.ic_user_pic);
+        }
+        if (helper.getPosition() == 0) {
+            helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.drawable.ic_room_user_no1);
+        } else if (helper.getPosition() == 1) {
+            helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.drawable.ic_room_user_no2);
+        } else if (helper.getPosition() == 2) {
+            helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.drawable.ic_room_user_no3);
         }
     }
 }

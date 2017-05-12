@@ -91,6 +91,8 @@ import org.simple.eventbus.Subscriber;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -181,6 +183,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private String roomIp, ip, roomPwd;
     private int roomId, port;
     private List<RoomUserInfoNew> list_audience = new ArrayList<>();
+    private List<RoomUserInfoNew> list_audience_top = new ArrayList<>();
     private BaseQuickAdapter roomUserAdapter;
     private PowerManager.WakeLock mWakeLock;
     private CustomPopWindow pop_info;
@@ -426,8 +429,38 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 //<b><FONT style="FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000">/mr599</FONT></b>
 //                EventBus.getDefault().post(msg,"CommonMsg");
 //                listView.setSelection(listView.getCount() - 1);
-                if (list_msg.size() > 200) {//放置消息过多，异常
+                if (list_msg.size() > 100) {//放置消息过多，异常
                     list_msg.clear();
+                }
+                //计算等级---不是主播
+                for (RoomUserInfoNew roomUserInfoNew : list_audience) {
+                    if (roomUserInfoNew.getUserid() == msg.getSrcid()) {
+                        if (!StringUtil.isEmptyandnull(roomUserInfoNew.getExpend())) {
+                            int level = (Integer.parseInt(roomUserInfoNew.getExpend()) / 100);
+                            if (level >= 100) {
+                                level = 100;
+                            }
+                            if (level == 0) {
+                                level = 1;
+                            }
+                            msg.setUser_level(level);
+                        }
+                    }
+                }
+                //是主播
+                if (userInfoAnchor != null) {
+                    if (userInfoAnchor.getUserid() == msg.getSrcid()) {
+                        if (!StringUtil.isEmptyandnull(userInfoAnchor.getExpend())) {
+                            int level = (Integer.parseInt(userInfoAnchor.getExpend()) / 100);
+                            if (level >= 100) {
+                                level = 100;
+                            }
+                            if (level == 0) {
+                                level = 1;
+                            }
+                            msg.setUser_level(level);
+                        }
+                    }
                 }
                 list_msg.add(msg);//以后消息过多会有问题
                 adapter_message.notifyDataSetChanged();
@@ -443,7 +476,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //            }
 //        }
         if (msg.getMsgtype() == 12 && msg.getSrcid() == 2) {
-
             Spanned spanned = Html.fromHtml(msg.getContent());
             Log.d("123", spanned + "");
         }
@@ -462,13 +494,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                             AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto(), System.currentTimeMillis()));
                 }
             }
-//            if (list_gift.size() > 2) {
-//                list_gift.clear();
-//            }
-//            list_gift.add(obj);
-//            adapter_gift.notifyDataSetChanged();
-//            lvRoomGift.setSelection(lvRoomGift.getCount() - 1);
-//            setAnimaAlpha(lvRoomGift);
         }
     }
 
@@ -497,14 +522,15 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         if (!StringUtil.isEmptyandnull(obj.getNb())) {
             if (Double.parseDouble(obj.getNb()) > 999999999) {//需要转成小数点
                 KLog.e(obj.getNb());
-                double nk = Double.parseDouble(obj.getNb()) / 1000000000;
-                KLog.e(nk);
+                float nk = Float.parseFloat(obj.getNb()) / 1000000000;
                 BigDecimal b = new BigDecimal(nk);
                 float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
                 tvAnchorKbiNum.setText(f1 + "亿");//主播K币
             } else if (Double.parseDouble(obj.getNb()) > 9999999) {
-                double nk = Double.parseDouble(obj.getNb()) / 10000000;
-                tvAnchorKbiNum.setText(nk + "百万");//主播K币
+                float nk = Float.parseFloat(obj.getNb()) / 10000000;
+                BigDecimal b = new BigDecimal(nk);
+                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+                tvAnchorKbiNum.setText(f1 + "百万");//主播K币
             } else {
                 tvAnchorKbiNum.setText(obj.getNb() + "");//主播K币
             }
@@ -520,13 +546,21 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         list_audience.clear();
         for (int i = 0; i < obj.size(); i++) {
             list_audience.add(obj.get(i));
-            KLog.e(AppConstant.BASE_IMG_URL + list_audience.get(i).getCphoto());
-            KLog.e(list_audience.get(i).getUserid());
-            KLog.e(list_audience.get(i).getUserstate());
-            KLog.e(list_audience.get(i).getMicindex());
         }
+        if (list_audience.size() > 20) {
+            list_audience_top = list_audience.subList(0, 19);
+        } else {
+            list_audience_top = list_audience;
+        }
+        //根据expend经验值，来重新排序。
+        Collections.sort(list_audience_top, new Comparator<RoomUserInfoNew>() {
+            @Override
+            public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
+                return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+            }
+        });
         roomUserAdapter.setNewData
-                (list_audience);
+                (list_audience_top);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -539,7 +573,20 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 list_audience.remove(i);
             }
         }
-        roomUserAdapter.setNewData(list_audience);
+        if (list_audience.size() > 20) {
+            list_audience_top = list_audience.subList(0, 19);
+        } else {
+            list_audience_top = list_audience;
+        }
+        //根据expend经验值，来重新排序。
+        Collections.sort(list_audience_top, new Comparator<RoomUserInfoNew>() {
+            @Override
+            public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
+                return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+            }
+        });
+        roomUserAdapter.setNewData(list_audience_top);
+        roomUserAdapter.notifyDataSetChanged();
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -547,7 +594,27 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @Subscriber(tag = "onRoomUserNotify")
     public void onRoomUserNotify(RoomUserInfoNew obj) {
         list_audience.add(obj);
-        roomUserAdapter.setNewData(list_audience);
+        //先排序
+        Collections.sort(list_audience, new Comparator<RoomUserInfoNew>() {
+            @Override
+            public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
+                return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+            }
+        });
+        //取前20
+        if (list_audience.size() > 20) {
+            list_audience_top = list_audience.subList(0, 19);
+        } else {
+            list_audience_top = list_audience;
+        }
+        //根据expend经验值，来重新排序。
+        Collections.sort(list_audience_top, new Comparator<RoomUserInfoNew>() {
+            @Override
+            public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
+                return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+            }
+        });
+        roomUserAdapter.setNewData(list_audience_top);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
     }
 
@@ -808,7 +875,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                        roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
                 Toast.makeText(context, R.string.add_fav_success, Toast.LENGTH_SHORT).show();

@@ -54,7 +54,6 @@ public class HomeFragment extends BaseFragment {
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
                 getActivity());
         vpFmHomeTab.setOffscreenPageLimit(3);
-
         vpFmHomeTab.setAdapter(adapter);
         vpFmHomeTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -105,5 +104,4 @@ public class HomeFragment extends BaseFragment {
                 break;
         }
     }
-
 }
