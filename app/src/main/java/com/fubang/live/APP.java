@@ -1,6 +1,9 @@
 package com.fubang.live;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.live.util.CrashHandler;
@@ -25,9 +28,12 @@ import okhttp3.OkHttpClient;
 /**
  * Created by jacky on 17/3/23.
  */
-public class APP extends Application {
+public class APP extends MultiDexApplication {
 
-
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {

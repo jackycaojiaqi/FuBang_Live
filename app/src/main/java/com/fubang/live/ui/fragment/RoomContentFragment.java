@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
@@ -39,6 +40,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
@@ -52,8 +55,10 @@ import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
+import com.fubang.live.ui.LiveDoneActivity;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.ui.UserInfoPageActivity;
+import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.GiftUtil;
 import com.fubang.live.util.GlobalOnItemClickManager;
@@ -104,6 +109,8 @@ import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
 public class RoomContentFragment extends BaseFragment implements MicNotify, RtmpUrlView {
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
+    @BindView(R.id.content)
+    RelativeLayout viewContent;
     @BindView(R.id.ib_change_orientation)
     ImageButton ibChangeOrientation;
     @BindView(R.id.ib_change_screen)
@@ -691,6 +698,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     };
     private InputMethodManager imm;
     private boolean is_show_content_view = true;
+    private MaterialDialog dialog;
 
     @OnClick({R.id.ib_change_orientation, R.id.ib_change_screen, R.id.iv_room_add_favorite,
             R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat
@@ -731,7 +739,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 if (popupWindow.isShowing()) {
                     popupWindow.dismiss();
                 } else {
-                    popupWindow.showAsDropDown(mLoadingView);
+                    int windowPos[] = ConfigUtils.calculatePopWindowPos(ivRoomExit, view_pop_gift);
+                    popupWindow.showAtLocation(viewContent, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
                 }
                 break;
             case R.id.iv_room_share:
@@ -741,7 +750,27 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 rllRoomInput.setVisibility(View.GONE);
                 break;
             case R.id.iv_room_exit:
-                getActivity().finish();
+                MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
+                        .title(R.string.sure_to_quit_live)
+                        .positiveText(R.string.sure)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                getActivity().finish();
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                if (dialog != null) {
+                                    dialog.dismiss();
+                                }
+                            }
+                        })
+                        .negativeText(R.string.cancle);
+                dialog = builder.build();
+                dialog.show();
+
                 break;
             case R.id.iv_room_chat:
                 rllRoomInput.setVisibility(View.VISIBLE);
@@ -873,18 +902,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private PopupWindow popupWindow;
     private List<GiftEntity> gifts = new ArrayList<>();
     private int giftId;
+    private View view_pop_gift;
 
     //礼物的悬浮框
     private void showWindow() {
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_gift_grid, null);
-        GridView gridView = (GridView) view.findViewById(R.id.room_gift_list);
-        Button giftSendBtn = (Button) view.findViewById(R.id.gift_send_btn);
-        final TextView giftName = (TextView) view.findViewById(R.id.gift_name_txt);
-        final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
+        view_pop_gift = layoutInflater.inflate(R.layout.pop_gift_grid, null);
+        GridView gridView = (GridView) view_pop_gift.findViewById(R.id.room_gift_list);
+        Button giftSendBtn = (Button) view_pop_gift.findViewById(R.id.gift_send_btn);
+        final TextView giftName = (TextView) view_pop_gift.findViewById(R.id.gift_name_txt);
+        final EditText giftCount = (EditText) view_pop_gift.findViewById(R.id.gift_count);
 //        final EditText
-        giftToUser = (TextView) view.findViewById(R.id.gift_to_user);
-        popupWindow = new PopupWindow(view);
+        giftToUser = (TextView) view_pop_gift.findViewById(R.id.gift_to_user);
+        popupWindow = new PopupWindow(view_pop_gift);
         popupWindow.setFocusable(true);
         gifts.clear();
         gifts.addAll(GiftUtil.getGifts());

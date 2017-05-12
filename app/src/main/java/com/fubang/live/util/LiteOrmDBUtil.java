@@ -17,7 +17,7 @@ public class LiteOrmDBUtil {
     public static LiteOrm liteOrm;
 
     public static void createDb(Context _activity, Object userId) {
-        DB_NAME = "fubang" + userId.toString() + ".db";
+        DB_NAME = "fubang_" + userId.toString() + ".db";
         if (liteOrm == null) {
             liteOrm = LiteOrm.newSingleInstance(_activity, DB_NAME);
         }

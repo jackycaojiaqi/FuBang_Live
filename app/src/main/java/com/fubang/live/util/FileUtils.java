@@ -229,6 +229,30 @@ public class FileUtils {
     }
 
     /**
+     * 删除指定文件
+     *
+     * @param filePath
+     * @return
+     */
+    public static boolean deleteFolderFile(String filePath) {
+        if (!TextUtils.isEmpty(filePath)) {
+            try {
+                File file = new File(filePath);
+
+                if (file.exists()) {
+                    file.delete();
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+
+    }
+
+    /**
      * 格式化单位
      *
      * @param size
@@ -432,13 +456,15 @@ public class FileUtils {
         if (files != null)// 先判断目录是否为空，否则会报空指针
         {
             for (File file : files) {
-                if (file.isDirectory()) {
-                    getMusicFileName(file.listFiles());
-                } else {
-                    String fileName = file.getName();
-                    if (fileName.endsWith(".mp3")) {
-                        String s = fileName;
-                        list.add(s);
+                if (file.length() > 0) {
+                    if (file.isDirectory()) {
+                        getMusicFileName(file.listFiles());
+                    } else {
+                        String fileName = file.getName();
+                        if (fileName.endsWith(".mp3")) {
+                            String s = fileName;
+                            list.add(s);
+                        }
                     }
                 }
             }
@@ -463,13 +489,15 @@ public class FileUtils {
         if (files != null)// 先判断目录是否为空，否则会报空指针
         {
             for (File file : files) {
-                if (file.isDirectory()) {
-                    getLrcFileName(file.listFiles());
-                } else {
-                    String fileName = file.getName();
-                    if (fileName.endsWith(".lrc")) {
-                        String s = fileName;
-                        list_lrc.add(s);
+                if (file.length() > 0) {
+                    if (file.isDirectory()) {
+                        getLrcFileName(file.listFiles());
+                    } else {
+                        String fileName = file.getName();
+                        if (fileName.endsWith(".lrc")) {
+                            String s = fileName;
+                            list_lrc.add(s);
+                        }
                     }
                 }
             }

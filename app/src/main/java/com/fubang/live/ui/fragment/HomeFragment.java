@@ -53,7 +53,8 @@ public class HomeFragment extends BaseFragment {
         //Fragment+ViewPager+FragmentViewPager组合的使用
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
                 getActivity());
-        vpFmHomeTab.setOffscreenPageLimit(1);
+        vpFmHomeTab.setOffscreenPageLimit(3);
+
         vpFmHomeTab.setAdapter(adapter);
         vpFmHomeTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -74,6 +75,7 @@ public class HomeFragment extends BaseFragment {
         });
         tbFmHomeTab.setTabMode(TabLayout.MODE_SCROLLABLE);
         tbFmHomeTab.setupWithViewPager(vpFmHomeTab);
+        vpFmHomeTab.setCurrentItem(1);
     }
 
 //    //接收标题栏是否隐藏信息

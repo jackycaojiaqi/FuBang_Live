@@ -34,6 +34,10 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
@@ -50,6 +54,7 @@ import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.FileUtils;
 import com.fubang.live.util.GlobalOnItemClickManager;
+import com.fubang.live.util.LocationUtil;
 import com.fubang.live.util.ScreenUtils;
 import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
@@ -111,7 +116,7 @@ import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 /**
  * Created by jacky on 17/3/27.
  */
-public class LiveActivity extends BaseStreamingActivity implements StreamingStateChangedListener, MicNotify {
+public class LiveActivity extends BaseStreamingActivity implements StreamingStateChangedListener, MicNotify, AMapLocationListener {
     private Context context;
     private RoomMain roomMain = new RoomMain(this);
     private EmotionInputDetector mDetector;
@@ -143,7 +148,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     .addRequestCode(100)
                     .permissions(
                             Manifest.permission.CAMERA)
-
                     .request();
         } else {
         }
@@ -601,6 +605,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
             case R.id.iv_live_start:
+                initlocation();
                 room_title = etLiveTitle.getText().toString().trim();
                 if (!StringUtil.isEmptyandnull(room_title)) {
                     tvLiveTitle.setText("直播标题：" + room_title);
@@ -824,8 +829,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         globalOnItemClickListener.attachToEditText((EditText) findViewById(R.id.edit_new_text));
     }
 
-    private ArrayList<String> localMusicList = new ArrayList<>();
-    private ArrayList<String> localLrcList = new ArrayList<>();
     private MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
@@ -834,13 +837,12 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_MUSIC) {
                 rllLiveLrc.setVisibility(View.VISIBLE);
-                localMusicList = data.getStringArrayListExtra("music");
-                localLrcList = data.getStringArrayListExtra("lrc");
-                File file_lrc = new File(FileUtils.getLrcFiles() + localLrcList.get(0));
+                String music_id = data.getStringExtra("music_id");
+                File file_lrc = new File(FileUtils.getLrcFiles() + music_id + ".lrc");
                 if (file_lrc.exists()) {
                     lrcLive.loadLrc(file_lrc);//设置歌词资源
                 }
-                File file_music = new File(FileUtils.getMusicFiles() + localMusicList.get(0));
+                File file_music = new File(FileUtils.getMusicFiles() + music_id + ".mp3");
 
                 if (file_music.exists()) {
                     try {
@@ -851,7 +853,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-                                KLog.e("1212");
                                 mediaPlayer.start();
                                 handler.post(runnable);
                             }
@@ -860,7 +861,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         }
@@ -880,4 +880,39 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             handler.postDelayed(this, 200);
         }
     };
+    private AMapLocationClientOption mLocationOption = null;
+    private AMapLocationClient mlocationClient;
+
+    private void initlocation() {
+        mlocationClient = new AMapLocationClient(this);
+        //初始化定位参数
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位监听
+        mlocationClient.setLocationListener(this);
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //设置定位间隔,单位毫秒,默认为2000ms
+        mLocationOption.setOnceLocation(true);
+        //设置定位参数
+        mlocationClient.setLocationOption(mLocationOption);
+        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+        // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+        // 在定位结束后，在合适的生命周期调用onDestroy()方法
+        // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+        //启动定位
+        mlocationClient.startLocation();
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null) {
+            if (StringUtil.isEmptyandnull(StartUtil.getCity(context))) {//为空表示用户没有手动设置区域，则定位填充数据，如果有数据，则不填充
+                StartUtil.putCity(context, aMapLocation.getCity());
+            }
+            StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
+            StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
+            LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
+                    String.valueOf(aMapLocation.getLongitude()));
+        }
+    }
 }

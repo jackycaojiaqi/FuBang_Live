@@ -127,6 +127,9 @@
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="Channel ID" />
+
+
+        <service android:name=".service.DownMusicService" />
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />

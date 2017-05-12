@@ -3,6 +3,11 @@ package com.fubang.live.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.litesuits.orm.db.annotation.Column;
+import com.litesuits.orm.db.annotation.PrimaryKey;
+import com.litesuits.orm.db.enums.AssignType;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +29,7 @@ public class MusicListEntity implements Parcelable {
     private String total;
     private String web_mp3;
     private String web_lrc;
-    private List<ListBean> list;
+    private List<MusicBean> list;
 
     public String getStatus() {
         return status;
@@ -58,15 +63,15 @@ public class MusicListEntity implements Parcelable {
         this.web_lrc = web_lrc;
     }
 
-    public List<ListBean> getList() {
+    public List<MusicBean> getList() {
         return list;
     }
 
-    public void setList(List<ListBean> list) {
+    public void setList(List<MusicBean> list) {
         this.list = list;
     }
 
-    public static class ListBean implements Parcelable {
+    public static class MusicBean extends BaseLiteOrmEntity implements Parcelable {
         /**
          * nid : 8
          * title : 演员
@@ -75,13 +80,28 @@ public class MusicListEntity implements Parcelable {
          * lrc : yanyuan-xuezhiqian.lrc
          * mp3_path : yanyuan-xuezhiqian.mp3
          */
-
+        @Column(value = "nid")
         private String nid;
+        @Column(value = "title")
         private String title;
+        @Column(value = "name")
         private String name;
+        @Column(value = "all_time")
         private String all_time;
+        @Column(value = "lrc")
         private String lrc;
+        @Column(value = "mp3_path")
         private String mp3_path;
+        @Column(value = "state")
+        private int state = 0; // 0 未下载  1下载中  2 下载完成
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
+        }
 
         public String getNid() {
             return nid;
@@ -131,6 +151,9 @@ public class MusicListEntity implements Parcelable {
             this.mp3_path = mp3_path;
         }
 
+        public MusicBean() {
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -144,29 +167,28 @@ public class MusicListEntity implements Parcelable {
             dest.writeString(this.all_time);
             dest.writeString(this.lrc);
             dest.writeString(this.mp3_path);
+            dest.writeInt(this.state);
         }
 
-        public ListBean() {
-        }
-
-        protected ListBean(Parcel in) {
+        protected MusicBean(Parcel in) {
             this.nid = in.readString();
             this.title = in.readString();
             this.name = in.readString();
             this.all_time = in.readString();
             this.lrc = in.readString();
             this.mp3_path = in.readString();
+            this.state = in.readInt();
         }
 
-        public static final Creator<ListBean> CREATOR = new Creator<ListBean>() {
+        public static final Creator<MusicBean> CREATOR = new Creator<MusicBean>() {
             @Override
-            public ListBean createFromParcel(Parcel source) {
-                return new ListBean(source);
+            public MusicBean createFromParcel(Parcel source) {
+                return new MusicBean(source);
             }
 
             @Override
-            public ListBean[] newArray(int size) {
-                return new ListBean[size];
+            public MusicBean[] newArray(int size) {
+                return new MusicBean[size];
             }
         };
     }
@@ -193,8 +215,8 @@ public class MusicListEntity implements Parcelable {
         this.total = in.readString();
         this.web_mp3 = in.readString();
         this.web_lrc = in.readString();
-        this.list = new ArrayList<ListBean>();
-        in.readList(this.list, ListBean.class.getClassLoader());
+        this.list = new ArrayList<MusicBean>();
+        in.readList(this.list, MusicBean.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<MusicListEntity> CREATOR = new Parcelable.Creator<MusicListEntity>() {

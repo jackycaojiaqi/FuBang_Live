@@ -89,7 +89,7 @@ public class GameFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     private void initview() {
         //=========================recycleview
-        roomFavAdapter = new RoomFavAdapter(R.layout.item_room_game, list);
+        roomFavAdapter = new RoomFavAdapter(R.layout.item_room, list);
         rvFollow.setLayoutManager(new GridLayoutManager(getActivity(), 1));
         roomFavAdapter.openLoadAnimation();
         roomFavAdapter.setAutoLoadMoreSize(5);

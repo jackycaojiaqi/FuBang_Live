@@ -142,6 +142,22 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         initlocation();
     }
 
+    @PermissionFail(requestCode = 200)
+    public void requareLocal() {
+        //获取权限
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            PermissionGen.with(MainActivity.this)
+                    .addRequestCode(200)
+                    .permissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .request();
+        } else {
+            initlocation();
+        }
+    }
+
 
     private void initview() {
         //获取权限
@@ -162,7 +178,8 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
                     .permissions(
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
                     .request();
         } else {
             initlocation();

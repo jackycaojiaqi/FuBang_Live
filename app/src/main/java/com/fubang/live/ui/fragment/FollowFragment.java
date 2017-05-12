@@ -130,7 +130,7 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
     private RoomEntity roomEntity;
 
     private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_FAV_LIST;
         OkGo.get(url)//
                 .tag(this)//
                 .params(AppConstant.COUNT, count)

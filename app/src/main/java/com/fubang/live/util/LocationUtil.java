@@ -39,6 +39,5 @@ public class LocationUtil {
                         e.printStackTrace();
                     }
                 });
-
     }
 }

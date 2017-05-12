@@ -55,13 +55,13 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         } else if (position == 2) {
             return new NearFragment();
         } else if (position == 3) {
-            return new GameFragment();
+            return new HotFragment();
         } else if (position == 4) {
-            return new FollowFragment();
+            return new HotFragment();
         } else if (position == 5) {
-            return new FollowFragment();
+            return new HotFragment();
         } else if (position == 6) {
-            return new FollowFragment();
+            return new HotFragment();
         }
         return new FollowFragment();
     }
