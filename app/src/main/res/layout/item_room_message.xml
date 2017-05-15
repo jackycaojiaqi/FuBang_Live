@@ -1,51 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="30dp"
-    android:background="@color/transparent"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tv_chat_level"
-        android:layout_width="35dp"
-        android:layout_height="15dp"
-        android:background="@drawable/ic_user_level_star"
-        android:gravity="center_vertical|right"
-        android:paddingRight="2dp"
-        android:text="99"
-        android:textColor="@color/white"
-        android:textSize="10dp" />
-    <ImageView
-        android:id="@+id/iv_chat_is_fans"
-        android:layout_width="15dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:layout_height="13dp"
-        android:background="@drawable/ic_user_fans"
-      />
-    <TextView
-        android:id="@+id/item_chat_user"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll_room_message"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="123:"
-        android:textColor="@color/room_message_color"
-        android:textSize="18dp" />
+        android:background="@color/transparent"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/item_chat_gift"
-        android:layout_width="80dp"
-        android:layout_height="60dp"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/tv_chat_level"
+            android:layout_width="35dp"
+            android:layout_height="15dp"
+            android:background="@drawable/ic_user_level_star"
+            android:gravity="center_vertical|right"
+            android:paddingRight="2dp"
+            android:text="99"
+            android:textColor="@color/white"
+            android:textSize="10dp" />
 
-    <TextView
-        android:id="@+id/item_chat_message"
-        android:layout_width="wrap_content"
-        android:layout_marginLeft="7dp"
+        <ImageView
+            android:id="@+id/iv_chat_is_fans"
+            android:layout_width="15dp"
+            android:layout_height="13dp"
+            android:layout_marginLeft="3dp"
+
+            android:layout_marginRight="3dp"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/ic_user_fans" />
+
+        <TextView
+            android:id="@+id/item_chat_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="123:"
+            android:textColor="@color/room_message_color"
+            android:textSize="18dp" />
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/item_chat_gift"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/item_chat_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:text="hello1121212121212121212112121212121212121212121212"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/ll_room_first_notify"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="hello"
-        android:textColor="@color/white"
-        android:textSize="18dp" />
+        android:orientation="horizontal">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="直播消息："
+            android:textColor="@color/white"
+            android:textSize="18dp" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_room_notify_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/come_room_first"
+            android:textColor="@color/room_message_color"
+            android:textSize="18dp" />
+    </RelativeLayout>
+</RelativeLayout>

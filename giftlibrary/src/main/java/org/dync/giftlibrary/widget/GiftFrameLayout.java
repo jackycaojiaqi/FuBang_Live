@@ -440,9 +440,105 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
 
     private void getUrl(int gift_id) {
         switch (gift_id) {
-            case 32:
+            case 21:
                 //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_32_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_21).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 22:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_22).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 23:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_23).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 24:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_24).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 25:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_25).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 26:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_26).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 27:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_27).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 28:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_28).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 29:
+                //礼物图片替换
+                Glide.with(mContext).load(R.drawable.ic_gift_29).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 30:
+                Glide.with(mContext).load(R.drawable.ic_gift_30).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 31:
+                Glide.with(mContext).load(R.drawable.ic_gift_31).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        anim_gift.setImageDrawable(resource);
+                    }
+                });
+                break;
+            case 32:
+                Glide.with(mContext).load(R.drawable.ic_gift_32).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -450,8 +546,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 33:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_33_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_33).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -459,8 +554,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 34:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_34_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_34).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -468,8 +562,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 35:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_35_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_35).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -477,8 +570,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 36:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_36_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_36).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -486,8 +578,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 37:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_37_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_37).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -495,8 +586,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 38:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_38_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_38).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -504,8 +594,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 39:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_39_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_39).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);
@@ -513,88 +602,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
             case 40:
-                //礼物图片替换
-                Glide.with(mContext).load(R.drawable.ic_gift_40_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 41:
-                Glide.with(mContext).load(R.drawable.ic_gift_41_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 42:
-                Glide.with(mContext).load(R.drawable.ic_gift_42_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 43:
-                Glide.with(mContext).load(R.drawable.ic_gift_43_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 44:
-                Glide.with(mContext).load(R.drawable.ic_gift_44_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 45:
-                Glide.with(mContext).load(R.drawable.ic_gift_45_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 46:
-                Glide.with(mContext).load(R.drawable.ic_gift_46_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 47:
-                Glide.with(mContext).load(R.drawable.ic_gift_47_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 48:
-                Glide.with(mContext).load(R.drawable.ic_gift_48_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 62:
-                Glide.with(mContext).load(R.drawable.ic_gift_62_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        anim_gift.setImageDrawable(resource);
-                    }
-                });
-                break;
-            case 63:
-                Glide.with(mContext).load(R.drawable.ic_gift_63_1).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
+                Glide.with(mContext).load(R.drawable.ic_gift_40).placeholder(R.mipmap.loading).into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         anim_gift.setImageDrawable(resource);

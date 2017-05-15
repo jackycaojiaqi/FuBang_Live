@@ -52,7 +52,9 @@ public class RoomGiftAdapter extends ListBaseAdapter<BigGiftRecord> {
     public RoomGiftAdapter(List<BigGiftRecord> list, Context context) {
         super(list, context);
     }
+
     private Uri uri;
+
     @Override
     public View getItemView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
@@ -77,119 +79,126 @@ public class RoomGiftAdapter extends ListBaseAdapter<BigGiftRecord> {
     }
 
     private void getUrl(int gift_id) {
-        switch (gift_id){
-            case 32:
-                 uri = new Uri.Builder()
+        switch (gift_id) {
+            case 21:
+                uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_32_1))
+                        .path(String.valueOf(R.drawable.ic_gift_21))
+                        .build();
+                break;
+            case 22:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_22))
+                        .build();
+                break;
+            case 23:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_23))
+                        .build();
+                break;
+            case 24:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_24))
+                        .build();
+                break;
+            case 25:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_25))
+                        .build();
+                break;
+            case 26:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_26))
+                        .build();
+                break;
+            case 27:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_27))
+                        .build();
+                break;
+            case 28:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_28))
+                        .build();
+                break;
+            case 29:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_29))
+                        .build();
+                break;
+
+            case 30:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_30))
+                        .build();
+                break;
+            case 31:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_31))
+                        .build();
+                break;
+            case 32:
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(R.drawable.ic_gift_32))
                         .build();
                 break;
             case 33:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_33_1))
+                        .path(String.valueOf(R.drawable.ic_gift_33))
                         .build();
                 break;
             case 34:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_34_1))
+                        .path(String.valueOf(R.drawable.ic_gift_34))
                         .build();
                 break;
             case 35:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_35_1))
+                        .path(String.valueOf(R.drawable.ic_gift_35))
                         .build();
                 break;
             case 36:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_36_1))
+                        .path(String.valueOf(R.drawable.ic_gift_36))
                         .build();
                 break;
             case 37:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_37_1))
+                        .path(String.valueOf(R.drawable.ic_gift_37))
                         .build();
                 break;
             case 38:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_38_1))
+                        .path(String.valueOf(R.drawable.ic_gift_38))
                         .build();
                 break;
             case 39:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_39_1))
+                        .path(String.valueOf(R.drawable.ic_gift_39))
                         .build();
                 break;
             case 40:
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_40_1))
-                        .build();
-                break;
-            case 41:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_41_1))
-                        .build();
-                break;
-            case 42:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_42_1))
-                        .build();
-                break;
-            case 43:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_43_1))
-                        .build();
-                break;
-            case 44:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_44_1))
-                        .build();
-                break;
-            case 45:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_45_1))
-                        .build();
-                break;
-            case 46:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_46_1))
-                        .build();
-                break;
-            case 47:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_47_1))
-                        .build();
-                break;
-            case 48:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_48_1))
-                        .build();
-                break;
-            case 62:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_62_1))
-                        .build();
-                break;
-            case 63:
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                        .path(String.valueOf(R.drawable.ic_gift_63_1))
+                        .path(String.valueOf(R.drawable.ic_gift_40))
                         .build();
                 break;
         }

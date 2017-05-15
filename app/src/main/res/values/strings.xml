@@ -81,4 +81,11 @@
     <string name="sure_to_quit_live">确认退出？</string>
     <string name="sure">确认</string>
     <string name="cancle">取消</string>
+    <string name="come_room_first">        我们提倡绿色直播，封面和直播内容含吸烟、低俗、引诱、暴露等都将会被封停账号，同时禁止直播聚众闹事、集会，网警24小时在线巡查哦！</string>
+    <string name="come_before">一道金光闪过</string>
+    <string name="come_after">进入直播间</string>
+    <string name="singer">好声音</string>
+    <string name="talent">才艺</string>
+    <string name="cool_boy">帅哥</string>
+    <string name="cool_girl">美女</string>
 </resources>

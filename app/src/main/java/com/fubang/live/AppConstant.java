@@ -29,7 +29,7 @@ public class AppConstant {
     public static final String MSG_GET_ROOM_INFO = "/index.php/app/roomlist?";//获取房间信息
     public static final String MSG_UP_AUTH_INFO = "/index.php/app/info_up";//上传认证信息
     public static final String MSG_GET_USER_INFO = "/index.php/app/get_info?";//获取用户信息
-    public static final String MSG_MODIFY_USER_INFO = "/index.php/app/upload_info";//更新用户信息
+    public static final String MSG_MODIFY_USER_INFO = "/index.php/app/upload_info";//更新用户信息 包括直播类型（才艺、好声音、帅哥、美女）
     public static final String MSG_MODIFY_USER_PIC = "/index.php/app/upload_pic";//更新用户图片信息
     public static final String MSG_GET_SEE_HISTORY = "/index.php/app/get_history?";//获取历史查看信息
     public static final String MSG_DELETE_ONE_HISTORY = "/index.php/app/delete_history?";//清除单个历史
@@ -41,4 +41,5 @@ public class AppConstant {
 
     public static final String MSG_UPLOAD_LATLON = "/index.php/app/upload_place?";//上传位置信息
     public static final String MSG_GET_MP3 = "/index.php/app/get_mp3?";//获取Mp3列表
+    public static final String MSG_GET_AD_INFO = "/index.php/app/ad_info?";//获取广告图和链接
 }

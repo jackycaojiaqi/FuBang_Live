@@ -34,6 +34,15 @@ public class RoomUserInfoNew implements Parcelable {
     private int userid;
     private int userstate;
     private int user_level;
+    private int myfavorite;
+
+    public int getMyfavorite() {
+        return myfavorite;
+    }
+
+    public void setMyfavorite(int myfavorite) {
+        this.myfavorite = myfavorite;
+    }
 
     public int getUser_level() {
         return user_level;

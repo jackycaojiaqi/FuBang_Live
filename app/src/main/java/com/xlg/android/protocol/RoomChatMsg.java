@@ -37,6 +37,15 @@ public class RoomChatMsg {
 
     private int user_level = 0;
     private boolean is_fans = false;
+    private int type=0;//0 表示聊天回调  1、进入直播间文字  2、等级大于30用户进入房间的文字
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public int getUser_level() {
         return user_level;

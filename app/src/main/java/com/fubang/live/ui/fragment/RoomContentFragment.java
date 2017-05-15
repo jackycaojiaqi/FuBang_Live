@@ -325,7 +325,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                roomMain.getRoom().getChannel().followRoom(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                                roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                             }
                         }).start();
                         ToastUtil.show(context, R.string.add_fav_success);
@@ -400,7 +400,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void run() {
                 KLog.e("addFav");
-                roomMain.getRoom().getChannel().followRoom(user_id, Integer.parseInt(StartUtil.getUserId(context)));
+                roomMain.getRoom().getChannel().followAnchor(user_id, Integer.parseInt(StartUtil.getUserId(context)));
             }
         }).start();
     }
@@ -562,6 +562,25 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         roomUserAdapter.setNewData
                 (list_audience_top);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
+        //===================首次进入房间，聊天列表会有文字提示
+        RoomChatMsg msg = new RoomChatMsg();
+        msg.setType(1);
+        list_msg.clear();
+        list_msg.add(msg);
+        adapter_message.notifyDataSetChanged();
+        lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
+        setAnimaAlpha(lvRoomMessage);
+        //本人已经关注 则取消关注按钮
+        for (RoomUserInfoNew roomUserInfoNew : list_audience) {
+            if (roomUserInfoNew.getUserid() == Integer.parseInt(StartUtil.getUserId(context))) {
+                if (roomUserInfoNew.getMyfavorite() == 0) {
+                    ivRoomAddFavorite.setVisibility(View.VISIBLE);
+                } else if (roomUserInfoNew.getMyfavorite() == 1) {
+                    ivRoomAddFavorite.setVisibility(View.GONE);
+                }
+            }
+        }
+
     }
 
     //用户离开房间回调
@@ -616,6 +635,20 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         });
         roomUserAdapter.setNewData(list_audience_top);
         tvRoomAnchorOnlineNum.setText(list_audience.size() + " ");//房间观众数量
+
+        //============================等级大于30进入房间聊天列表会有通知
+        RoomChatMsg msg = new RoomChatMsg();
+        if (!StringUtil.isEmptyandnull(obj.getExpend())) {
+            int level = (Integer.parseInt(obj.getExpend()) / 100);
+            if (level >= 30) {
+                msg.setType(2);
+                msg.setSrcalias(obj.getAlias());
+                list_msg.add(msg);
+                adapter_message.notifyDataSetChanged();
+                lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
+                setAnimaAlpha(lvRoomMessage);
+            }
+        }
     }
 
     @Override
@@ -878,6 +911,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
+                ivRoomAddFavorite.setVisibility(View.GONE);
                 Toast.makeText(context, R.string.add_fav_success, Toast.LENGTH_SHORT).show();
                 break;
             //清除房间的页面

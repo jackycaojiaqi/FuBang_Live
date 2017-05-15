@@ -38,9 +38,6 @@ import com.lzy.okgo.OkGo;
 import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +82,10 @@ public class UserInfoActivity extends TakePhotoActivity {
     TextView tvUserInfoAddr;
     @BindView(R.id.rl_user_info_addr)
     RelativeLayout rlUserInfoAddr;
+    @BindView(R.id.tv_user_live_type)
+    TextView tvUserLiveType;
+    @BindView(R.id.rl_user_live_type)
+    RelativeLayout rlUserLiveType;
     private Context context;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
@@ -137,6 +138,12 @@ public class UserInfoActivity extends TakePhotoActivity {
             } else {
                 tvUserInfoAddr.setText(userInfoEntity.getInfo().getLocation() + " ");
             }
+            //直播类型
+            if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getType())) {
+                tvUserLiveType.setText(userInfoEntity.getInfo().getType() + " ");
+            } else {
+                tvUserLiveType.setText("才艺");
+            }
 
         }
     }
@@ -144,10 +151,11 @@ public class UserInfoActivity extends TakePhotoActivity {
     private final int MSG_MODIFY_INFO_NAME = 0X0011;
     private final int MSG_MODIFY_INFO_GENDER = 0X0012;
     private final int MSG_MODIFY_INFO_SIGN = 0X0013;
+    private final int MSG_MODIFY_INFO_TYPE = 0X0014;
 
     @OnClick({R.id.rl_user_info_pic, R.id.iv_back, R.id.rl_user_info_name,
             R.id.rl_user_info_gender, R.id.rl_user_info_sign, R.id.rl_user_info_id
-            , R.id.rl_user_info_addr})
+            , R.id.rl_user_info_addr, R.id.rl_user_live_type})
     public void onViewClicked(View v) {
         Intent intent;
         switch (v.getId()) {
@@ -199,6 +207,11 @@ public class UserInfoActivity extends TakePhotoActivity {
                     }
                 });
                 task.execute("浙江", "台州");
+                break;
+            case R.id.rl_user_live_type:
+                intent = new Intent(context, LivePickTypeActivity.class);
+                intent.putExtra("content", userInfoEntity.getInfo().getType());
+                startActivityForResult(intent, MSG_MODIFY_INFO_TYPE);
                 break;
         }
     }
@@ -394,6 +407,13 @@ public class UserInfoActivity extends TakePhotoActivity {
                     userInfoEntity.getInfo().setCidiograph(sign);
                 }
                 KLog.e(sign);
+            } else if (requestCode == MSG_MODIFY_INFO_TYPE) {
+                String type = data.getStringExtra("type");
+                if (!StringUtil.isEmptyandnull(sign)) {
+                    tvUserLiveType.setText(type);
+                    userInfoEntity.getInfo().setType(type);
+                }
+                KLog.e(type);
             }
         }
     }

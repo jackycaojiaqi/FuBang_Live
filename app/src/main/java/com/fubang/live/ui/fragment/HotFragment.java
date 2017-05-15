@@ -3,6 +3,7 @@ package com.fubang.live.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -21,12 +22,14 @@ import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.entities.AdEntity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.listener.HidingScrollListener;
 import com.fubang.live.listener.UpDownScrollListener;
 import com.fubang.live.presenter.impl.RoomListPresenterImpl;
 import com.fubang.live.ui.RoomActivity;
+import com.fubang.live.util.LiteOrmDBUtil;
 import com.fubang.live.view.RoomListView;
 import com.fubang.live.widget.DividerItemDecoration;
 import com.google.gson.Gson;
@@ -35,6 +38,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.squareup.picasso.Picasso;
 import com.youth.banner.Banner;
+import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
 
 import org.simple.eventbus.EventBus;
@@ -120,20 +124,31 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         rvhot.addItemDecoration(new DividerItemDecoration(
                 context, DividerItemDecoration.HORIZONTAL_LIST, 5, getActivity().getResources().getColor(R.color.gray_c)));
         //======================banner
-        list_url.add("http://img05.tooopen.com/images/20150830/tooopen_sy_140703593676.jpg");
-        list_url.add("http://img.sc115.com/uploads1/sc/jpgs/1503/apic19333_sc115.com.jpg");
-        list_url.add("http://img.7139.com/file/201207/04/299ac0ab2be96c216c6bd5255945cb6c.jpg");
-        View header = LayoutInflater.from(context).inflate(R.layout.header, rvhot, false);
-        banner = (Banner) header.findViewById(R.id.banner);
-        //banner数据
-        //设置图片加载器
-        banner.setImageLoader(new GlideImageLoader());
-        //设置图片集合
-        banner.setImages(list_url);
-        //banner设置方法全部调用完毕时最后调用
-        banner.start();
-        banner.setDelayTime(3000);
-        roomFavAdapter.setHeaderView(header);
+        final List<AdEntity.PicListBean> listBeen = LiteOrmDBUtil.getQueryAll(AdEntity.PicListBean.class);
+        if (listBeen.size() > 0) {
+            for (int i = 0; i < listBeen.size(); i++) {
+                list_url.add(listBeen.get(i).getXuhao());
+            }
+            View header = LayoutInflater.from(context).inflate(R.layout.header, rvhot, false);
+            banner = (Banner) header.findViewById(R.id.banner);
+            //banner数据
+            //设置图片加载器
+            banner.setOnBannerListener(new OnBannerListener() {
+                @Override
+                public void OnBannerClick(int position) {
+                    Uri uri = Uri.parse(listBeen.get(position).getHref());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            });
+            banner.setImageLoader(new GlideImageLoader());
+            //设置图片集合
+            banner.setImages(list_url);
+            //banner设置方法全部调用完毕时最后调用
+            banner.start();
+            banner.setDelayTime(3000);
+            roomFavAdapter.setHeaderView(header);
+        }
         //=====================下拉刷新
         srlRoom.setOnRefreshListener(this);
         //设置样式刷新显示的位置
@@ -195,9 +210,8 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     public class GlideImageLoader extends ImageLoader {
         @Override
         public void displayImage(Context context, Object path, ImageView imageView) {
-
             //Picasso 加载图片简单用法
-            Picasso.with(context).load((String) path).into(imageView);
+            Picasso.with(context).load((String) path).fit().into(imageView);
         }
     }
 }

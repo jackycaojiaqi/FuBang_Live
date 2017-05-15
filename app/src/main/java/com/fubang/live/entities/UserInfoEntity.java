@@ -54,6 +54,15 @@ public class UserInfoEntity implements Parcelable {
         private String ngender = "1";
         private String micstate;
         private String location;
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
 
         public String getLocation() {
             return location;

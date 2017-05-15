@@ -30,14 +30,13 @@
                 android:id="@+id/et_search_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="30dp"
                 android:layout_marginRight="10dp"
                 android:background="@null"
-                android:hint="请输入昵称\房间号"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
+                android:hint="请输入昵称/房间号"
+                android:textColor="@color/gray_deep"
+                android:textColorHint="@color/gray_deep"
                 android:textSize="14dp" />
-
 
         </RelativeLayout>
 

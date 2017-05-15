@@ -159,14 +159,15 @@ public class FavListActivity extends BaseActivity {
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();
                             }
-                            if (roomFavEntity.getDatalist() != null) {
-                                if (roomFavEntity.getDatalist().size() > 0) {
-                                    list_fav.clear();
-                                    list_fav = roomFavEntity.getDatalist();
-                                    roomHistoryAdapter.setNewData(list_fav);
+                            if (roomFavEntity != null) {
+                                if (roomFavEntity.getDatalist() != null) {
+                                    if (roomFavEntity.getDatalist().size() > 0) {
+                                        list_fav.clear();
+                                        list_fav = roomFavEntity.getDatalist();
+                                        roomHistoryAdapter.setNewData(list_fav);
+                                    }
                                 }
                             }
-
                         }
                     }
 

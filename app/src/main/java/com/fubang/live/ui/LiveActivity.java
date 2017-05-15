@@ -263,7 +263,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                roomMain.getRoom().getChannel().followRoom(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)));
+                                roomMain.getRoom().getChannel().followAnchor(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)));
                             }
                         }).start();
                         ToastUtil.show(context, R.string.add_fav_success);
@@ -570,6 +570,15 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         roomUserAdapter.setNewData
                 (list_audience_top);
         tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
+
+        //===================首次进入房间，聊天列表会有文字提示
+        RoomChatMsg msg = new RoomChatMsg();
+        msg.setType(1);
+        list_msg.clear();
+        list_msg.add(msg);
+        adapter.notifyDataSetChanged();
+        lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
+        setAnimaAlpha(lvRoomMessage);
     }
 
     //用户离开房间回调
@@ -617,6 +626,20 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         });
         roomUserAdapter.setNewData(list_audience_top);
         tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
+
+        //============================等级大于30进入房间聊天列表会有通知
+        RoomChatMsg msg = new RoomChatMsg();
+        if (!StringUtil.isEmptyandnull(obj.getExpend())) {
+            int level = (Integer.parseInt(obj.getExpend()) / 100);
+            if (level >= 30) {
+                msg.setType(2);
+                msg.setSrcalias(obj.getAlias());
+                list_msg.add(msg);
+                adapter.notifyDataSetChanged();
+                lvRoomMessage.setSelection(lvRoomMessage.getCount() - 1);
+                setAnimaAlpha(lvRoomMessage);
+            }
+        }
     }
 
     @Override
@@ -631,6 +654,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     public void run() {
                         DialogFactory.hideRequestDialog();
                         rl_live_control.setVisibility(View.VISIBLE);
+                        lvRoomMessage.setVisibility(View.VISIBLE);
                         llLiveStart.setVisibility(View.GONE);
                     }
                 });

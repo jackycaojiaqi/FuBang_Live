@@ -5,10 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.fubang.live.ui.fragment.FemaleFragment;
 import com.fubang.live.ui.fragment.FollowFragment;
 import com.fubang.live.ui.fragment.GameFragment;
 import com.fubang.live.ui.fragment.HotFragment;
+import com.fubang.live.ui.fragment.MaleFragment;
 import com.fubang.live.ui.fragment.NearFragment;
+import com.fubang.live.ui.fragment.SingerFragment;
+import com.fubang.live.ui.fragment.TalentFragment;
 import com.fubang.live.ui.fragment.VideoFragment;
 
 /**
@@ -49,19 +53,19 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new FollowFragment();
+            return new FollowFragment();//关注
         } else if (position == 1) {
-            return new HotFragment();
+            return new HotFragment();//热门
         } else if (position == 2) {
-            return new NearFragment();
+            return new NearFragment();//附近
         } else if (position == 3) {
-            return new HotFragment();
+            return new TalentFragment();//才艺
         } else if (position == 4) {
-            return new HotFragment();
+            return new SingerFragment();//好声音
         } else if (position == 5) {
-            return new HotFragment();
+            return new MaleFragment();//
         } else if (position == 6) {
-            return new HotFragment();
+            return new FemaleFragment();
         }
         return new FollowFragment();
     }

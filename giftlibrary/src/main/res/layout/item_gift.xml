@@ -56,7 +56,7 @@
             android:layout_marginRight="6dp"
             android:layout_toRightOf="@id/nickNameTv"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_gift_32_1" />
+            android:src="@drawable/ic_gift_21" />
     </RelativeLayout>
 
     <ImageView
