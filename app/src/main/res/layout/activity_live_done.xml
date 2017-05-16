@@ -53,14 +53,15 @@
                 android:layout_height="wrap_content"
                 android:text="18"
                 android:textColor="@color/color_main"
-                android:textSize="24dp" />
+                android:textSize="28dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="人看过"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -68,7 +69,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_live_done_kbi_get"
@@ -161,7 +163,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
-        android:padding="10dp"
+        android:padding="13dp"
         android:src="@drawable/ic_live_done_back" />
 
     <TextView

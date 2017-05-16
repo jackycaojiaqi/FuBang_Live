@@ -43,7 +43,7 @@ public class GiftUtil {
     public static List<GiftEntity> getGifts() {
         List<GiftEntity> list = new ArrayList<>();
         list.clear();
-        list.add(new GiftEntity(21, R.drawable.ic_gift_21, "心(100)"));
+        list.add(new GiftEntity(21, R.drawable.ic_gift_21, "爱心(100)"));
         list.add(new GiftEntity(22, R.drawable.ic_gift_22, "荧光棒(100)"));
         list.add(new GiftEntity(23, R.drawable.ic_gift_23, "啤酒(100)"));
         list.add(new GiftEntity(24, R.drawable.ic_gift_24, "鲜花(100)"));

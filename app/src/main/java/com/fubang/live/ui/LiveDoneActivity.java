@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.util.ShareUtil;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +50,8 @@ public class LiveDoneActivity extends BaseActivity {
     @BindView(R.id.iv_live_done_back)
     ImageView ivLiveDoneBack;
     private Context context;
+    private int audience_num = 0;
+    private String pic, name;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +59,16 @@ public class LiveDoneActivity extends BaseActivity {
         setContentView(R.layout.activity_live_done);
         context = this;
         ButterKnife.bind(this);
+        audience_num = getIntent().getIntExtra("num", 0);
+        name = getIntent().getStringExtra("name");
+        pic = getIntent().getStringExtra("pic");
+        initview();
+    }
+
+    private void initview() {
+        tvLiveDonePeopleSeeNum.setText(audience_num + " ");
+        Picasso.with(context).load(AppConstant.BASE_IMG_URL + pic).fit().into(ivLiveDonePic);
+        tvLiveDoneName.setText(name + " ");
     }
 
     @OnClick({R.id.iv_live_done_share_sina, R.id.iv_live_done_share_qq, R.id.iv_live_done_share_wechat, R.id.iv_live_done_share_wechat_circle, R.id.iv_live_done_back})

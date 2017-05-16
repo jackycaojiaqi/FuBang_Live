@@ -20,6 +20,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -513,7 +514,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
+//                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));//将自己提出房间
                     roomMain.getRoom().getChannel().Close();
                 }
             }).start();
@@ -538,7 +539,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 roomMain.getRoom().getChannel().sendUpMic();
                 roomMain.getRoom().getChannel().forTitle(room_title);
 
@@ -583,29 +583,40 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
 
     //用户离开房间回调
     @Subscriber(tag = "RoomKickoutUserInfo")
-
     public void RoomKickoutUserInfo(RoomKickoutUserInfo obj) {
         int to_id = obj.getToid();
-        for (int i = 0; i < list_audience.size(); i++) {
-            if (list_audience.get(i).getUserid() == to_id) {
-                list_audience.remove(i);
+        KLog.e(to_id);
+        if (to_id == Integer.parseInt(StartUtil.getUserId(context))) {//如果是主播自己退出
+//            DialogFactory.hideRequestDialog();
+            int audience = obj.getReserve();
+            Intent intent = new Intent(context, LiveDoneActivity.class);
+            intent.putExtra("num", audience);
+            intent.putExtra("name", userInfoAnchor.getAlias());
+            intent.putExtra("pic", userInfoAnchor.getCphoto());
+            startActivity(intent);
+            finish();
+        } else {//观众退出
+            for (int i = 0; i < list_audience.size(); i++) {
+                if (list_audience.get(i).getUserid() == to_id) {
+                    list_audience.remove(i);
+                }
             }
-        }
-        if (list_audience.size() > 20) {
-            list_audience_top = list_audience.subList(0, 19);
-        } else {
-            list_audience_top = list_audience;
-        }
-        //根据expend经验值，来重新排序。
-        Collections.sort(list_audience_top, new Comparator<RoomUserInfoNew>() {
-            @Override
-            public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
-                return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+            if (list_audience.size() > 20) {
+                list_audience_top = list_audience.subList(0, 19);
+            } else {
+                list_audience_top = list_audience;
             }
-        });
-        roomUserAdapter.setNewData(list_audience_top);
-        roomUserAdapter.notifyDataSetChanged();
-        tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
+            //根据expend经验值，来重新排序。
+            Collections.sort(list_audience_top, new Comparator<RoomUserInfoNew>() {
+                @Override
+                public int compare(RoomUserInfoNew o1, RoomUserInfoNew o2) {
+                    return Integer.parseInt(o1.getExpend()) > Integer.parseInt(o2.getExpend()) ? -1 : 1;
+                }
+            });
+            roomUserAdapter.setNewData(list_audience_top);
+            roomUserAdapter.notifyDataSetChanged();
+            tvLiveAudinceNum.setText(list_audience.size() + " ");//房间观众数量
+        }
     }
 
     //用户加入房间回调
@@ -750,7 +761,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     }, Integer.parseInt(StartUtil.getUserId(context)));
                     presenter.getUpMicInfo();
                 }
-
                 break;
             case R.id.iv_live_share:
                 doShareAction();
@@ -762,8 +772,13 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                startActivity(new Intent(context, LiveDoneActivity.class));
-                                finish();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                                    }
+                                }).start();
+
                             }
                         })
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -1014,4 +1029,21 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     String.valueOf(aMapLocation.getLongitude()));
         }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        KLog.e("KeyEvent");
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            KLog.e("KEYCODE_BACK");
+            if (DialogFactory.isShow()) {
+                KLog.e("isShow");
+                DialogFactory.hideRequestDialog();
+                return false;
+            }
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
 }

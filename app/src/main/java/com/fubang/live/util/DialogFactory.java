@@ -45,7 +45,7 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context) {
         if (mDialog != null) {
-            if (mDialog.isShowing()){
+            if (mDialog.isShowing()) {
                 mDialog.dismiss();
                 mDialog = null;
             }
@@ -56,7 +56,7 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, String tip) {
         if (mDialog != null) {
-            if (mDialog.isShowing()){
+            if (mDialog.isShowing()) {
                 mDialog.dismiss();
                 mDialog = null;
             }
@@ -68,7 +68,7 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, String tip, boolean isCancel) {
         if (mDialog != null) {
-            if (mDialog.isShowing()){
+            if (mDialog.isShowing()) {
                 mDialog.dismiss();
                 mDialog = null;
             }
@@ -79,7 +79,7 @@ public class DialogFactory {
 
     public static void showRequestDialog(final Context context, boolean isCancel) {
         if (mDialog != null) {
-            if (mDialog.isShowing()){
+            if (mDialog.isShowing()) {
                 mDialog.dismiss();
                 mDialog = null;
             }
@@ -105,6 +105,16 @@ public class DialogFactory {
                 mDialog = null;
             }
         }
+    }
+    public static boolean isShow() {
+        if (mDialog != null) {
+            if (mDialog.isShowing()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     public static void hideFavoriteDialog() {

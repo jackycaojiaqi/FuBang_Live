@@ -739,6 +739,7 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setReserve((short) 0);
         obj.setSrcid(mUserID);
         obj.setToid(toid);
+        KLog.e(mUserID + " " + toid);
         obj.setVcbid(mRoomID);
         sendPack(header, obj);
     }
