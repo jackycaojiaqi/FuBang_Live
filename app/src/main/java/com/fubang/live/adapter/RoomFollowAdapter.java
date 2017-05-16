@@ -1,12 +1,16 @@
 package com.fubang.live.adapter;
 
+import android.widget.ImageView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.fubang.live.AppConstant;
 import com.fubang.live.R;
-import com.fubang.live.entities.RoomDistanceEntity;
+import com.fubang.live.entities.RoomFollowEntity;
 import com.fubang.live.entities.RoomListEntity;
+import com.fubang.live.util.FBImage;
+import com.fubang.live.util.StringUtil;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,31 +38,23 @@ import java.util.List;
  * ━━━━━━神兽出没━━━━━━
  * Created by jacky on 17/3/10.
  */
-public class RoomNearAdapter extends BaseQuickAdapter<RoomDistanceEntity.RoomlistBean, BaseViewHolder> {
-    private List<RoomDistanceEntity.RoomlistBean> list;
+public class RoomFollowAdapter extends BaseQuickAdapter<RoomFollowEntity.DatalistBean, BaseViewHolder> {
+    private List<RoomFollowEntity.DatalistBean> list;
 
-    public RoomNearAdapter(int layoutResId, List data) {
+    public RoomFollowAdapter(int layoutResId, List data) {
         super(layoutResId, data);
         list = data;
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, RoomDistanceEntity.RoomlistBean item) {
-        Float dis = Float.valueOf(item.getDis());
+    protected void convert(BaseViewHolder helper, RoomFollowEntity.DatalistBean item) {
+        helper.setText(R.id.tv_anchor_name, item.getCalias())
+                .setText(R.id.tv_anchor_audience_num, item.getRscount() + " ")
+                .setText(R.id.tv_anchor_title, item.getCtheme() + " ");
+        if (!StringUtil.isEmptyandnull(item.getCphoto()))
+            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getCphoto()).into((ImageView) helper.getView(R.id.civ_anchor_pic));
 
-        if (dis > 1000) {
-            dis = dis / 1000;
-            BigDecimal b = new BigDecimal(dis);
-            float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
-            helper.setText(R.id.tv_room_near_name, "距离：" + f1 + "km");
-        } else {
-            BigDecimal b = new BigDecimal(dis);
-            float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
-            helper.setText(R.id.tv_room_near_name, "距离：" + f1 + "m");
-        }
-
-//        if (item.get() >= 0) {
-//            helper.setImageResource(R.id.iv_mic_people_pic, R.drawable.head0);
-//        }
+        if (!StringUtil.isEmptyandnull(item.getBphoto()))
+            FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getBphoto()).into((ImageView) helper.getView(R.id.tv_anchor_bg));
     }
 }

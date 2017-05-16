@@ -88,4 +88,7 @@
     <string name="talent">才艺</string>
     <string name="cool_boy">帅哥</string>
     <string name="cool_girl">美女</string>
+    <string name="no_more_nk">金币不足</string>
+    <string name="how_to_add_experience">开直播，看直播，就可获得经验</string>
+    <string name="how_to_add_experience_more">不想等待，礼物刷起来，刷得越多，经验越快</string>
 </resources>

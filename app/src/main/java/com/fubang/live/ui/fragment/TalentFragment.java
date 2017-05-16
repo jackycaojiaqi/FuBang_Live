@@ -158,7 +158,7 @@ public class TalentFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .params("nuserid", StartUtil.getUserId(context))
                 .params("count", count)
                 .params("page", page)
-                .params("type","才艺")
+                .params("type", 1)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {

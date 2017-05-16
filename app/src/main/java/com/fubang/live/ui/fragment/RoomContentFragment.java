@@ -79,6 +79,7 @@ import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfoNew;
@@ -392,6 +393,14 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         }
     }
 
+    private long nk_num;//用户金币总量
+
+    //在用户信息界面发送的关注指令，在房间中操作
+    @Subscriber(tag = "JoinRoomResponse")
+    private void JoinRoomResponse(JoinRoomResponse userinfo) {
+        nk_num = userinfo.getNk();
+    }
+
     //在用户信息界面发送的关注指令，在房间中操作
     @Subscriber(tag = "add_fav")
     private void addFav(final int user_id) {
@@ -435,8 +444,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 //计算等级---不是主播
                 for (RoomUserInfoNew roomUserInfoNew : list_audience) {
                     if (roomUserInfoNew.getUserid() == msg.getSrcid()) {
-                        if (!StringUtil.isEmptyandnull(roomUserInfoNew.getExpend())) {
-                            int level = (Integer.parseInt(roomUserInfoNew.getExpend()) / 100);
+                        if (!StringUtil.isEmptyandnull(roomUserInfoNew.getNb())) {
+                            int level = (Integer.parseInt(roomUserInfoNew.getNb()) / 100);
                             if (level >= 100) {
                                 level = 100;
                             }
@@ -450,8 +459,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 //是主播
                 if (userInfoAnchor != null) {
                     if (userInfoAnchor.getUserid() == msg.getSrcid()) {
-                        if (!StringUtil.isEmptyandnull(userInfoAnchor.getExpend())) {
-                            int level = (Integer.parseInt(userInfoAnchor.getExpend()) / 100);
+                        if (!StringUtil.isEmptyandnull(userInfoAnchor.getNb())) {
+                            int level = (Integer.parseInt(userInfoAnchor.getNb()) / 100);
                             if (level >= 100) {
                                 level = 100;
                             }
@@ -519,22 +528,22 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         KLog.e(obj.getUserid());
 //        tvRoomAnchorName.setText(obj.getUseralias());//主播名字
         tvAnchorId.setText(obj.getUserid() + " ");//主播ID
-        if (!StringUtil.isEmptyandnull(obj.getNb())) {
-            if (Double.parseDouble(obj.getNb()) > 999999999) {//需要转成小数点
-                KLog.e(obj.getNb());
-                float nk = Float.parseFloat(obj.getNb()) / 1000000000;
-                BigDecimal b = new BigDecimal(nk);
-                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
-                tvAnchorKbiNum.setText(f1 + "亿");//主播K币
-            } else if (Double.parseDouble(obj.getNb()) > 9999999) {
-                float nk = Float.parseFloat(obj.getNb()) / 10000000;
-                BigDecimal b = new BigDecimal(nk);
-                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
-                tvAnchorKbiNum.setText(f1 + "百万");//主播K币
-            } else {
-                tvAnchorKbiNum.setText(obj.getNb() + "");//主播K币
-            }
-        }
+//        if (!StringUtil.isEmptyandnull(obj.getNb())) {
+//            if (Double.parseDouble(obj.getNb()) > 999999999) {//需要转成小数点
+//                KLog.e(obj.getNb());
+//                float nk = Float.parseFloat(obj.getNb()) / 1000000000;
+//                BigDecimal b = new BigDecimal(nk);
+//                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+//                tvAnchorKbiNum.setText(f1 + "亿");//主播K币
+//            } else if (Double.parseDouble(obj.getNb()) > 9999999) {
+//                float nk = Float.parseFloat(obj.getNb()) / 10000000;
+//                BigDecimal b = new BigDecimal(nk);
+//                float f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+//                tvAnchorKbiNum.setText(f1 + "百万");//主播K币
+//            } else {
+//                tvAnchorKbiNum.setText(obj.getNb() + "");//主播K币
+//            }
+//        }
         if (!StringUtil.isEmptyandnull(obj.getCphoto())) {
             FBImage.Create(context, AppConstant.BASE_IMG_URL + obj.getCphoto()).into(ivRoomAnchorSmallPic);
         }
@@ -638,8 +647,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
         //============================等级大于30进入房间聊天列表会有通知
         RoomChatMsg msg = new RoomChatMsg();
-        if (!StringUtil.isEmptyandnull(obj.getExpend())) {
-            int level = (Integer.parseInt(obj.getExpend()) / 100);
+        if (!StringUtil.isEmptyandnull(obj.getNb())) {
+            int level = (Integer.parseInt(obj.getNb()) / 100);
             if (level >= 30) {
                 msg.setType(2);
                 msg.setSrcalias(obj.getAlias());
@@ -1004,6 +1013,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private List<GiftEntity> gifts = new ArrayList<>();
     private int giftId;
     private View view_pop_gift;
+    private int gift_position = -1;
 
     //礼物的悬浮框
     private void showWindow() {
@@ -1028,6 +1038,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 giftId = gifts.get(position).getGiftId();
                 String name = gifts.get(position).getGiftName();
                 giftName.setText(name + " 送给");
+                gift_position = position;
             }
         });
         //发送礼物
@@ -1039,6 +1050,10 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     return;
                 }
                 final int count = Integer.parseInt(giftCount.getText().toString());
+                if (nk_num < (gifts.get(gift_position).getPrice() * count)) {
+                    ToastUtil.show(context, R.string.no_more_nk);
+                    return;
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

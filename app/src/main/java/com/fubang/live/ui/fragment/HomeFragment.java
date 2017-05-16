@@ -53,7 +53,7 @@ public class HomeFragment extends BaseFragment {
         //Fragment+ViewPager+FragmentViewPager组合的使用
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
                 getActivity());
-        vpFmHomeTab.setOffscreenPageLimit(3);
+        vpFmHomeTab.setOffscreenPageLimit(0);
         vpFmHomeTab.setAdapter(adapter);
         vpFmHomeTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

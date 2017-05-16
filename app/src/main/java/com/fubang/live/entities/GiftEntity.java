@@ -36,6 +36,15 @@ public class GiftEntity {
     private int giftId;
     private int giftImage;
     private String giftName;
+    private long price;
+
+    public long getPrice() {
+        return price;
+    }
+
+    public void setPrice(long price) {
+        this.price = price;
+    }
 
     public String getGiftName() {
         return giftName;
@@ -61,10 +70,11 @@ public class GiftEntity {
         this.giftImage = giftImage;
     }
 
-    public GiftEntity(int giftId, int giftImage, String giftName) {
+    public GiftEntity(int giftId, int giftImage, String giftName,long price) {
         this.giftName = giftName;
         this.giftId = giftId;
         this.giftImage = giftImage;
+        this.price = price;
     }
     public GiftEntity() {
     }

@@ -118,6 +118,14 @@ public class MainActivity extends BaseActivity implements RtmpUrlView, AMapLocat
         MobclickAgent.onPause(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mlocationClient != null) {
+            mlocationClient.onDestroy();
+        }
+    }
+
     private void initlocation() {
         mlocationClient = new AMapLocationClient(this);
         //初始化定位参数

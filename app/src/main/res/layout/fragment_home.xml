@@ -13,10 +13,10 @@
         <LinearLayout
             android:id="@+id/ll_fm_home_tab"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
+            android:layout_height="68dp"
             android:background="@color/color_main"
             android:orientation="horizontal"
-            android:paddingTop="18dp"
+            android:paddingTop="22dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
 

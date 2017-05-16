@@ -36,6 +36,8 @@ public class AppConstant {
     public static final String MSG_DELETE_ALL_HISTORY = "/index.php/app/clear_history?";//清除所有历史
     public static final String MSG_DELETE_ONE_FAV = "/index.php/app/delete_fav?";//清除单个关注
     public static final String MSG_GET_FAV_LIST = "/index.php/app/room_fav?";//获取关注注列表
+    public static final String MSG_GET_DISTANCE_LIST = "/index.php/app/dis_list?";//获取关注注列表
+
 
     public static final String MSG_GET_ROOM_BY_KEY = "/index.php/app/ser_list?";//根据关键字模糊查询
 

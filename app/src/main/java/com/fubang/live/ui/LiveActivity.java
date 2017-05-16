@@ -531,6 +531,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         mediaPlayer.release();
         mediaPlayer = null;
         EventBus.getDefault().unregister(this);
+        if (mlocationClient != null) {
+            mlocationClient.onDestroy();
+        }
     }
 
     private String room_title;

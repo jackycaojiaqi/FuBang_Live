@@ -13,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
@@ -22,6 +20,7 @@ import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.ui.AuthApplyActivity;
 import com.fubang.live.ui.FavListActivity;
 import com.fubang.live.ui.HistoryActivity;
+import com.fubang.live.ui.LevelInfoActivity;
 import com.fubang.live.ui.LoginActivity;
 import com.fubang.live.ui.UserInfoActivity;
 import com.fubang.live.util.FBImage;
@@ -31,7 +30,6 @@ import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
-import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +69,10 @@ public class MineFragment extends BaseFragment {
     TextView tvMineAuth;
     @BindView(R.id.tv_mine_sign)
     TextView tvMineSign;
+    @BindView(R.id.tv_mine_level)
+    TextView tvMineLevel;
+    @BindView(R.id.rll_mine_level)
+    RelativeLayout rllMineLevel;
 
     private Context context;
 
@@ -131,8 +133,8 @@ public class MineFragment extends BaseFragment {
                                 tvMineSign.setText(userEntity.getInfo().getCidiograph());
                             }
                             //粉丝数
-                            tvMineFans.setText("粉丝 " + userEntity.getInfo().getGuanzhunum());
-                            //关注数
+//                            tvMineFans.setText("粉丝 " + userEntity.getInfo().getGuanzhunum());
+                            //关注数、
                             tvMineFav.setText("关注 " + userEntity.getInfo().getGuanzhunum());
                             //金币数
                             tvMineMoney.setText(userEntity.getInfo().getNk() + " K币");
@@ -145,7 +147,6 @@ public class MineFragment extends BaseFragment {
 
                         }
                     }
-
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
@@ -162,7 +163,7 @@ public class MineFragment extends BaseFragment {
     }
 
     @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history
-            , R.id.tv_mine_fav})
+            , R.id.tv_mine_fav, R.id.rll_mine_level})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -186,6 +187,11 @@ public class MineFragment extends BaseFragment {
             case R.id.tv_mine_fav:
                 intent = new Intent(context, FavListActivity.class);
                 intent.putExtra(AppConstant.USER_ID, StartUtil.getUserId(context));
+                startActivity(intent);
+                break;
+            case R.id.rll_mine_level:
+                intent = new Intent(context, LevelInfoActivity.class);
+                intent.putExtra("experience", "1110");
                 startActivity(intent);
                 break;
         }

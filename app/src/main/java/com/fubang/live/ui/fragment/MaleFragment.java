@@ -158,7 +158,7 @@ public class MaleFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                 .params("nuserid", StartUtil.getUserId(context))
                 .params("count", count)
                 .params("page", page)
-                .params("type","帅哥")
+                .params("type",3)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {

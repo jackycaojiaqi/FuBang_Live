@@ -79,6 +79,10 @@
             android:name=".ui.LivePickTypeActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.LevelInfoActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"
@@ -114,12 +118,14 @@
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
-            android:screenOrientation="behind"></activity>
+            android:screenOrientation="behind" >
+        </activity>
         <activity
             android:name="com.alipay.sdk.auth.AuthActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
-            android:screenOrientation="behind"></activity>
+            android:screenOrientation="behind" >
+        </activity>
         <!-- 支付宝声明的activity 结束 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"

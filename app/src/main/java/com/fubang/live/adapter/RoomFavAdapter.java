@@ -55,7 +55,5 @@ public class RoomFavAdapter extends BaseQuickAdapter<RoomListEntity, BaseViewHol
 
         if (!StringUtil.isEmptyandnull(item.getBphoto()))
             FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getBphoto()).into((ImageView) helper.getView(R.id.tv_anchor_bg));
-
-
     }
 }

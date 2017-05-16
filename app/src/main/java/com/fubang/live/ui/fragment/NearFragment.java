@@ -32,6 +32,7 @@ import com.fubang.live.R;
 import com.fubang.live.adapter.RoomFavAdapter;
 import com.fubang.live.adapter.RoomNearAdapter;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.entities.RoomDistanceEntity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.listener.HidingScrollListener;
@@ -66,7 +67,7 @@ import okhttp3.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, AMapLocationListener {
     @BindView(R.id.tv_near_filter_name)
     TextView tvNearFilterName;
     @BindView(R.id.rl_near_filter)
@@ -80,7 +81,7 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     private int count = 10;
     private int page = 1;
     private int group = 0;
-    private List<RoomListEntity> list = new ArrayList<>();
+    private List<RoomDistanceEntity.RoomlistBean> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
     //声明mLocationOption对象
     private AMapLocationClientOption mLocationOption = null;
@@ -127,18 +128,7 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         //初始化定位参数
         mLocationOption = new AMapLocationClientOption();
         //设置定位监听
-        mlocationClient.setLocationListener(new AMapLocationListener() {
-            @Override
-            public void onLocationChanged(AMapLocation aMapLocation) {
-                if (aMapLocation != null) {
-                    StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
-                    StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
-                    LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
-                            String.valueOf(aMapLocation.getLongitude()));
-                    initdate();
-                }
-            }
-        });
+        mlocationClient.setLocationListener(this);
         //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置定位间隔,单位毫秒,默认为2000ms
@@ -150,20 +140,27 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         // 在定位结束后，在合适的生命周期调用onDestroy()方法
         // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
         //启动定位
-        mlocationClient.startLocation();
+//        mlocationClient.startLocation();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (mlocationClient != null) {
-            mlocationClient.startLocation();
+            initdate();
         }
 
     }
 
-    private void initview() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mlocationClient != null) {
+            mlocationClient.onDestroy();
+        }
+    }
 
+    private void initview() {
         //=========================recycleview
         roomFavAdapter = new RoomNearAdapter(R.layout.item_room_near, list);
         rvNear.setLayoutManager(new GridLayoutManager(getActivity(), 3));
@@ -187,15 +184,15 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         srlNear.setOnRefreshListener(this);
         //设置样式刷新显示的位置
         srlNear.setProgressViewOffset(true, -10, 50);
-
     }
 
-    private RoomEntity roomEntity;
+    private RoomDistanceEntity roomEntity;
 
     private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_DISTANCE_LIST;
         OkGo.get(url)//
                 .tag(this)//
+                .params("nuserid", StartUtil.getUserId(context))
                 .params(AppConstant.COUNT, count)
                 .params(AppConstant.PAGE, page)
                 .execute(new StringCallback() {
@@ -203,10 +200,10 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                     public void onSuccess(String s, Call call, Response response) {
                         srlNear.setRefreshing(false);
                         try {
-                            roomEntity = new Gson().fromJson(s, RoomEntity.class);
+                            roomEntity = new Gson().fromJson(s, RoomDistanceEntity.class);
                             if (roomEntity.getStatus().equals("success")) {
                                 list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                List<RoomDistanceEntity.RoomlistBean> roomListEntities = roomEntity.getRoomlist();
                                 list.addAll(roomListEntities);
                                 roomFavAdapter.notifyDataSetChanged();
                             }
@@ -286,13 +283,37 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     }
 
+    private long before = 0;
+    private long after = 0;
 
     @Override
     public void onRefresh() {
         page = 1;
-        if (mlocationClient != null) {
+        before = System.currentTimeMillis();
+        if (after == 0) {//第一次先定位
             mlocationClient.startLocation();
+        } else {//之后判断间隔时间
+            if (mlocationClient != null) {
+                if (after - before > 1000000)//100秒后才刷新
+                {
+                    mlocationClient.startLocation();
+                } else {
+                    initdate();
+                }
+            }
         }
     }
 
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null) {
+            StartUtil.putLAT(context, String.valueOf(aMapLocation.getLatitude()));
+            StartUtil.putLNG(context, String.valueOf(aMapLocation.getLongitude()));
+            LocationUtil.uploadLatLng(context, String.valueOf(aMapLocation.getLatitude()),
+                    String.valueOf(aMapLocation.getLongitude()));
+            initdate();
+            after = before;
+        }
+
+    }
 }

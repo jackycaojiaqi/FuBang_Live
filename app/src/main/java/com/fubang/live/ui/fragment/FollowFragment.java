@@ -20,8 +20,10 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fubang.live.AppConstant;
 import com.fubang.live.R;
 import com.fubang.live.adapter.RoomFavAdapter;
+import com.fubang.live.adapter.RoomFollowAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.RoomEntity;
+import com.fubang.live.entities.RoomFollowEntity;
 import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.listener.HidingScrollListener;
@@ -66,7 +68,7 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
     private int count = 10;
     private int page = 1;
     private int group = 0;
-    private List<RoomListEntity> list = new ArrayList<>();
+    private List<RoomFollowEntity.DatalistBean> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
 
     @Nullable
@@ -99,7 +101,7 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
     private void initview() {
 
         //=========================recycleview
-        roomFavAdapter = new RoomFavAdapter(R.layout.item_room, list);
+        roomFavAdapter = new RoomFollowAdapter(R.layout.item_room, list);
         rvFollow.setLayoutManager(new GridLayoutManager(getActivity(), 1));
         roomFavAdapter.openLoadAnimation();
         roomFavAdapter.setAutoLoadMoreSize(5);
@@ -127,7 +129,7 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
 
     }
 
-    private RoomEntity roomEntity;
+    private RoomFollowEntity roomEntity;
 
     private void initdate() {
         String url = AppConstant.BASE_URL + AppConstant.MSG_GET_FAV_LIST;
@@ -135,16 +137,16 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .tag(this)//
                 .params(AppConstant.COUNT, count)
                 .params(AppConstant.PAGE, page)
+                .params("nuserid", StartUtil.getUserId(context))
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         srlRoom.setRefreshing(false);
                         try {
-                            roomEntity = new Gson().fromJson(s, RoomEntity.class);
+                            roomEntity = new Gson().fromJson(s, RoomFollowEntity.class);
                             if (roomEntity.getStatus().equals("success")) {
-
                                 list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                List<RoomFollowEntity.DatalistBean> roomListEntities = roomEntity.getDatalist();
                                 list.addAll(roomListEntities);
                                 roomFavAdapter.notifyDataSetChanged();
                             }

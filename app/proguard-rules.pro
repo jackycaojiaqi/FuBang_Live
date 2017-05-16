@@ -205,8 +205,7 @@
 -keepattributes *Annotation*
 
 # # 支付宝支付混淆
-#-libraryjars libs/alipaySDK-20170309.jar
-
+-libraryjars libs/alipaySDK-20170510.jar
 -keep class com.alipay.android.app.IAlixPay{*;}
 -keep class com.alipay.android.app.IAlixPay$Stub{*;}
 -keep class com.alipay.android.app.IRemoteServiceCallback{*;}

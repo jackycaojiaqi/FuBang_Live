@@ -158,7 +158,7 @@ public class SingerFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .params("nuserid", StartUtil.getUserId(context))
                 .params("count", count)
                 .params("page", page)
-                .params("type","好声音")
+                .params("type",2)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {

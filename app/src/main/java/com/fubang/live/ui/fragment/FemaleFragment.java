@@ -158,7 +158,7 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .params("nuserid", StartUtil.getUserId(context))
                 .params("count", count)
                 .params("page", page)
-                .params("type","美女")
+                .params("type",4)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
