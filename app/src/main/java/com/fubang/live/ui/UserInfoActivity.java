@@ -112,6 +112,7 @@ public class UserInfoActivity extends TakePhotoActivity {
 
     private void initdate() {
         userInfoEntity = getIntent().getParcelableExtra(AppConstant.CONTENT);
+        KLog.e(userInfoEntity.getInfo().getType()+" ");
         if (userInfoEntity.getStatus().equals("success")) {
             //头像
             if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getCphoto())) {
@@ -126,7 +127,6 @@ public class UserInfoActivity extends TakePhotoActivity {
                 } else {
                     tvUserInfoGender.setText(R.string.female);
                 }
-
             } else {
                 tvUserInfoGender.setText(R.string.unknow);
             }
@@ -139,12 +139,18 @@ public class UserInfoActivity extends TakePhotoActivity {
                 tvUserInfoAddr.setText(userInfoEntity.getInfo().getLocation() + " ");
             }
             //直播类型
-            if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getType())) {
-                tvUserLiveType.setText(userInfoEntity.getInfo().getType() + " ");
-            } else {
+            KLog.e(userInfoEntity.getInfo().getType());
+            if (userInfoEntity.getInfo().getType() == 0) {
+                tvUserLiveType.setText("请选择");
+            } else if (userInfoEntity.getInfo().getType() == 1) {
                 tvUserLiveType.setText("才艺");
+            } else if (userInfoEntity.getInfo().getType() == 2) {
+                tvUserLiveType.setText("好声音");
+            } else if (userInfoEntity.getInfo().getType() == 3) {
+                tvUserLiveType.setText("帅哥");
+            } else if (userInfoEntity.getInfo().getType() == 4) {
+                tvUserLiveType.setText("美女");
             }
-
         }
     }
 
@@ -210,7 +216,11 @@ public class UserInfoActivity extends TakePhotoActivity {
                 break;
             case R.id.rl_user_live_type:
                 intent = new Intent(context, LivePickTypeActivity.class);
-                intent.putExtra("content", userInfoEntity.getInfo().getType());
+                if (userInfoEntity.getInfo().getType() == 0) {
+                    intent.putExtra("content", 1);
+                } else {
+                    intent.putExtra("content", userInfoEntity.getInfo().getType());
+                }
                 startActivityForResult(intent, MSG_MODIFY_INFO_TYPE);
                 break;
         }
@@ -408,10 +418,16 @@ public class UserInfoActivity extends TakePhotoActivity {
                 }
                 KLog.e(sign);
             } else if (requestCode == MSG_MODIFY_INFO_TYPE) {
-                String type = data.getStringExtra("type");
-                if (!StringUtil.isEmptyandnull(sign)) {
-                    tvUserLiveType.setText(type);
-                    userInfoEntity.getInfo().setType(type);
+                int type = data.getIntExtra("type", 1);
+                userInfoEntity.getInfo().setType(type);
+                if (type == 1) {
+                    tvUserLiveType.setText("才艺");
+                } else if (type == 2) {
+                    tvUserLiveType.setText("好声音");
+                } else if (type == 3) {
+                    tvUserLiveType.setText("帅哥");
+                } else if (type == 4) {
+                    tvUserLiveType.setText("美女");
                 }
                 KLog.e(type);
             }

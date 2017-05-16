@@ -152,7 +152,8 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     .addRequestCode(100)
                     .permissions(
                             Manifest.permission.CAMERA,
-                            Manifest.permission.RECORD_AUDIO)
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
                     .request();
         } else {
         }
@@ -245,6 +246,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         giftFrameLayout1 = (GiftFrameLayout) findViewById(R.id.gift_layout1);
         giftFrameLayout2 = (GiftFrameLayout) findViewById(R.id.gift_layout2);
         giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
+
     }
 
     private void handleLogic(View contentView, final RoomUserInfoNew roomUserInfo) {
@@ -397,7 +399,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     }
 
     @PermissionSuccess(requestCode = 300)
-    public void Permission300Fail() {
+    public void Permission300Success() {
         initlocation();
     }
 
@@ -1029,21 +1031,5 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     String.valueOf(aMapLocation.getLongitude()));
         }
     }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        KLog.e("KeyEvent");
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            KLog.e("KEYCODE_BACK");
-            if (DialogFactory.isShow()) {
-                KLog.e("isShow");
-                DialogFactory.hideRequestDialog();
-                return false;
-            }
-
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
 
 }

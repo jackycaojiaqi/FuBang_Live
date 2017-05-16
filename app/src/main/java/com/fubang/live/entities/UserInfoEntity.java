@@ -54,13 +54,13 @@ public class UserInfoEntity implements Parcelable {
         private String ngender = "1";
         private String micstate;
         private String location;
-        private String type;
+        private int type = 1;
 
-        public String getType() {
+        public int getType() {
             return type;
         }
 
-        public void setType(String type) {
+        public void setType(int type) {
             this.type = type;
         }
 
@@ -172,6 +172,7 @@ public class UserInfoEntity implements Parcelable {
             dest.writeString(this.ngender);
             dest.writeString(this.micstate);
             dest.writeString(this.location);
+            dest.writeInt(this.type);
         }
 
         protected InfoBean(Parcel in) {
@@ -185,6 +186,7 @@ public class UserInfoEntity implements Parcelable {
             this.ngender = in.readString();
             this.micstate = in.readString();
             this.location = in.readString();
+            this.type = in.readInt();
         }
 
         public static final Creator<InfoBean> CREATOR = new Creator<InfoBean>() {

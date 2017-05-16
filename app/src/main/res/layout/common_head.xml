@@ -11,7 +11,7 @@
         android:id="@+id/iv_back"
         android:layout_width="40dp"
         android:layout_height="match_parent"
-        android:padding="15dp"
+        android:padding="13dp"
         android:src="@drawable/ic_left_arrow" />
 
     <TextView
@@ -30,7 +30,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:gravity="center"
-        android:paddingTop="10dp"
         android:text="提交"
         android:textColor="@color/white"
         android:textSize="16dp"

@@ -11,6 +11,8 @@ import com.fubang.live.R;
 import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.AdEntity;
 import com.fubang.live.entities.MusicListEntity;
+import com.fubang.live.entities.UserInfoEntity;
+import com.fubang.live.util.FBImage;
 import com.fubang.live.util.LiteOrmDBUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
@@ -19,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.socks.library.KLog;
 
 import java.util.List;
 
@@ -62,6 +65,7 @@ public class WelcomeActivity extends BaseActivity {
                                             List<AdEntity.PicListBean> listBeen = LiteOrmDBUtil.getQueryAll(AdEntity.PicListBean.class);
                                             if (!StringUtil.isEmptyandnull(userid)) {
                                                 startActivity(new Intent(context, MainActivity.class));
+
                                                 finish();
                                             } else {
                                                 startActivity(new Intent(context, LoginActivity.class));
@@ -83,7 +87,38 @@ public class WelcomeActivity extends BaseActivity {
                         });
             }
         }, 1000);
-
-
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserId(context))) {//获取直播类型
+            if (StartUtil.getLiveType(context).equals("0")) {
+                initdate();
+            }
+        }
     }
+
+    private UserInfoEntity userEntity;
+
+    private void initdate() {
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_USER_INFO;
+        OkGo.get(url)//
+                .tag(this)//
+                .params("nuserid", StartUtil.getUserId(context))
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        userEntity = new Gson().fromJson(s, UserInfoEntity.class);
+                        if (userEntity.getStatus().equals("success")) {
+                            if (userEntity.getInfo().getType() == 0) {
+                                StartUtil.putLiveType(context, "0");
+                            } else if (userEntity.getInfo().getType() > 0) {
+                                StartUtil.putLiveType(context, String.valueOf(userEntity.getInfo().getType()));
+                            }
+                        }
+                    }
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                        e.printStackTrace();
+                    }
+                });
+    }
+
 }

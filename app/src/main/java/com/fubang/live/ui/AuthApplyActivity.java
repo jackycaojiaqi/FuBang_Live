@@ -1,6 +1,7 @@
 package com.fubang.live.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -72,15 +73,19 @@ public class AuthApplyActivity extends BaseActivity {
             case R.id.tv_auth_apply_submit://支付宝验证身份
                 String user_name = etAuthApplyName.getText().toString().trim();
                 String user_id = etAuthApplyId.getText().toString().trim();
+
                 if (user_name.length() < 2) {
                     ToastUtil.show(context, R.string.name_incorrect);
+                    return;
+                }
+                if (user_id.indexOf(" ") != -1) {
+                    ToastUtil.show(context, R.string.id_incorrect);
                     return;
                 }
                 if (user_id.length() != 18) {
                     ToastUtil.show(context, R.string.id_incorrect);
                     return;
                 }
-                String result = IdcardUtils.toNewIdCard(user_id);
                 if (!IdcardUtils.isRealIDCard(user_id)) {
                     ToastUtil.show(context, R.string.id_incorrect);
                     return;
@@ -96,8 +101,15 @@ public class AuthApplyActivity extends BaseActivity {
                             @Override
                             public void onSuccess(String s, Call call, Response response) {
                                 ToastUtil.show(context, R.string.up_auth_info_success);
+                                //没有设置直播类型先去设置
+                                if (StartUtil.getLiveType(context).equals("0")) {
+                                    Intent intent = new Intent(context, LivePickTypeActivity.class);
+                                    intent.putExtra("has_type", false);
+                                    startActivity(intent);
+                                }
                                 finish();
                             }
+
                             @Override
                             public void onError(Call call, Response response, Exception e) {
                                 super.onError(call, response, e);

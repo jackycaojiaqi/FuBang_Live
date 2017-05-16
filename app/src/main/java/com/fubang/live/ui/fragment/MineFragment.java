@@ -106,6 +106,7 @@ public class MineFragment extends BaseFragment {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         userEntity = new Gson().fromJson(s, UserInfoEntity.class);
+
                         if (userEntity.getStatus().equals("success")) {
                             //名字
                             tvMineName.setText(userEntity.getInfo().getCalias() + " ");

@@ -51,8 +51,11 @@ public class LivePickTypeActivity extends BaseActivity {
     RadioGroup rgGender;
     @BindView(R.id.tv_submit)
     TextView tvSubmit;
-    private String type = "才艺";
+    @BindView(R.id.tv_type_is_first)
+    TextView tvTypeIs_First;
+    private int type = 1;
     private Context context;
+    private boolean has_type = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,17 +64,45 @@ public class LivePickTypeActivity extends BaseActivity {
         setContentView(R.layout.activity_live_pick_type);
         ButterKnife.bind(this);
         context = this;
+        type = getIntent().getIntExtra("content", 1);
+        has_type = getIntent().getBooleanExtra("has_type", true);
+        if (!has_type) {
+            tvTypeIs_First.setVisibility(View.VISIBLE);
+        } else {
+            tvTypeIs_First.setVisibility(View.GONE);
+        }
         initview();
     }
 
     private void initview() {
         back(ivBack);
-        setTitle("选择直播类型");
+        tvTitle.setText("选择直播类型");
         tvSubmit.setVisibility(View.VISIBLE);
+        if (type == 1) {
+            rbTypeTalent.setChecked(true);
+            rbTypeMale.setChecked(false);
+            rbTypeSinger.setChecked(false);
+            rbTypeFemale.setChecked(false);
+        } else if (type == 2) {
+            rbTypeTalent.setChecked(false);
+            rbTypeMale.setChecked(false);
+            rbTypeSinger.setChecked(true);
+            rbTypeFemale.setChecked(false);
+        } else if (type == 3) {
+            rbTypeTalent.setChecked(false);
+            rbTypeMale.setChecked(true);
+            rbTypeSinger.setChecked(false);
+            rbTypeFemale.setChecked(false);
+        } else if (type == 4) {
+            rbTypeTalent.setChecked(false);
+            rbTypeMale.setChecked(false);
+            rbTypeSinger.setChecked(false);
+            rbTypeFemale.setChecked(true);
+        }
         rbTypeTalent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type = "才艺";
+                type = 1;
                 rbTypeTalent.setChecked(true);
                 rbTypeMale.setChecked(false);
                 rbTypeSinger.setChecked(false);
@@ -81,7 +112,7 @@ public class LivePickTypeActivity extends BaseActivity {
         rbTypeMale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type = "帅哥";
+                type = 3;
                 rbTypeTalent.setChecked(false);
                 rbTypeMale.setChecked(true);
                 rbTypeSinger.setChecked(false);
@@ -91,7 +122,7 @@ public class LivePickTypeActivity extends BaseActivity {
         rbTypeSinger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type = "好声音";
+                type = 2;
                 rbTypeTalent.setChecked(false);
                 rbTypeMale.setChecked(false);
                 rbTypeSinger.setChecked(true);
@@ -101,7 +132,7 @@ public class LivePickTypeActivity extends BaseActivity {
         rbTypeFemale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type = "美女";
+                type = 4;
                 rbTypeTalent.setChecked(false);
                 rbTypeMale.setChecked(false);
                 rbTypeSinger.setChecked(false);
@@ -117,7 +148,7 @@ public class LivePickTypeActivity extends BaseActivity {
                 String url = AppConstant.BASE_URL + AppConstant.MSG_MODIFY_USER_INFO;
                 Map<String, String> params = new HashMap<>();
                 params.put("nuserid", StartUtil.getUserId(context));
-                params.put("type", type);
+                params.put("type", String.valueOf(type));
                 OkGo.post(url)
                         .tag(this)
                         .params(params)
@@ -128,11 +159,17 @@ public class LivePickTypeActivity extends BaseActivity {
                                     JSONObject object = new JSONObject(s);
                                     String states = object.getString("status");
                                     if (states.equals("success")) {
-                                        ToastUtil.show(context, R.string.modify_success);
-                                        Intent intent = new Intent();
-                                        intent.putExtra("type", type);
-                                        setResult(RESULT_OK, intent);
-                                        finish();
+                                        if (!has_type) {
+                                            finish();
+                                        } else {
+                                            StartUtil.putLiveType(context, String.valueOf(type));
+                                            ToastUtil.show(context, R.string.modify_success);
+                                            Intent intent = new Intent();
+                                            intent.putExtra("type", type);
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+
                                     } else {
                                         ToastUtil.show(context, R.string.modify_failed);
                                     }
