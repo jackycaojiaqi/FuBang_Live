@@ -84,7 +84,7 @@ public class FavListActivity extends BaseActivity {
             }
         });
         roomHistoryAdapter.bindToRecyclerView(rvFav);
-        roomHistoryAdapter.setEmptyView(R.layout.empty_view);
+        roomHistoryAdapter.setEmptyView(R.layout.empty_view_no_main);
         //水平分割线
         rvFav.addItemDecoration(new DividerItemDecoration(
                 context, DividerItemDecoration.HORIZONTAL_LIST, 5, getResources().getColor(R.color.gray_dan)));

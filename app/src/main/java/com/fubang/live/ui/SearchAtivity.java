@@ -81,7 +81,7 @@ public class SearchAtivity extends BaseActivity {
             }
         });
         SearchListAdapter.bindToRecyclerView(rvSearch);
-        SearchListAdapter.setEmptyView(R.layout.empty_view);
+        SearchListAdapter.setEmptyView(R.layout.empty_view_no_main);
         rvSearch.setAdapter(SearchListAdapter);
         //水平分割线
         rvSearch.addItemDecoration(new DividerItemDecoration(

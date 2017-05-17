@@ -10,6 +10,7 @@
         android:id="@+id/room_gift_list"
         android:layout_width="match_parent"
         android:layout_height="180dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:numColumns="4" />
@@ -70,29 +71,51 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:paddingRight="10dp"
-        android:orientation="horizontal">
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:paddingRight="10dp">
 
         <TextView
             android:id="@+id/tv_room_nk_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:text="金币余额 1000"
+            android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
-            android:textColor="@color/login_wechat"
-            android:layout_centerHorizontal="true" />
+            android:layout_marginRight="20dp"
+            android:text="余额 1000"
+            android:textColor="@color/login_wechat" />
 
-        <TextView
-            android:id="@+id/tv_room_goto_pay"
+        <LinearLayout
+            android:id="@+id/ll_room_goto_pay"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:textSize="18dp"
-            android:gravity="center"
-            android:text="去充值  >"
-            android:textColor="@color/login_wechat"
-            />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="去充值"
+                android:textColor="@color/login_wechat"
+                android:textSize="18dp" />
+            <ImageView
+                android:layout_width="20dp"
+                android:src="@drawable/ic_pay_nk"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text=">"
+                android:textColor="@color/login_wechat"
+                android:textSize="18dp" />
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

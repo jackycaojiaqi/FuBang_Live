@@ -1034,7 +1034,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         GridView gridView = (GridView) view_pop_gift.findViewById(R.id.room_gift_list);
         Button giftSendBtn = (Button) view_pop_gift.findViewById(R.id.gift_send_btn);
         final TextView giftName = (TextView) view_pop_gift.findViewById(R.id.gift_name_txt);
-        TextView goto_pay = (TextView) view_pop_gift.findViewById(R.id.tv_room_goto_pay);
+        LinearLayout goto_pay = (LinearLayout) view_pop_gift.findViewById(R.id.ll_room_goto_pay);
         tv_nk_num = (TextView) view_pop_gift.findViewById(R.id.tv_room_nk_num);
         final EditText giftCount = (EditText) view_pop_gift.findViewById(R.id.gift_count);
 //        final EditText
@@ -1087,7 +1087,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 startActivity(intent);
             }
         });
-        tv_nk_num.setText("金币余额 " + nk_num);
+        tv_nk_num.setText("余额:" + nk_num);
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         ColorDrawable dw = new ColorDrawable(0x00ffffff);

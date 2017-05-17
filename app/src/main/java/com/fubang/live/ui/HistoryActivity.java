@@ -93,7 +93,7 @@ public class HistoryActivity extends BaseActivity {
             }
         });
         roomHistoryAdapter.bindToRecyclerView(rvHistory);
-        roomHistoryAdapter.setEmptyView(R.layout.empty_view);
+        roomHistoryAdapter.setEmptyView(R.layout.empty_view_no_main);
         //水平分割线
         rvHistory.addItemDecoration(new DividerItemDecoration(
                 context, DividerItemDecoration.HORIZONTAL_LIST, 5, getResources().getColor(R.color.gray_dan)));
