@@ -83,6 +83,10 @@
             android:name=".ui.LevelInfoActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PayActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <!--七牛自带-->
         <activity
             android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"

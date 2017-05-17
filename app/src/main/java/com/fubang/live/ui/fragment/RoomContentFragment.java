@@ -56,6 +56,7 @@ import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
 import com.fubang.live.ui.LiveDoneActivity;
+import com.fubang.live.ui.PayActivity;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.ui.UserInfoPageActivity;
 import com.fubang.live.util.ConfigUtils;
@@ -395,7 +396,17 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     private long nk_num;//用户金币总量
 
-    //在用户信息界面发送的关注指令，在房间中操作
+
+    //充值金币成功后，
+    @Subscriber(tag = "onPaySuccess")
+    private void onPaySuccess(long nk) {
+        nk_num = nk;
+        if (tv_nk_num != null) {
+            tv_nk_num.setText("金币余额 " + nk_num);
+        }
+    }
+
+    //用户第一次加入房间，获取金币数量
     @Subscriber(tag = "JoinRoomResponse")
     private void JoinRoomResponse(JoinRoomResponse userinfo) {
         nk_num = userinfo.getNk();
@@ -1014,6 +1025,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private int giftId;
     private View view_pop_gift;
     private int gift_position = -1;
+    private TextView tv_nk_num;
 
     //礼物的悬浮框
     private void showWindow() {
@@ -1022,6 +1034,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         GridView gridView = (GridView) view_pop_gift.findViewById(R.id.room_gift_list);
         Button giftSendBtn = (Button) view_pop_gift.findViewById(R.id.gift_send_btn);
         final TextView giftName = (TextView) view_pop_gift.findViewById(R.id.gift_name_txt);
+        TextView goto_pay = (TextView) view_pop_gift.findViewById(R.id.tv_room_goto_pay);
+        tv_nk_num = (TextView) view_pop_gift.findViewById(R.id.tv_room_nk_num);
         final EditText giftCount = (EditText) view_pop_gift.findViewById(R.id.gift_count);
 //        final EditText
         giftToUser = (TextView) view_pop_gift.findViewById(R.id.gift_to_user);
@@ -1065,6 +1079,15 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 //                sendControl.setVisibility(View.VISIBLE);
             }
         });
+        goto_pay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PayActivity.class);
+                intent.putExtra("nk_num", nk_num);
+                startActivity(intent);
+            }
+        });
+        tv_nk_num.setText("金币余额 " + nk_num);
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         ColorDrawable dw = new ColorDrawable(0x00ffffff);
