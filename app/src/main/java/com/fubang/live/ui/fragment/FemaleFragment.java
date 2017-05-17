@@ -119,6 +119,7 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
         //======================banner
         final List<AdEntity.PicListBean> listBeen = LiteOrmDBUtil.getQueryAll(AdEntity.PicListBean.class);
         if (listBeen.size() > 0) {
+            list_url.clear();
             for (int i = 0; i < listBeen.size(); i++) {
                 list_url.add(listBeen.get(i).getXuhao());
             }
@@ -152,7 +153,7 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
     private RoomEntity roomEntity;
 
     private void initdate() {
-        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_BY_KEY;
+        String url = AppConstant.BASE_URL + AppConstant.MSG_GET_ROOM_INFO;
         OkGo.get(url)//
                 .tag(this)//
                 .params("nuserid", StartUtil.getUserId(context))
@@ -176,9 +177,7 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
                             list.clear();
                             roomFavAdapter.notifyDataSetChanged();
                         }
-
                     }
-
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);

@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 import com.youth.banner.Banner;
 import com.youth.banner.listener.OnBannerListener;
@@ -62,6 +63,7 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     private Context context;
     private int count = 10;
     private int page = 1;
+    private int date_type = 0;//0 第一次进入这个刷新   1、下拉刷新  2上拉加载
     private int group = 0;
     private List<RoomListEntity> list = new ArrayList<>();
     private BaseQuickAdapter roomFavAdapter;
@@ -86,6 +88,8 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onResume() {
         super.onResume();
+        page = 1;
+        date_type = 0;
         initdate();
     }
 
@@ -100,13 +104,14 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     }
 
     private void initview() {
-
         //=========================recycleview
         roomFavAdapter = new RoomFavAdapter(R.layout.item_room, list);
         rvhot.setLayoutManager(new GridLayoutManager(getActivity(), 1));
         roomFavAdapter.openLoadAnimation();
-        roomFavAdapter.setAutoLoadMoreSize(5);
         roomFavAdapter.setEnableLoadMore(true);
+        roomFavAdapter.bindToRecyclerView(rvhot);
+        roomFavAdapter.setEmptyView(R.layout.empty_view);
+        roomFavAdapter.disableLoadMoreIfNotFullPage();//检查是否满一屏，如果不满足关闭loadMore   必须在bindToRecyclerView之后
         roomFavAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -117,8 +122,19 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                 startActivity(intent);
             }
         });
-        roomFavAdapter.bindToRecyclerView(rvhot);
-        roomFavAdapter.setEmptyView(R.layout.empty_view);
+        roomFavAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+            @Override
+            public void onLoadMoreRequested() {
+                rvhot.postDelayed(new Runnable() {//延迟800毫秒再操作，防止上拉加载线程 和正常刷新线程回调时间引起的数据异常
+                    @Override
+                    public void run() {
+                        page++;
+                        date_type = 2;
+                        initdate();
+                    }
+                }, 800);
+            }
+        });
         rvhot.setAdapter(roomFavAdapter);
         //水平分割线
         rvhot.addItemDecoration(new DividerItemDecoration(
@@ -126,6 +142,7 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //======================banner
         final List<AdEntity.PicListBean> listBeen = LiteOrmDBUtil.getQueryAll(AdEntity.PicListBean.class);
         if (listBeen.size() > 0) {
+            list_url.clear();
             for (int i = 0; i < listBeen.size(); i++) {
                 list_url.add(listBeen.get(i).getXuhao());
             }
@@ -171,18 +188,28 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                         try {
                             roomEntity = new Gson().fromJson(s, RoomEntity.class);
                             if (roomEntity.getStatus().equals("success")) {
+                                if (date_type == 0 || date_type == 1) {//下拉刷新和第一次处理数据方式一致
+                                    list.clear();
+                                    List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                    list.addAll(roomListEntities);
+                                    roomFavAdapter.notifyDataSetChanged();
+                                } else if (date_type == 2) {//上拉加载
+                                    if (roomEntity.getRoomlist().size() > 0) {
+                                        list.addAll(roomEntity.getRoomlist());
+                                        roomFavAdapter.notifyDataSetChanged();
+                                        roomFavAdapter.loadMoreComplete();
+                                    } else {
+                                        roomFavAdapter.notifyDataSetChanged();
+                                        roomFavAdapter.loadMoreEnd();
+                                    }
+                                }
 
-                                list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                list.addAll(roomListEntities);
-                                roomFavAdapter.notifyDataSetChanged();
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
-                            list.clear();
+                            roomFavAdapter.loadMoreEnd();
                             roomFavAdapter.notifyDataSetChanged();
                         }
-
                     }
 
                     @Override
@@ -203,6 +230,7 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onRefresh() {
         page = 1;
+        date_type = 1;
         initdate();
 
     }
