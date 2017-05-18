@@ -141,6 +141,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private GiftFrameLayout giftFrameLayout2;
     private GiftControl giftControl;
 
+    private boolean is_connect_room = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -405,6 +406,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
 
     private RoomUserInfoNew userInfoAnchor;
 
+
     //接收主播信息
     @Subscriber(tag = "onMicUser")
     public void AnchorInfo(RoomUserInfoNew obj) {
@@ -541,12 +543,21 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     //主播加入房间后上麦、并且发送标题
     @Subscriber(tag = "JoinRoomResponse")
     public void JoinRoomResponse(JoinRoomResponse obj) {
+        is_connect_room = true;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                DialogFactory.hideRequestDialog();
+                rl_live_control.setVisibility(View.VISIBLE);
+                lvRoomMessage.setVisibility(View.VISIBLE);
+                llLiveStart.setVisibility(View.GONE);
+            }
+        });
         new Thread(new Runnable() {
             @Override
             public void run() {
                 roomMain.getRoom().getChannel().sendUpMic();
                 roomMain.getRoom().getChannel().forTitle(room_title);
-
             }
         }).start();
 
@@ -665,15 +676,17 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 KLog.e("PREPARING");
                 break;
             case CONNECTING:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DialogFactory.hideRequestDialog();
-                        rl_live_control.setVisibility(View.VISIBLE);
-                        lvRoomMessage.setVisibility(View.VISIBLE);
-                        llLiveStart.setVisibility(View.GONE);
-                    }
-                });
+                if (is_connect_room) {//如果房间没有连接成功，则不显示控制页面
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DialogFactory.hideRequestDialog();
+                            rl_live_control.setVisibility(View.VISIBLE);
+                            lvRoomMessage.setVisibility(View.VISIBLE);
+                            llLiveStart.setVisibility(View.GONE);
+                        }
+                    });
+                }
                 KLog.e("CONNECTING");
                 break;
             case READY:
@@ -685,6 +698,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 }
                 break;
             case STREAMING:
+
                 KLog.e("STREAMING");
                 // The av packet had been sent.
                 break;

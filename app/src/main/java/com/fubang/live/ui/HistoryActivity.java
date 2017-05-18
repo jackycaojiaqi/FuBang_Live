@@ -172,7 +172,8 @@ public class HistoryActivity extends BaseActivity {
                 });
     }
 
-    private List<RoomHistoryEntity> list_history = new ArrayList<>();
+    private List<RoomHistoryEntity.DatalistBean> list_history = new ArrayList<>();
+    private RoomHistoryEntity roomHistoryEntity;
 
     private void initdate() {
         String url = AppConstant.BASE_URL + AppConstant.MSG_GET_SEE_HISTORY;
@@ -185,10 +186,17 @@ public class HistoryActivity extends BaseActivity {
                         if (!StringUtil.isEmptyandnull(s)) {
                             tvSubmit.setVisibility(View.VISIBLE);
                             try {
-                                list_history = new Gson().fromJson(s, new TypeToken<List<RoomHistoryEntity>>() {
-                                }.getType());
+                                roomHistoryEntity = new Gson().fromJson(s, RoomHistoryEntity.class);
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();
+                            }
+                            if (roomHistoryEntity != null) {
+                                if (roomHistoryEntity.getDatalist() != null) {
+                                    if (roomHistoryEntity.getDatalist().size() > 0) {
+                                        list_history.clear();
+                                        list_history = roomHistoryEntity.getDatalist();
+                                    }
+                                }
                             }
                             roomHistoryAdapter.setNewData(list_history);
                         } else {

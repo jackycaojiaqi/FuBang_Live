@@ -100,9 +100,8 @@ public class PayActivity extends BaseActivity {
             @Override
             public void run() {
                 PayTask alipay = new PayTask(PayActivity.this);
-                Map<String, String> result = alipay.payV2(" orderinfo", true);//========
+                Map<String, String> result = alipay.payV2(" orderinfo", true);//========获取到的订单信息
                 Log.i("msp", result.toString());
-
                 Message msg = new Message();
                 msg.what = SDK_PAY_FLAG;
                 msg.obj = result;

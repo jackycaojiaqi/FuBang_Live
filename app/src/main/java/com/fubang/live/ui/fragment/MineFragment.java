@@ -22,6 +22,7 @@ import com.fubang.live.ui.FavListActivity;
 import com.fubang.live.ui.HistoryActivity;
 import com.fubang.live.ui.LevelInfoActivity;
 import com.fubang.live.ui.LoginActivity;
+import com.fubang.live.ui.PayActivity;
 import com.fubang.live.ui.UserInfoActivity;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.StartUtil;
@@ -30,6 +31,9 @@ import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
+
+import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,6 +77,8 @@ public class MineFragment extends BaseFragment {
     TextView tvMineLevel;
     @BindView(R.id.rll_mine_level)
     RelativeLayout rllMineLevel;
+    @BindView(R.id.tv_mine_nk)
+    RelativeLayout tvMineNk;
 
     private Context context;
 
@@ -88,6 +94,7 @@ public class MineFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         context = getActivity();
+        EventBus.getDefault().register(this);
 
     }
 
@@ -98,6 +105,16 @@ public class MineFragment extends BaseFragment {
     }
 
     UserInfoEntity userEntity;
+    private long nk_num;
+
+    //充值金币成功后，
+    @Subscriber(tag = "onPaySuccess")
+    private void onPaySuccess(long nk) {
+        nk_num = nk;
+        if (tvMineMoney != null) {
+            tvMineMoney.setText("金币余额 " + nk_num);
+        }
+    }
 
     private void initdate() {
         String url = AppConstant.BASE_URL + AppConstant.MSG_GET_USER_INFO;
@@ -147,6 +164,7 @@ public class MineFragment extends BaseFragment {
 
                         }
                     }
+
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);
@@ -159,11 +177,12 @@ public class MineFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         OkGo.getInstance().cancelTag(this);
+        EventBus.getDefault().unregister(this);
         unbinder.unbind();
     }
 
     @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history
-            , R.id.tv_mine_fav, R.id.rll_mine_level})
+            , R.id.tv_mine_fav, R.id.rll_mine_level, R.id.tv_mine_nk})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -176,7 +195,6 @@ public class MineFragment extends BaseFragment {
                     intent.putExtra(AppConstant.CONTENT, userEntity);
                     startActivity(intent);
                 }
-
                 break;
             case R.id.rll_mian_auth:
                 startActivity(new Intent(context, AuthApplyActivity.class));
@@ -192,6 +210,11 @@ public class MineFragment extends BaseFragment {
             case R.id.rll_mine_level:
                 intent = new Intent(context, LevelInfoActivity.class);
                 intent.putExtra("experience", "1110");
+                startActivity(intent);
+                break;
+            case R.id.tv_mine_nk:
+                intent = new Intent(context, PayActivity.class);
+                intent.putExtra("nk_num", Long.parseLong(userEntity.getInfo().getNk()));
                 startActivity(intent);
                 break;
         }

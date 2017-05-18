@@ -39,8 +39,8 @@ import java.util.List;
  * ━━━━━━神兽出没━━━━━━
  * Created by jacky on 17/3/10.
  */
-public class RoomHistoryAdapter extends BaseItemDraggableAdapter<RoomHistoryEntity, BaseViewHolder> {
-    private List<RoomHistoryEntity> list;
+public class RoomHistoryAdapter extends BaseItemDraggableAdapter<RoomHistoryEntity.DatalistBean, BaseViewHolder> {
+    private List<RoomHistoryEntity.DatalistBean> list;
     private int layoutResId;
     public RoomHistoryAdapter(int layoutResId, List data) {
         super(layoutResId, data);
@@ -50,7 +50,7 @@ public class RoomHistoryAdapter extends BaseItemDraggableAdapter<RoomHistoryEnti
     public void notifyDateSetChange(List list){
     }
     @Override
-    protected void convert(BaseViewHolder helper, RoomHistoryEntity item) {
+    protected void convert(BaseViewHolder helper, RoomHistoryEntity.DatalistBean item) {
         helper.setText(R.id.tv_room_history_name, item.getCalias() + " ")
                 .setText(R.id.tv_room_history_signe, item.getCidiograph() + " ");
         if (!StringUtil.isEmptyandnull(item.getCphoto()))
