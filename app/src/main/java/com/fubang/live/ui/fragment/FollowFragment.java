@@ -138,6 +138,7 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .params(AppConstant.COUNT, count)
                 .params(AppConstant.PAGE, page)
                 .params("nuserid", StartUtil.getUserId(context))
+                .params("micstate", 1)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {

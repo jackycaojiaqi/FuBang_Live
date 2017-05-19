@@ -49,11 +49,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpParams;
 
 import org.simple.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -190,11 +193,16 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     private void initdate() {
         String url = AppConstant.BASE_URL + AppConstant.MSG_GET_DISTANCE_LIST;
+        HttpParams params = new HttpParams();
+        params.put("nuserid", StartUtil.getUserId(context));
+        params.put(AppConstant.PAGE, page);
+        params.put(AppConstant.COUNT, count);
+        if (gender_type == 0 || gender_type == 1) {//如果选了性别，则传参数
+            params.put("ngender", gender_type);
+        }
         OkGo.get(url)//
-                .tag(this)//
-                .params("nuserid", StartUtil.getUserId(context))
-                .params(AppConstant.COUNT, count)
-                .params(AppConstant.PAGE, page)
+                .tag(this)
+                .params(params)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
@@ -245,7 +253,7 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    private int gender_type = 0;// 0全部  1、女性、 2 男性
+    private int gender_type = -1;// 0全部  1、女性、 2 男性
 
     private void handleLogic(View contentView) {
         TextView tv_all = (TextView) contentView.findViewById(R.id.pop_filter_tv_all);
@@ -262,22 +270,28 @@ public class NearFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         tv_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gender_type = 0;
+                gender_type = -1;
                 pop_info.dissmiss();
+                tvNearFilterName.setText("看全部");
+                initdate();
             }
         });
         tv_female.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gender_type = 1;
+                gender_type = 0;
                 pop_info.dissmiss();
+                tvNearFilterName.setText("美女");
+                initdate();
             }
         });
         tv_male.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gender_type = 2;
+                gender_type = 1;
                 pop_info.dissmiss();
+                tvNearFilterName.setText("帅哥");
+                initdate();
             }
         });
 

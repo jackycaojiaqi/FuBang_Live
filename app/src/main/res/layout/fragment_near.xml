@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/srl_near"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/srl_near"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
     android:paddingTop="10dp">
@@ -15,10 +15,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="2dp"
             android:text="正在直播"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:textColor="@color/black_3a3a3a"
+            android:textSize="14dp" />
 
         <RelativeLayout
             android:id="@+id/rl_near_filter"
@@ -29,15 +29,16 @@
 
             <ImageView
                 android:layout_width="22dp"
-                android:layout_height="26dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_filter" />
 
             <TextView
                 android:id="@+id/tv_near_filter_name"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:gravity="center"
                 android:text="看全部"
                 android:textColor="@color/color_main" />
         </RelativeLayout>

@@ -52,6 +52,8 @@ public class FavListActivity extends BaseActivity {
     private String user_id;
     private Context context;
     private BaseItemDraggableAdapter roomHistoryAdapter;
+    private int count = 20;
+    private int page = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,6 +127,8 @@ public class FavListActivity extends BaseActivity {
                 .tag(this)//
                 .params(AppConstant.USERID, user_id)
                 .params("del_nuserid", list_fav.get(pos).getRoomid())
+                .params(AppConstant.COUNT, count)
+                .params(AppConstant.PAGE, page)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
