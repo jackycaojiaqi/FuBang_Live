@@ -145,11 +145,13 @@ public class FollowFragment extends BaseFragment implements SwipeRefreshLayout.O
                         srlRoom.setRefreshing(false);
                         try {
                             roomEntity = new Gson().fromJson(s, RoomFollowEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
-                                list.clear();
-                                List<RoomFollowEntity.DatalistBean> roomListEntities = roomEntity.getDatalist();
-                                list.addAll(roomListEntities);
-                                roomFavAdapter.notifyDataSetChanged();
+                            if (roomEntity != null) {
+                                if (roomEntity.getStatus().equals("success")) {
+                                    list.clear();
+                                    List<RoomFollowEntity.DatalistBean> roomListEntities = roomEntity.getDatalist();
+                                    list.addAll(roomListEntities);
+                                    roomFavAdapter.notifyDataSetChanged();
+                                }
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();

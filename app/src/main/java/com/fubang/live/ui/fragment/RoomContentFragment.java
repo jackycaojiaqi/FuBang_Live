@@ -327,6 +327,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                if (roomMain.getRoom().isOK())
                                 roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                             }
                         }).start();
@@ -420,6 +421,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void run() {
                 KLog.e("addFav");
+                if (roomMain.getRoom().isOK())
                 roomMain.getRoom().getChannel().followAnchor(user_id, Integer.parseInt(StartUtil.getUserId(context)));
             }
         }).start();
@@ -913,6 +915,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            if (roomMain.getRoom().isOK())
                             roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
                         }
                     }).start();
@@ -928,6 +931,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        if (roomMain.getRoom().isOK())
                         roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
@@ -1071,7 +1075,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
+                        if (roomMain.getRoom().isOK())
+                            roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
                     }
                 }).start();
                 giftName.setText("送给");

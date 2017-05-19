@@ -159,18 +159,20 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
                 .params("nuserid", StartUtil.getUserId(context))
                 .params("count", count)
                 .params("page", page)
-                .params("type",4)
+                .params("type", 4)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         srlRoom.setRefreshing(false);
                         try {
                             roomEntity = new Gson().fromJson(s, RoomEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
-                                list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                list.addAll(roomListEntities);
-                                roomFavAdapter.notifyDataSetChanged();
+                            if (roomEntity != null) {
+                                if (roomEntity.getStatus().equals("success")) {
+                                    list.clear();
+                                    List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                    list.addAll(roomListEntities);
+                                    roomFavAdapter.notifyDataSetChanged();
+                                }
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
@@ -178,6 +180,7 @@ public class FemaleFragment extends BaseFragment implements SwipeRefreshLayout.O
                             roomFavAdapter.notifyDataSetChanged();
                         }
                     }
+
                     @Override
                     public void onError(Call call, Response response, Exception e) {
                         super.onError(call, response, e);

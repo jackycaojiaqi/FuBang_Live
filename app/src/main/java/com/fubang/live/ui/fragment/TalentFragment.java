@@ -166,11 +166,13 @@ public class TalentFragment extends BaseFragment implements SwipeRefreshLayout.O
                         srlRoom.setRefreshing(false);
                         try {
                             roomEntity = new Gson().fromJson(s, RoomEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
-                                list.clear();
-                                List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                list.addAll(roomListEntities);
-                                roomFavAdapter.notifyDataSetChanged();
+                            if (roomEntity != null) {
+                                if (roomEntity.getStatus().equals("success")) {
+                                    list.clear();
+                                    List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                    list.addAll(roomListEntities);
+                                    roomFavAdapter.notifyDataSetChanged();
+                                }
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();

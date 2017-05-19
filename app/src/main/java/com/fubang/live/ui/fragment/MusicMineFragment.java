@@ -232,12 +232,13 @@ public class MusicMineFragment extends BaseFragment implements SwipeRefreshLayou
                         srlNear.setRefreshing(false);
                         try {
                             musicListEntity = new Gson().fromJson(s, MusicListEntity.class);
-
-                            if (musicListEntity.getStatus().equals("success")) {
-                                list.clear();
-                                list.addAll(musicListEntity.getList());
-                                ScaneLocalMusic();
-                                roomFavAdapter.notifyDataSetChanged();
+                            if (musicListEntity != null) {
+                                if (musicListEntity.getStatus().equals("success")) {
+                                    list.clear();
+                                    list.addAll(musicListEntity.getList());
+                                    ScaneLocalMusic();
+                                    roomFavAdapter.notifyDataSetChanged();
+                                }
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();

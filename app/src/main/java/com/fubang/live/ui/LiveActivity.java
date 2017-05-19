@@ -314,7 +314,8 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        roomMain.getRoom().getChannel().forTitle(room_title);
+                                        if (roomMain.getRoom().isOK())
+                                            roomMain.getRoom().getChannel().forTitle(room_title);
                                     }
                                 }).start();
                                 etLiveChangeTitle.setText("");
@@ -835,7 +836,8 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
+                            if (roomMain.getRoom().isOK())
+                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
                         }
                     }).start();
                     roomMessageEdit.setText("");
@@ -860,8 +862,10 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 } else {
                     contentView_setting = LayoutInflater.from(context).inflate(R.layout.pop_live_setting, null);
                     windowPos = ConfigUtils.calculatePopWindowPos(ivLiveSetting, contentView_setting);
-//                    int xOff = 20;// 可以自己调整偏移
-//                    windowPos[0] -= xOff;
+                    int xOff = ScreenUtils.Dp2Px(context, 5);// 可以自己调整偏移
+                    windowPos[0] += xOff;
+                    int yOff = ScreenUtils.Dp2Px(context, 25);// 可以自己调整偏移
+                    windowPos[1] += yOff;
                     //处理popWindow 显示内容
                     handleSettingView(contentView_setting);
                     //创建并显示popWindow
@@ -869,6 +873,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                             .setView(contentView_setting)
                             .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
                             .enableBackgroundDark(false) //弹出popWindow时，背景是否变暗
+                            .size(ScreenUtils.Dp2Px(context, 120), ScreenUtils.Dp2Px(context, 280))
                             .create()
                             .showAtLocation(contentView_setting, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
                 }

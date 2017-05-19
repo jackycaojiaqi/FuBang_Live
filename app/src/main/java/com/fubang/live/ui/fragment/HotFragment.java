@@ -187,23 +187,25 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                         srlRoom.setRefreshing(false);
                         try {
                             roomEntity = new Gson().fromJson(s, RoomEntity.class);
-                            if (roomEntity.getStatus().equals("success")) {
-                                if (date_type == 0 || date_type == 1) {//下拉刷新和第一次处理数据方式一致
-                                    list.clear();
-                                    List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
-                                    list.addAll(roomListEntities);
-                                    roomFavAdapter.notifyDataSetChanged();
-                                } else if (date_type == 2) {//上拉加载
-                                    if (roomEntity.getRoomlist().size() > 0) {
-                                        list.addAll(roomEntity.getRoomlist());
+                            if (roomEntity != null) {
+                                if (roomEntity.getStatus().equals("success")) {
+                                    if (date_type == 0 || date_type == 1) {//下拉刷新和第一次处理数据方式一致
+                                        list.clear();
+                                        List<RoomListEntity> roomListEntities = roomEntity.getRoomlist();
+                                        list.addAll(roomListEntities);
                                         roomFavAdapter.notifyDataSetChanged();
-                                        roomFavAdapter.loadMoreComplete();
-                                    } else {
-                                        roomFavAdapter.notifyDataSetChanged();
-                                        roomFavAdapter.loadMoreEnd();
+                                    } else if (date_type == 2) {//上拉加载
+                                        if (roomEntity.getRoomlist().size() > 0) {
+                                            list.addAll(roomEntity.getRoomlist());
+                                            roomFavAdapter.notifyDataSetChanged();
+                                            roomFavAdapter.loadMoreComplete();
+                                        } else {
+                                            roomFavAdapter.notifyDataSetChanged();
+                                            roomFavAdapter.loadMoreEnd();
+                                        }
                                     }
-                                }
 
+                                }
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();

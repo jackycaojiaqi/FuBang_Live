@@ -123,15 +123,17 @@ public class SearchAtivity extends BaseActivity {
                         public void onSuccess(String s, Call call, Response response) {
                             try {
                                 searchListEntity = new Gson().fromJson(s, SearchListEntity.class);
-                                if (searchListEntity.getRoomlist() != null) {
-                                    if (searchListEntity.getRoomlist().size() > 0) {
+                                if (searchListEntity != null) {
+                                    if (searchListEntity.getRoomlist() != null) {
+                                        if (searchListEntity.getRoomlist().size() > 0) {
+                                            list_key.clear();
+                                            list_key = searchListEntity.getRoomlist();
+                                            SearchListAdapter.setNewData(list_key);
+                                        }
+                                    } else {
                                         list_key.clear();
-                                        list_key = searchListEntity.getRoomlist();
                                         SearchListAdapter.setNewData(list_key);
                                     }
-                                } else {
-                                    list_key.clear();
-                                    SearchListAdapter.setNewData(list_key);
                                 }
                             } catch (JsonSyntaxException e) {
                                 e.printStackTrace();
