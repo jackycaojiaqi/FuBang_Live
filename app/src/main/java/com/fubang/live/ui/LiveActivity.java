@@ -699,7 +699,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 }
                 break;
             case STREAMING:
-
                 KLog.e("STREAMING");
                 // The av packet had been sent.
                 break;
