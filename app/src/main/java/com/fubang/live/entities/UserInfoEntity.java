@@ -55,6 +55,15 @@ public class UserInfoEntity implements Parcelable {
         private String micstate;
         private String location;
         private int type = 1;
+        private int fansnum;
+
+        public int getFansnum() {
+            return fansnum;
+        }
+
+        public void setFansnum(int fansnum) {
+            this.fansnum = fansnum;
+        }
 
         public int getType() {
             return type;
@@ -173,6 +182,7 @@ public class UserInfoEntity implements Parcelable {
             dest.writeString(this.micstate);
             dest.writeString(this.location);
             dest.writeInt(this.type);
+            dest.writeInt(this.fansnum);
         }
 
         protected InfoBean(Parcel in) {
@@ -187,6 +197,7 @@ public class UserInfoEntity implements Parcelable {
             this.micstate = in.readString();
             this.location = in.readString();
             this.type = in.readInt();
+            this.fansnum = in.readInt();
         }
 
         public static final Creator<InfoBean> CREATOR = new Creator<InfoBean>() {

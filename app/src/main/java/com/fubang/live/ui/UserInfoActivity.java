@@ -151,6 +151,7 @@ public class UserInfoActivity extends TakePhotoActivity {
             } else if (userInfoEntity.getInfo().getType() == 4) {
                 tvUserLiveType.setText("美女");
             }
+
         }
     }
 

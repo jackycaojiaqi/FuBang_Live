@@ -18,6 +18,7 @@ import com.fubang.live.R;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.UserInfoEntity;
 import com.fubang.live.ui.AuthApplyActivity;
+import com.fubang.live.ui.FansListActivity;
 import com.fubang.live.ui.FavListActivity;
 import com.fubang.live.ui.HistoryActivity;
 import com.fubang.live.ui.LevelInfoActivity;
@@ -41,7 +42,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import okhttp3.Call;
 import okhttp3.Response;
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -150,8 +150,8 @@ public class MineFragment extends BaseFragment {
                                 tvMineSign.setText(userEntity.getInfo().getCidiograph());
                             }
                             //粉丝数
-//                            tvMineFans.setText("粉丝 " + userEntity.getInfo().getGuanzhunum());
-                            //关注数、
+                            tvMineFans.setText("粉丝 " + userEntity.getInfo().getFansnum());
+                            //关注数
                             tvMineFav.setText("关注 " + userEntity.getInfo().getGuanzhunum());
                             //金币数
                             tvMineMoney.setText(userEntity.getInfo().getNk() + " K币");
@@ -182,12 +182,13 @@ public class MineFragment extends BaseFragment {
     }
 
     @OnClick({R.id.rl_setting, R.id.iv_mine_bg, R.id.rll_mian_auth, R.id.rll_mine_history
-            , R.id.tv_mine_fav, R.id.rll_mine_level, R.id.tv_mine_nk})
+            , R.id.tv_mine_fav, R.id.rll_mine_level, R.id.tv_mine_nk, R.id.tv_mine_fans})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
             case R.id.rl_setting:
                 startActivity(new Intent(getActivity(), LoginActivity.class));
+//                EMClient.getInstance().logout(true);
                 break;
             case R.id.iv_mine_bg:
                 intent = new Intent(getActivity(), UserInfoActivity.class);
@@ -215,6 +216,10 @@ public class MineFragment extends BaseFragment {
             case R.id.tv_mine_nk:
                 intent = new Intent(context, PayActivity.class);
                 intent.putExtra("nk_num", Long.parseLong(userEntity.getInfo().getNk()));
+                startActivity(intent);
+                break;
+            case R.id.tv_mine_fans:
+                intent = new Intent(context, FansListActivity.class);
                 startActivity(intent);
                 break;
         }

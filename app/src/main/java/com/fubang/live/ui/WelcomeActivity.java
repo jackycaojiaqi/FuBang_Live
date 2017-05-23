@@ -19,6 +19,8 @@ import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+//import com.hyphenate.chat.EMClient;
+//import com.hyphenate.util.EasyUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.socks.library.KLog;
@@ -43,6 +45,10 @@ public class WelcomeActivity extends BaseActivity {
             finish();
             return;
         }
+//        //获取回话信息
+//        EMClient.getInstance().chatManager().loadAllConversations();
+//        EMClient.getInstance().groupManager().loadAllGroups();
+
         setTranslucentStatus();
         setContentView(R.layout.activity_welcome);
         context = this;
@@ -60,6 +66,7 @@ public class WelcomeActivity extends BaseActivity {
                                     adEntity = new Gson().fromJson(s, AdEntity.class);
                                     if (adEntity != null) {
                                         if (adEntity.getPic_list() != null) {
+
                                             LiteOrmDBUtil.deleteAll(AdEntity.PicListBean.class);//删除旧的
                                             LiteOrmDBUtil.insertAll(adEntity.getPic_list());//插入新的广告实体
                                             List<AdEntity.PicListBean> listBeen = LiteOrmDBUtil.getQueryAll(AdEntity.PicListBean.class);

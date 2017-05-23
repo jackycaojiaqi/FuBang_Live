@@ -1,9 +1,10 @@
 package com.xlg.android.protocol;
 
+import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xlg.android.utils.ByteBuffer;
 import com.xlg.android.utils.Tools;
 
-public class RoomChatMsg {
+public class RoomChatMsg implements MultiItemEntity {
     @StructOrder(0)
     private int vcbid;
     @StructOrder(1)
@@ -188,5 +189,17 @@ public class RoomChatMsg {
         this.textlen = (short) this.content.size();
     }
 
+    public static final int CHAT_TYPE_SELF = 1;
+    public static final int CHAT_TYPE_OTHER = 2;
+    private int itemType;
 
+    public RoomChatMsg(int itemType) {
+        this.itemType = itemType;
+    }
+    public RoomChatMsg() {
+    }
+    @Override
+    public int getItemType() {
+        return 0;
+    }
 }

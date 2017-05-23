@@ -53,6 +53,14 @@ public class APP extends MultiDexApplication {
         CrashHandler.getInstance().init(getApplicationContext());//本地统计日志
         LiteOrmDBUtil.createDb(getApplicationContext(), "live");
         MobclickAgent.setScenarioType(getApplicationContext(), MobclickAgent.EScenarioType.E_UM_NORMAL);
+
+//        //环信
+//        EMOptions options = new EMOptions();
+//        options.setAutoLogin(true);
+//        //初始化
+//        EMClient.getInstance().init(getApplicationContext(), options);
+//        //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
+//        EMClient.getInstance().setDebugMode(true);
     }
 
     private void initOkGo() {

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import com.fubang.live.R;
 import com.fubang.live.adapter.MyFragmentPagerAdapter;
 import com.fubang.live.base.BaseFragment;
+import com.fubang.live.ui.ChatActivity;
 import com.fubang.live.ui.SearchAtivity;
 import com.socks.library.KLog;
 
@@ -101,6 +102,7 @@ public class HomeFragment extends BaseFragment {
                 startActivity(new Intent(getActivity(), SearchAtivity.class));
                 break;
             case R.id.iv_home_message:
+                startActivity(new Intent(getActivity(), ChatActivity.class));
                 break;
         }
     }

@@ -10,9 +10,9 @@
     <include layout="@layout/activity_user_info_top" />
     <!--滚动布局-->
     <include layout="@layout/activity_user_inf_scroll" />
+
     <!--底部控件-->
     <include layout="@layout/layout_userinfo_control" />
-
     <LinearLayout
         android:id="@+id/ll_user_info_goto_room"
         android:layout_width="220dp"
@@ -30,4 +30,5 @@
             android:textColor="@color/white"
             android:textSize="18dp" />
     </LinearLayout>
+
 </FrameLayout>

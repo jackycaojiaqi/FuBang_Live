@@ -231,7 +231,15 @@
                 android:text="关注"
                 android:textColor="@color/blue_1b99d1"
                 android:textSize="16dp" />
-
+            <TextView
+                android:id="@+id/tv_pop_privite_chat"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="私聊"
+                android:textColor="@color/blue_1b99d1"
+                android:textSize="16dp" />
             <TextView
                 android:id="@+id/tv_pop_goto_user_info_page"
                 android:layout_width="0dp"

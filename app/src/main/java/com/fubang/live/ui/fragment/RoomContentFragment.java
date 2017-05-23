@@ -50,12 +50,13 @@ import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.GiftGridViewAdapter;
 import com.fubang.live.adapter.RoomAudienceAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
+import com.fubang.live.adapter.RoomFollowAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
+import com.fubang.live.adapter.RoomProviteChatAdapter;
 import com.fubang.live.base.BaseFragment;
 import com.fubang.live.entities.GiftEntity;
 import com.fubang.live.entities.RtmpUrlEntity;
 import com.fubang.live.presenter.impl.RtmpUrlPresenterImpl;
-import com.fubang.live.ui.LiveDoneActivity;
 import com.fubang.live.ui.PayActivity;
 import com.fubang.live.ui.RoomActivity;
 import com.fubang.live.ui.UserInfoPageActivity;
@@ -91,7 +92,6 @@ import org.dync.giftlibrary.widget.GiftModel;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -167,6 +167,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     com.fubang.live.widget.DivergeView DivergeView;
     @BindView(R.id.iv_room_content_clear)
     ImageView ivRoomContentClear;
+    //===================================私聊布局
+    @BindView(R.id.tv_room_privite_title)
+    TextView tvRoomPriviteTitle;
+    @BindView(R.id.iv_room_privite_cancle)
+    ImageView ivRoomPriviteCancle;
+    @BindView(R.id.rv_room_privite_chat)
+    RecyclerView rvRoomPriviteChat;
+    @BindView(R.id.et_room_privite_chat)
+    EditText etRoomPriviteChat;
+    @BindView(R.id.btn_room_privite_chat_send)
+    Button btnRoomPriviteChatSend;
+    @BindView(R.id.rll_room_privite_chat_content)
+    RelativeLayout rllRoomPriviteChatContent;
 
     private MediaController mMediaController;
     private PLVideoTextureView mVideoView;
@@ -328,7 +341,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                             @Override
                             public void run() {
                                 if (roomMain.getRoom().isOK())
-                                roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                                    roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                             }
                         }).start();
                         ToastUtil.show(context, R.string.add_fav_success);
@@ -339,6 +352,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         intent.putExtra(AppConstant.ROOMIP, roomIp);
                         intent.putExtra(AppConstant.ROOMPWD, roomPwd);
                         startActivity(intent);
+                        break;
+                    case R.id.tv_pop_privite_chat:
+                        doPriviteChat(roomUserInfo);
                         break;
                 }
             }
@@ -351,6 +367,16 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         ((TextView) contentView.findViewById(R.id.tv_pop_user_name)).setText(roomUserInfo.getAlias() + " ");//用户名字
         FBImage.Create(getActivity(), AppConstant.BASE_IMG_URL + roomUserInfo.getCphoto())
                 .into(((ImageView) contentView.findViewById(R.id.iv_pop_user_pic)));//头像
+    }
+
+    private BaseQuickAdapter privite_chatadapter;
+    private List<RoomChatMsg> list_room_privite_chat;
+
+    private void doPriviteChat(final RoomUserInfoNew roomUserInfo) {
+        privite_chatadapter = new RoomProviteChatAdapter(list_room_privite_chat);
+        tvRoomPriviteTitle.setText(roomUserInfo.getAlias() + " ");
+        rllRoomPriviteChatContent.setVisibility(View.VISIBLE);
+        pop_info.dissmiss();
     }
 
     private ArrayList<Bitmap> mList;
@@ -387,6 +413,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         }
     };
 
+
     class Provider implements DivergeView.DivergeViewProvider {
 
         @Override
@@ -422,7 +449,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             public void run() {
                 KLog.e("addFav");
                 if (roomMain.getRoom().isOK())
-                roomMain.getRoom().getChannel().followAnchor(user_id, Integer.parseInt(StartUtil.getUserId(context)));
+                    roomMain.getRoom().getChannel().followAnchor(user_id, Integer.parseInt(StartUtil.getUserId(context)));
             }
         }).start();
     }
@@ -825,7 +852,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @OnClick({R.id.ib_change_orientation, R.id.ib_change_screen, R.id.iv_room_add_favorite,
             R.id.iv_room_gift, R.id.iv_room_share, R.id.iv_room_exit, R.id.iv_room_chat
             , R.id.room_new_chat_send, R.id.tv_room_input_close, R.id.iv_room_content_clear
-            , R.id.iv_room_anchor_small_pic})
+            , R.id.iv_room_anchor_small_pic, R.id.iv_room_privite_cancle, R.id.btn_room_privite_chat_send})
     public void onViewClicked(View view) {
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         switch (view.getId()) {
@@ -916,7 +943,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                         @Override
                         public void run() {
                             if (roomMain.getRoom().isOK())
-                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
+                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0x00, (byte) 0x00, msg, StartUtil.getUserName(context), 0);
                         }
                     }).start();
                     roomMessageEdit.setText("");
@@ -932,7 +959,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     @Override
                     public void run() {
                         if (roomMain.getRoom().isOK())
-                        roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
+                            roomMain.getRoom().getChannel().followAnchor(roomId, Integer.parseInt(StartUtil.getUserId(context)));
                     }
                 }).start();
                 ivRoomAddFavorite.setVisibility(View.GONE);
@@ -965,6 +992,12 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                             .create()
                             .showAtLocation(rvRoomAudience, Gravity.CENTER, 0, 0);
                 }
+                break;
+            //==================私聊界面
+            case R.id.iv_room_privite_cancle:
+                rllRoomPriviteChatContent.setVisibility(View.GONE);
+                break;
+            case R.id.btn_room_privite_chat_send:
                 break;
         }
     }
@@ -1070,6 +1103,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 final int count = Integer.parseInt(giftCount.getText().toString());
                 if (nk_num < (gifts.get(gift_position).getPrice() * count)) {
                     ToastUtil.show(context, R.string.no_more_nk);
+                    Intent intent = new Intent(context, PayActivity.class);
+                    intent.putExtra("nk_num", nk_num);
+                    startActivity(intent);
                     return;
                 }
                 new Thread(new Runnable() {

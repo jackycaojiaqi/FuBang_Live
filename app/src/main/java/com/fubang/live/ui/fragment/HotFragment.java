@@ -209,6 +209,9 @@ public class HotFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                             }
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
+                            if (date_type == 1) {
+                                list.clear();
+                            }
                             roomFavAdapter.loadMoreEnd();
                             roomFavAdapter.notifyDataSetChanged();
                         }

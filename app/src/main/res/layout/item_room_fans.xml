@@ -12,7 +12,7 @@
         android:paddingRight="10dp">
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/riv_room_history_pic"
+            android:id="@+id/riv_room_fans_pic"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
@@ -27,7 +27,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_room_history_name"
+                android:id="@+id/tv_room_fans_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="小心"
@@ -35,7 +35,7 @@
                 android:textSize="16dp" />
 
             <ImageView
-                android:id="@+id/iv_room_history_gender"
+                android:id="@+id/iv_room_fans_gender"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginLeft="10dp"
@@ -43,7 +43,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_room_history_signe"
+            android:id="@+id/tv_room_fans_signe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="100dp"
@@ -53,6 +53,14 @@
             android:textColor="@color/black_3a3a3a"
             android:textSize="14dp" />
 
-
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            android:visibility="gone"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_add_fav" />
     </RelativeLayout>
 </LinearLayout>

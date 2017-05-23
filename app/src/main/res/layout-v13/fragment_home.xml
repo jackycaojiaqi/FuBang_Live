@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -40,8 +39,7 @@
                 app:tabPaddingBottom="1dp"
                 app:tabSelectedTextColor="@color/white"
                 app:tabTextAppearance="@android:style/TextAppearance.Holo.Medium"
-                app:tabTextColor="@color/gray_unselect"
-                tools:targetApi="honeycomb_mr2"></android.support.design.widget.TabLayout>
+                app:tabTextColor="@color/gray_unselect"></android.support.design.widget.TabLayout>
 
             <ImageView
                 android:id="@+id/iv_home_message"

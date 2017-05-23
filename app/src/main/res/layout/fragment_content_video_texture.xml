@@ -172,6 +172,7 @@
             android:layout_marginRight="10dp" />
 
         <include layout="@layout/layout_room_edit" />
+        <include layout="@layout/layout_room_privite_chat"/>
         <!--<LinearLayout-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->

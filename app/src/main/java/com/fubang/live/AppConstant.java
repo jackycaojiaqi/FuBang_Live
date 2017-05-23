@@ -44,4 +44,5 @@ public class AppConstant {
     public static final String MSG_UPLOAD_LATLON = "/index.php/app/upload_place?";//上传位置信息       （首页、主播上麦前、刷新距离列表）
     public static final String MSG_GET_MP3 = "/index.php/app/get_mp3?";//获取Mp3列表
     public static final String MSG_GET_AD_INFO = "/index.php/app/ad_info?";//获取广告图和链接
+    public static final String MSG_GET_FANS_LIST = "/index.php/app/fans_list?";//获取粉丝列表
 }

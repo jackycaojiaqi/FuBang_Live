@@ -140,7 +140,7 @@ public class UserInfoPageActivity extends BaseActivity {
                                     ivUserInfoGender.setImageResource(R.drawable.ic_male_select);
                                 }
                                 //粉丝数
-                                tvUserInfoFans.setText("粉丝 " + userEntity.getInfo().getGuanzhunum());
+                                tvUserInfoFans.setText("粉丝 " + userEntity.getInfo().getFansnum());
                                 //关注数
                                 tvUserInfoFav.setText("关注 " + userEntity.getInfo().getGuanzhunum());
                                 //直播背景图片
@@ -226,6 +226,8 @@ public class UserInfoPageActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.tv_user_info_fans:
+                intent = new Intent(context, FansListActivity.class);
+                startActivity(intent);
                 break;
             case R.id.ll_user_info_fav:
                 EventBus.getDefault().post(roomId, "add_fav");
