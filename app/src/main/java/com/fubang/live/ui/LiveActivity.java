@@ -151,7 +151,6 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     private AlivcRecordReporter mRecordReporter;
     private int mPreviewWidth = 0;
     private int mPreviewHeight = 0;
-    private boolean isRecording = false;
     private Map<String, Object> mConfigure = new HashMap<>();
     private String publishUrlFromServer;
 
@@ -194,41 +193,8 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
         EventBus.getDefault().register(this);
 //        setContentView(R.layout.activity_live);
         //================================================================推流组件
+        initCameraView();
 
-        //采集
-        _CameraSurface =
-                (SurfaceView) findViewById(R.id.cameraPreview_surfaceView);
-        _CameraSurface.getHolder().addCallback(_CameraSurfaceCallback);
-        _CameraSurface.setOnTouchListener(mOnTouchListener);
-        AspectFrameLayout afl = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
-        afl.setShowMode(AspectFrameLayout.SHOW_MODE.FULL);
-        //对焦，缩放
-        mDetector = new GestureDetector(_CameraSurface.getContext(), mGestureDetector);
-        mScaleDetector = new ScaleGestureDetector(_CameraSurface.getContext(), mScaleGestureListener);
-
-        mMediaRecorder = AlivcMediaRecorderFactory.createMediaRecorder();
-        mMediaRecorder.init(context);
-        mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
-
-        /**
-         * this method only can be called after mMediaRecorder.init(),
-         * else will return null;
-         */
-        mRecordReporter = mMediaRecorder.getRecordReporter();
-        mMediaRecorder.setOnRecordStatusListener(mRecordStatusListener);
-        mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
-        mMediaRecorder.setOnRecordErrorListener(mOnErrorListener);
-
-        mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
-        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 3);
-        mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
-        mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
-        mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
-        mConfigure.put(AlivcMediaFormat.KEY_MIN_VIDEO_BITRATE, minBitrate * 1000);
-        mConfigure.put(AlivcMediaFormat.KEY_INITIAL_VIDEO_BITRATE, initBitrate * 100);
-        mConfigure.put(AlivcMediaFormat.KEY_DISPLAY_ROTATION, screenOrientation ? AlivcMediaFormat.DISPLAY_ROTATION_90 : AlivcMediaFormat.DISPLAY_ROTATION_0);
-        mConfigure.put(AlivcMediaFormat.KEY_EXPOSURE_COMPENSATION, -1);//曝光度
-        mConfigure.put(AlivcMediaFormat.KEY_FRAME_RATE, frameRate);
 
         //======================推流组件
         //设置表情适配器
@@ -277,6 +243,43 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
 
     }
 
+    private void initCameraView() {
+        //采集
+        _CameraSurface =
+                (SurfaceView) findViewById(R.id.cameraPreview_surfaceView);
+        _CameraSurface.getHolder().addCallback(_CameraSurfaceCallback);
+        _CameraSurface.setOnTouchListener(mOnTouchListener);
+        AspectFrameLayout afl = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
+        afl.setShowMode(AspectFrameLayout.SHOW_MODE.FULL);
+        //对焦，缩放
+        mDetector = new GestureDetector(_CameraSurface.getContext(), mGestureDetector);
+        mScaleDetector = new ScaleGestureDetector(_CameraSurface.getContext(), mScaleGestureListener);
+
+        mMediaRecorder = AlivcMediaRecorderFactory.createMediaRecorder();
+        mMediaRecorder.init(context);
+        mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
+
+        /**
+         * this method only can be called after mMediaRecorder.init(),
+         * else will return null;
+         */
+        mRecordReporter = mMediaRecorder.getRecordReporter();
+        mMediaRecorder.setOnRecordStatusListener(mRecordStatusListener);
+        mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
+        mMediaRecorder.setOnRecordErrorListener(mOnErrorListener);
+
+        mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 1);
+        mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_MIN_VIDEO_BITRATE, minBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_INITIAL_VIDEO_BITRATE, initBitrate * 100);
+        mConfigure.put(AlivcMediaFormat.KEY_DISPLAY_ROTATION, screenOrientation ? AlivcMediaFormat.DISPLAY_ROTATION_90 : AlivcMediaFormat.DISPLAY_ROTATION_0);
+        mConfigure.put(AlivcMediaFormat.KEY_EXPOSURE_COMPENSATION, -1);//曝光度
+        mConfigure.put(AlivcMediaFormat.KEY_FRAME_RATE, frameRate);
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -285,8 +288,8 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
 
     @Override
     protected void onResume() {
-        super.onResume();
-        if (  is_pause) {
+
+        if (is_pause) {
             KLog.e("onResume");
             mMediaRecorder.startRecord(publishUrlFromServer);
             is_pause = false;
@@ -301,16 +304,14 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
         mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_VIDEO_ENCODED_FRAMES_FAILED, mVideoEncodeFrameFailedRes));
         mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_AUDIO_ENCODED_FRAMES_FAILED, mAudioEncodeFrameFailedRes));
         mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_FAILED, mAudioCaptureOpenFailedRes));
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
-        if (isRecording) {
-            is_pause = true;
-            KLog.e("onpause");
-            mMediaRecorder.stopRecord();
-            isRecording = false;
-        }
+        is_pause = true;
+        KLog.e("onpause");
+        mMediaRecorder.stopRecord();
         mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_BITRATE_DOWN);
         mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_BITRATE_RAISE);
         mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_SUCC);
@@ -521,12 +522,14 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                         is_beautify = !is_beautify;
                         pop_setting.dissmiss();
                         break;
-                    case R.id.ll_pop_setting_mirror://静音
+                    case R.id.ll_pop_setting_mirror://静音开关
                         is_mirror = !is_mirror;
                         if (!is_mirror) {
-                            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_MUTE_ON);
-                        } else {
                             mMediaRecorder.removeFlag(AlivcMediaFormat.FLAG_MUTE_ON);
+                            ToastUtil.show(context, "关闭静音推流");
+                        } else {
+                            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_MUTE_ON);
+                            ToastUtil.show(context, "开启静音推流");
                         }
                         pop_setting.dissmiss();
                         break;
@@ -545,6 +548,16 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     private RoomChatAdapter adapter;
     private RoomGiftAdapter adapter_gift;
 
+    @PermissionSuccess(requestCode = 100)
+    public void Permission100Success() {
+        //================================================================推流组件
+
+        //采集
+        initCameraView();
+
+        //======================推流组件
+    }
+
     @PermissionFail(requestCode = 100)
     public void Permission100Fail() {
         //获取权限
@@ -557,7 +570,6 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                     .request();
         } else {
         }
-
     }
 
     @PermissionFail(requestCode = 200)
@@ -879,7 +891,6 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                                 mMediaRecorder.startRecord(publishUrlFromServer);
                             } catch (Exception e) {
                             }
-                            isRecording = true;
                             //隐藏和显示控件
                             runOnUiThread(new Runnable() {
                                 @Override
