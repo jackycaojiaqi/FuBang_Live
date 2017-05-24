@@ -11,6 +11,7 @@ android {
         versionName "1.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled  true
+
     }
     buildTypes {
         release {
@@ -46,6 +47,13 @@ android {
     dexOptions {
         jumboMode true
     }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a'
+        }
+    }
 }
 
 dependencies {
@@ -80,10 +88,11 @@ dependencies {
     compile files('libs/android-directionalviewpager-1.2.0.jar')
     compile 'me.kaelaela:verticalviewpager:1.0.0@aar'
     //垂直viewpager
+
     //七牛
-    compile files('libs/pldroid-media-streaming-2.1.3.jar')
-    compile 'com.qiniu:happy-dns:0.2.8'
-    compile 'com.qiniu.pili:pili-android-qos:0.8.18'
+//    compile files('libs/pldroid-media-streaming-2.1.3.jar')
+//    compile 'com.qiniu:happy-dns:0.2.8'
+//    compile 'com.qiniu.pili:pili-android-qos:0.8.18'
     //本地数据库
     compile files('libs/lite-orm-1.9.2.jar')
     //图片选择工具
@@ -98,6 +107,7 @@ dependencies {
     //RxJava扩展支持，根据需要添加
     compile 'com.lzy.net:okserver:1.1.3'
     //下载管理和上传管理扩展，根据需要添加
+
     //popwindow封装
     compile 'com.github.pinguo-zhouwei:CustomPopwindow:2.0.0'
     //roundedimageview
@@ -111,4 +121,6 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.4.4'
     compile 'com.android.support:multidex:1.0.0'
     compile files('libs/alipaySingle-20170510.jar')
+    compile files('libs/alivc-live-record-v1.2.0.jar')
+    compile files('libs/alivc-player-2.4.0.jar')
 }

@@ -95,10 +95,10 @@
             android:name=".ui.ChatActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
-        <!--七牛自带-->
-        <activity
-            android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <!--&lt;!&ndash;七牛自带&ndash;&gt;-->
+        <!--<activity-->
+            <!--android:name="com.qiniu.pili.droid.streaming.screen.ScreenCaptureRequestActivity"-->
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>-->
 
 
         <activity

@@ -1,13 +1,13 @@
 package com.fubang.live.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,13 +18,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -35,6 +40,17 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.alibaba.livecloud.event.AlivcEvent;
+import com.alibaba.livecloud.event.AlivcEventResponse;
+import com.alibaba.livecloud.event.AlivcEventSubscriber;
+import com.alibaba.livecloud.live.AlivcMediaFormat;
+import com.alibaba.livecloud.live.AlivcMediaRecorder;
+import com.alibaba.livecloud.live.AlivcMediaRecorderFactory;
+import com.alibaba.livecloud.live.AlivcRecordReporter;
+import com.alibaba.livecloud.live.AlivcStatusCode;
+import com.alibaba.livecloud.live.OnLiveRecordErrorListener;
+import com.alibaba.livecloud.live.OnNetworkStatusListener;
+import com.alibaba.livecloud.live.OnRecordStatusListener;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -47,9 +63,9 @@ import com.fubang.live.adapter.EmotionAdapter;
 import com.fubang.live.adapter.RoomAudienceAdapter;
 import com.fubang.live.adapter.RoomChatAdapter;
 import com.fubang.live.adapter.RoomGiftAdapter;
-import com.fubang.live.base.BaseActivity;
 import com.fubang.live.entities.RoomEntity;
 import com.fubang.live.presenter.impl.UpMicPresenterImpl;
+import com.fubang.live.util.Config;
 import com.fubang.live.util.ConfigUtils;
 import com.fubang.live.util.DialogFactory;
 import com.fubang.live.util.FBImage;
@@ -61,27 +77,15 @@ import com.fubang.live.util.ShareUtil;
 import com.fubang.live.util.StartUtil;
 import com.fubang.live.util.StringUtil;
 import com.fubang.live.util.ToastUtil;
-import com.fubang.live.view.RoomListView;
 import com.fubang.live.view.UpMicView;
 import com.fubang.live.widget.SlidingTab.EmotionInputDetector;
-import com.fubang.live.widget.SlidingTab.SlidingTabLayout;
 import com.qiniu.BaseStreamingActivity;
-import com.qiniu.CameraPreviewFrameView;
-import com.qiniu.filter.IFilter;
-import com.qiniu.pili.droid.streaming.AVCodecType;
-import com.qiniu.pili.droid.streaming.CameraStreamingSetting;
-import com.qiniu.pili.droid.streaming.MediaStreamingManager;
-import com.qiniu.pili.droid.streaming.StreamingProfile;
-import com.qiniu.pili.droid.streaming.StreamingState;
-import com.qiniu.pili.droid.streaming.StreamingStateChangedListener;
-import com.qiniu.pili.droid.streaming.WatermarkSetting;
 import com.qiniu.pili.droid.streaming.widget.AspectFrameLayout;
 import com.sample.room.MicNotify;
 import com.sample.room.RoomMain;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.JoinRoomResponse;
-import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfoNew;
@@ -89,8 +93,6 @@ import com.xlg.android.protocol.RoomUserInfoNew;
 import org.dync.giftlibrary.widget.GiftControl;
 import org.dync.giftlibrary.widget.GiftFrameLayout;
 import org.dync.giftlibrary.widget.GiftModel;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
@@ -99,7 +101,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -119,10 +123,10 @@ import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 /**
  * Created by jacky on 17/3/27.
  */
-public class LiveActivity extends BaseStreamingActivity implements StreamingStateChangedListener, MicNotify, AMapLocationListener {
+public class LiveActivity extends BaseStreamingActivity implements MicNotify, AMapLocationListener {
     private Context context;
     private RoomMain roomMain = new RoomMain(this);
-    private EmotionInputDetector mDetector;
+    private EmotionInputDetector emotionInputDetector;
     private UpMicPresenterImpl presenter;
     private List<RoomUserInfoNew> list_audience = new ArrayList<>();
     private List<RoomUserInfoNew> list_audience_top = new ArrayList<>();
@@ -140,13 +144,32 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
     private GiftFrameLayout giftFrameLayout1;
     private GiftFrameLayout giftFrameLayout2;
     private GiftControl giftControl;
-
+    private Surface mPreviewSurface;
+    private SurfaceView _CameraSurface;
     private boolean is_connect_room = false;
+    private AlivcMediaRecorder mMediaRecorder;
+    private AlivcRecordReporter mRecordReporter;
+    private int mPreviewWidth = 0;
+    private int mPreviewHeight = 0;
+    private boolean isRecording = false;
+    private Map<String, Object> mConfigure = new HashMap<>();
+    private String publishUrlFromServer;
+
+    private int resolution = AlivcMediaFormat.OUTPUT_RESOLUTION_360P;
+    private boolean screenOrientation = false;
+    private int cameraFrontFacing = 1;
+    private int bestBitrate = 500;
+    private int minBitrate = 400;
+    private int maxBitrate = 600;
+    private int initBitrate = 500;
+    private int frameRate = 25;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+        publishUrlFromServer = getIntent().getStringExtra(Config.EXTRA_KEY_PUB_URL);
+        KLog.e("publishUrlFromServer:" + publishUrlFromServer);
         //获取权限
         if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             PermissionGen.with(LiveActivity.this)
@@ -159,15 +182,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         } else {
         }
 
-        //获取权限
-        if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            PermissionGen.with(LiveActivity.this)
-                    .addRequestCode(200)
-                    .permissions(
-                            Manifest.permission.RECORD_AUDIO)
-                    .request();
-        } else {
-        }
         if (ContextCompat.checkSelfPermission(LiveActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             PermissionGen.with(LiveActivity.this)
                     .addRequestCode(300)
@@ -179,33 +193,46 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
         EventBus.getDefault().register(this);
 //        setContentView(R.layout.activity_live);
+        //================================================================推流组件
+
+        //采集
+        _CameraSurface =
+                (SurfaceView) findViewById(R.id.cameraPreview_surfaceView);
+        _CameraSurface.getHolder().addCallback(_CameraSurfaceCallback);
+        _CameraSurface.setOnTouchListener(mOnTouchListener);
         AspectFrameLayout afl = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
         afl.setShowMode(AspectFrameLayout.SHOW_MODE.FULL);
-        CameraPreviewFrameView cameraPreviewFrameView =
-                (CameraPreviewFrameView) findViewById(R.id.cameraPreview_surfaceView);
-        cameraPreviewFrameView.setListener(this);
-//        WatermarkSetting watermarksetting = new WatermarkSetting(this);
-//        watermarksetting.setResourceId(R.mipmap.ic_launcher)
-//                .setAlpha(100)
-//                .setSize(WatermarkSetting.WATERMARK_SIZE.SMALL)
-//                .setCustomPosition(0.5f, 0.5f);
-        mMediaStreamingManager = new MediaStreamingManager(this, afl, cameraPreviewFrameView,
-                AVCodecType.SW_VIDEO_WITH_SW_AUDIO_CODEC); // sw codec
-//        mMediaStreamingManager.prepare(mCameraStreamingSetting, mMicrophoneStreamingSetting, watermarksetting, mProfile, new PreviewAppearance(0.0f, 0.0f, 0.5f, 0.5f, PreviewAppearance.ScaleType.FIT));
-        mMediaStreamingManager.prepare(mCameraStreamingSetting, mMicrophoneStreamingSetting, mProfile);
+        //对焦，缩放
+        mDetector = new GestureDetector(_CameraSurface.getContext(), mGestureDetector);
+        mScaleDetector = new ScaleGestureDetector(_CameraSurface.getContext(), mScaleGestureListener);
 
-        mMediaStreamingManager.setStreamingStateListener(this);
-        mMediaStreamingManager.setSurfaceTextureCallback(this);
-        mMediaStreamingManager.setStreamingSessionListener(this);
-//        mMediaStreamingManager.setNativeLoggingEnabled(false);
-        mMediaStreamingManager.setStreamStatusCallback(this);
-        mMediaStreamingManager.setAudioSourceCallback(this);
-        // update the StreamingProfile
-//        mProfile.setStream(new StreamingProfile.Stream(mJSONObject1));
-//        mMediaStreamingManager.setStreamingProfile(mProfile);
-        setFocusAreaIndicator();
+        mMediaRecorder = AlivcMediaRecorderFactory.createMediaRecorder();
+        mMediaRecorder.init(context);
+        mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
+
+        /**
+         * this method only can be called after mMediaRecorder.init(),
+         * else will return null;
+         */
+        mRecordReporter = mMediaRecorder.getRecordReporter();
+        mMediaRecorder.setOnRecordStatusListener(mRecordStatusListener);
+        mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
+        mMediaRecorder.setOnRecordErrorListener(mOnErrorListener);
+
+        mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 3);
+        mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_MIN_VIDEO_BITRATE, minBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_INITIAL_VIDEO_BITRATE, initBitrate * 100);
+        mConfigure.put(AlivcMediaFormat.KEY_DISPLAY_ROTATION, screenOrientation ? AlivcMediaFormat.DISPLAY_ROTATION_90 : AlivcMediaFormat.DISPLAY_ROTATION_0);
+        mConfigure.put(AlivcMediaFormat.KEY_EXPOSURE_COMPENSATION, -1);//曝光度
+        mConfigure.put(AlivcMediaFormat.KEY_FRAME_RATE, frameRate);
+
+        //======================推流组件
         //设置表情适配器
-        mDetector = EmotionInputDetector.with(LiveActivity.this)
+        emotionInputDetector = EmotionInputDetector.with(LiveActivity.this)
                 .setEmotionView(emotionNewLayout)
                 .bindToContent(emotionNewLayout)
                 .bindToEditText(roomMessageEdit)
@@ -249,6 +276,149 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         giftControl = new GiftControl(giftFrameLayout1, giftFrameLayout2);
 
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPreviewSurface != null) {
+            mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+            Log.d("AlivcMediaRecorder", " onResume==== isRecording =" + isRecording + "=====");
+        }
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_BITRATE_DOWN, mBitrateDownRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_BITRATE_RAISE, mBitrateUpRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_SUCC, mAudioCaptureSuccRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_DATA_DISCARD, mDataDiscardRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_INIT_DONE, mInitDoneRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_VIDEO_ENCODER_OPEN_SUCC, mVideoEncoderSuccRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_VIDEO_ENCODER_OPEN_FAILED, mVideoEncoderFailedRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_VIDEO_ENCODED_FRAMES_FAILED, mVideoEncodeFrameFailedRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_AUDIO_ENCODED_FRAMES_FAILED, mAudioEncodeFrameFailedRes));
+        mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_FAILED, mAudioCaptureOpenFailedRes));
+    }
+
+    @Override
+    protected void onPause() {
+        if (isRecording) {
+            mMediaRecorder.stopRecord();
+            isRecording = false;
+        }
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_BITRATE_DOWN);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_BITRATE_RAISE);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_SUCC);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_DATA_DISCARD);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_INIT_DONE);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_VIDEO_ENCODER_OPEN_SUCC);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_VIDEO_ENCODER_OPEN_FAILED);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_VIDEO_ENCODED_FRAMES_FAILED);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_AUDIO_ENCODED_FRAMES_FAILED);
+        mMediaRecorder.unSubscribeEvent(AlivcEvent.EventType.EVENT_AUDIO_CAPTURE_OPEN_FAILED);
+        /**
+         * 如果要调用stopRecord和reset()方法，则stopRecord（）必须在reset之前调用，否则将会抛出IllegalStateException
+         */
+        mMediaRecorder.reset();
+        super.onPause();
+    }
+
+
+    private GestureDetector mDetector;
+    private ScaleGestureDetector mScaleDetector;
+    private GestureDetector.OnGestureListener mGestureDetector = new GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            if (mPreviewWidth > 0 && mPreviewHeight > 0) {
+                float x = motionEvent.getX() / mPreviewWidth;
+                float y = motionEvent.getY() / mPreviewHeight;
+                mMediaRecorder.focusing(x, y);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+    };
+
+    private View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mDetector.onTouchEvent(motionEvent);
+            mScaleDetector.onTouchEvent(motionEvent);
+            return true;
+        }
+    };
+
+    private ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            mMediaRecorder.setZoom(scaleGestureDetector.getScaleFactor());
+            return true;
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector scaleGestureDetector) {
+        }
+    };
+
+    private void startPreview(final SurfaceHolder holder) {
+        mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight());
+    }
+
+    private final SurfaceHolder.Callback _CameraSurfaceCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            holder.setKeepScreenOn(true);
+            mPreviewSurface = holder.getSurface();
+            KLog.e("_CameraSurfaceCallback");
+            startPreview(holder);
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            mMediaRecorder.setPreviewSize(width, height);
+            mPreviewWidth = width;
+            mPreviewHeight = height;
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            mPreviewSurface = null;
+            mMediaRecorder.stopRecord();
+            mMediaRecorder.reset();
+        }
+    };
 
     private void handleLogic(View contentView, final RoomUserInfoNew roomUserInfo) {
         //设置pop监听事件
@@ -296,6 +466,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
      * @param contentView
      */
     private boolean is_mirror = false;
+    private boolean is_beautify = true;
 
     private void handleSettingView(View contentView) {
         View.OnClickListener listener = new View.OnClickListener() {
@@ -334,25 +505,26 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                         pop_setting.dissmiss();
                         break;
                     case R.id.ll_pop_setting_camera_change:
-                        mHandler.removeCallbacks(mSwitcher);
-                        mHandler.postDelayed(mSwitcher, 100);
+                        mMediaRecorder.switchCamera();
+                        int currFacing = mMediaRecorder.switchCamera();
+                        mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, currFacing);
                         pop_setting.dissmiss();
                         break;
                     case R.id.ll_pop_setting_beautify:
-                        if (!mHandler.hasMessages(MSG_FB)) {
-                            mHandler.sendEmptyMessage(MSG_FB);
+                        if (is_beautify) {
+                            mMediaRecorder.removeFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);//关闭美颜
+                        } else {
+                            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);//开启美颜
                         }
+                        is_beautify = !is_beautify;
                         pop_setting.dissmiss();
                         break;
-                    case R.id.ll_pop_setting_mirror:
+                    case R.id.ll_pop_setting_mirror://静音
                         is_mirror = !is_mirror;
                         if (!is_mirror) {
-                            ToastUtil.show(context, R.string.mirror_same);
+                            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_MUTE_ON);
                         } else {
-                            ToastUtil.show(context, R.string.mirror_not_same);
-                        }
-                        if (!mHandler.hasMessages(MSG_PREVIEW_MIRROR)) {
-                            mHandler.sendEmptyMessage(MSG_PREVIEW_MIRROR);
+                            mMediaRecorder.removeFlag(AlivcMediaFormat.FLAG_MUTE_ON);
                         }
                         pop_setting.dissmiss();
                         break;
@@ -496,21 +668,9 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mMediaStreamingManager.resume();
-    }
 
     private boolean is_pause = false;
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // You must invoke pause here.
-        is_pause = true;
-        mMediaStreamingManager.pause();
-    }
 
     @Override
     protected void onDestroy() {
@@ -524,6 +684,7 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 }
             }).start();
         }
+        mMediaRecorder.release();
         //销毁动画
         if (giftControl != null) {
             giftControl.cleanAll();
@@ -670,56 +831,6 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
     }
 
-    @Override
-    public void onStateChanged(StreamingState streamingState, Object o) {
-        switch (streamingState) {
-            case PREPARING:
-                KLog.e("PREPARING");
-                break;
-            case CONNECTING:
-                if (is_connect_room) {//如果房间没有连接成功，则不显示控制页面
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            DialogFactory.hideRequestDialog();
-                            rl_live_control.setVisibility(View.VISIBLE);
-                            lvRoomMessage.setVisibility(View.VISIBLE);
-                            llLiveStart.setVisibility(View.GONE);
-                        }
-                    });
-                }
-                KLog.e("CONNECTING");
-                break;
-            case READY:
-                KLog.e("READY");
-                mIsReady = true;
-                if (is_pause) {//如果是调用onpause  再onresume，需要重新上传视频流
-                    startStreaming();
-                    is_pause = false;
-                }
-                break;
-            case STREAMING:
-
-                KLog.e("STREAMING");
-                // The av packet had been sent.
-                break;
-            case SHUTDOWN:
-                KLog.e("SHUTDOWN");
-                // The streaming had been finished.
-                break;
-            case IOERROR:
-                KLog.e("IOERROR");
-                // Network connect error.
-                break;
-            case OPEN_CAMERA_FAIL:
-                KLog.e("OPEN_CAMERA_FAIL");
-                // Failed to open camera.
-                break;
-            case DISCONNECTED:
-                KLog.e("DISCONNECTED");
-                break;
-        }
-    }
 
     private InputMethodManager imm;
     private String ip;
@@ -740,47 +851,60 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
                 if (!StringUtil.isEmptyandnull(room_title)) {
                     tvLiveTitle.setText("直播标题：" + room_title);
                 }
-                if (mIsReady) {
-                    DialogFactory.showRequestDialog(context);
-                    //上麦presenter
-                    presenter = new UpMicPresenterImpl(new UpMicView() {
-                        @Override
-                        public void successUpMic(RoomEntity entity) {
-                            if (entity.getRoomlist().size() > 0) {
-                                final String roomPwd = entity.getRoomlist().get(0).getRoompwd();
-                                String roomIp = entity.getRoomlist().get(0).getGateway();
-                                String roomId = entity.getRoomlist().get(0).getRoomid();
-                                String[] Ips = roomIp.split(";");
-                                String[] ports = Ips[0].split(":");
-                                ip = ports[0];
-                                port = Integer.parseInt(ports[1]);
-                                KLog.e(roomId + " " + ip + " " + port + " " + roomPwd);
-                                //连接房间
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        roomMain.Start(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), ip, port, roomPwd);
-                                    }
-                                }).start();
-                                startStreaming();
-                            } else {
-                                DialogFactory.hideRequestDialog();
-                                startActivity(new Intent(context, AuthApplyActivity.class));
-                                ToastUtil.show(context, R.string.auth_upmic);
-                                finish();
+                DialogFactory.showRequestDialog(context);
+                //上麦presenter
+                presenter = new UpMicPresenterImpl(new UpMicView() {
+                    @Override
+                    public void successUpMic(RoomEntity entity) {
+                        if (entity.getRoomlist().size() > 0) {
+                            final String roomPwd = entity.getRoomlist().get(0).getRoompwd();
+                            String roomIp = entity.getRoomlist().get(0).getGateway();
+                            String roomId = entity.getRoomlist().get(0).getRoomid();
+                            String[] Ips = roomIp.split(";");
+                            String[] ports = Ips[0].split(":");
+                            ip = ports[0];
+                            port = Integer.parseInt(ports[1]);
+                            KLog.e(roomId + " " + ip + " " + port + " " + roomPwd);
+                            //连接房间
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    roomMain.Start(Integer.parseInt(StartUtil.getUserId(context)), Integer.parseInt(StartUtil.getUserId(context)), StartUtil.getUserPwd(context), ip, port, roomPwd);
+                                }
+                            }).start();
+                            try {
+                                mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+                                mMediaRecorder.startRecord(publishUrlFromServer);
+                            } catch (Exception e) {
                             }
-                        }
-
-                        @Override
-                        public void faidedUpMic(Throwable e) {
+                            isRecording = true;
+                            //隐藏和显示控件
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DialogFactory.hideRequestDialog();
+                                    rl_live_control.setVisibility(View.VISIBLE);
+                                    lvRoomMessage.setVisibility(View.VISIBLE);
+                                    llLiveStart.setVisibility(View.GONE);
+                                }
+                            });
+                        } else {
                             DialogFactory.hideRequestDialog();
                             startActivity(new Intent(context, AuthApplyActivity.class));
                             ToastUtil.show(context, R.string.auth_upmic);
                             finish();
                         }
-                    }, Integer.parseInt(StartUtil.getUserId(context)));
-                    presenter.getUpMicInfo();
-                }
+                    }
+
+                    @Override
+                    public void faidedUpMic(Throwable e) {
+                        DialogFactory.hideRequestDialog();
+                        startActivity(new Intent(context, AuthApplyActivity.class));
+                        ToastUtil.show(context, R.string.auth_upmic);
+                        finish();
+                    }
+                }, Integer.parseInt(StartUtil.getUserId(context)));
+                presenter.getUpMicInfo();
                 break;
             case R.id.iv_live_share:
                 doShareAction();
@@ -1054,4 +1178,202 @@ public class LiveActivity extends BaseStreamingActivity implements StreamingStat
         }
     }
 
+    private boolean is_Ready = false;
+    private OnRecordStatusListener mRecordStatusListener = new OnRecordStatusListener() {
+        @Override
+        public void onDeviceAttach() {
+//            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_AUTO_FOCUS_ON);
+        }
+
+        @Override
+        public void onDeviceAttachFailed(int facing) {
+
+        }
+
+        @Override
+        public void onSessionAttach() {
+            is_Ready = true;
+            mMediaRecorder.focusing(0.5f, 0.5f);
+//            if (is_connect_room) {//如果房间没有连接成功，则不显示控制页面
+
+//            }
+        }
+
+        @Override
+        public void onSessionDetach() {
+
+        }
+
+        @Override
+        public void onDeviceDetach() {
+
+        }
+
+        @Override
+        public void onIllegalOutputResolution() {
+            KLog.e("selected illegal output resolution");
+        }
+    };
+
+
+    private OnNetworkStatusListener mOnNetworkStatusListener = new OnNetworkStatusListener() {
+        @Override
+        public void onNetworkBusy() {
+            KLog.e("==== on network busy ====");
+        }
+
+        @Override
+        public void onNetworkFree() {
+            KLog.e("network_status", "===== on network free ====");
+        }
+
+        @Override
+        public void onConnectionStatusChange(int status) {
+            KLog.e("ffmpeg Live stream connection status-->" + status);
+
+            switch (status) {
+                case AlivcStatusCode.STATUS_CONNECTION_START:
+                    KLog.e("Start live stream connection!");
+                    break;
+                case AlivcStatusCode.STATUS_CONNECTION_ESTABLISHED:
+                    KLog.e("Live stream connection is established!");
+                    break;
+                case AlivcStatusCode.STATUS_CONNECTION_CLOSED:
+                    KLog.e("Live stream connection is closed!");
+                    break;
+            }
+        }
+
+        @Override
+        public boolean onNetworkReconnectFailed() {
+            KLog.e("Reconnect timeout, not adapt to living");
+            mMediaRecorder.stopRecord();
+            showIllegalArgumentDialog("网络重连失败");
+            return false;
+        }
+    };
+
+
+    public void showIllegalArgumentDialog(String message) {
+        if (illegalArgumentDialog == null) {
+            illegalArgumentDialog = new AlertDialog.Builder(this)
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            illegalArgumentDialog.dismiss();
+                        }
+                    })
+                    .setTitle("提示")
+                    .create();
+        }
+        illegalArgumentDialog.dismiss();
+        illegalArgumentDialog.setMessage(message);
+        illegalArgumentDialog.show();
+    }
+
+    AlertDialog illegalArgumentDialog = null;
+
+    private OnLiveRecordErrorListener mOnErrorListener = new OnLiveRecordErrorListener() {
+        @Override
+        public void onError(int errorCode) {
+            KLog.e("Live stream connection error-->" + errorCode);
+
+            switch (errorCode) {
+                case AlivcStatusCode.ERROR_ILLEGAL_ARGUMENT:
+                    showIllegalArgumentDialog("-22错误产生");
+                case AlivcStatusCode.ERROR_SERVER_CLOSED_CONNECTION:
+                case AlivcStatusCode.ERORR_OUT_OF_MEMORY:
+                case AlivcStatusCode.ERROR_CONNECTION_TIMEOUT:
+                case AlivcStatusCode.ERROR_BROKEN_PIPE:
+                case AlivcStatusCode.ERROR_IO:
+                case AlivcStatusCode.ERROR_NETWORK_UNREACHABLE:
+                    KLog.e("Live stream connection error-->" + errorCode);
+                    break;
+
+                default:
+            }
+        }
+    };
+
+
+    private AlivcEventResponse mBitrateUpRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            Bundle bundle = event.getBundle();
+            int preBitrate = bundle.getInt(AlivcEvent.EventBundleKey.KEY_PRE_BITRATE);
+            int currBitrate = bundle.getInt(AlivcEvent.EventBundleKey.KEY_CURR_BITRATE);
+            KLog.e("event->up bitrate, previous bitrate is " + preBitrate +
+                    "current bitrate is " + currBitrate);
+        }
+    };
+    private AlivcEventResponse mBitrateDownRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            Bundle bundle = event.getBundle();
+            int preBitrate = bundle.getInt(AlivcEvent.EventBundleKey.KEY_PRE_BITRATE);
+            int currBitrate = bundle.getInt(AlivcEvent.EventBundleKey.KEY_CURR_BITRATE);
+            KLog.e("event->down bitrate, previous bitrate is " + preBitrate +
+                    "current bitrate is " + currBitrate);
+        }
+    };
+    private AlivcEventResponse mAudioCaptureSuccRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event->audio recorder start success");
+        }
+    };
+
+    private AlivcEventResponse mVideoEncoderSuccRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event->video encoder start success");
+        }
+    };
+    private AlivcEventResponse mVideoEncoderFailedRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event->video encoder start failed");
+        }
+    };
+    private AlivcEventResponse mVideoEncodeFrameFailedRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event->video encode frame failed");
+        }
+    };
+
+
+    private AlivcEventResponse mInitDoneRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event->live recorder initialize completely");
+        }
+    };
+
+    private AlivcEventResponse mDataDiscardRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            Bundle bundle = event.getBundle();
+            int discardFrames = 0;
+            if (bundle != null) {
+                discardFrames = bundle.getInt(AlivcEvent.EventBundleKey.KEY_DISCARD_FRAMES);
+            }
+            KLog.e("event->data discard, the frames num is " + discardFrames);
+        }
+    };
+
+    private AlivcEventResponse mAudioCaptureOpenFailedRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event-> audio capture device open failed");
+        }
+    };
+
+    private AlivcEventResponse mAudioEncodeFrameFailedRes = new AlivcEventResponse() {
+        @Override
+        public void onEvent(AlivcEvent event) {
+            KLog.e("event-> audio encode frame failed");
+        }
+    };
 }
