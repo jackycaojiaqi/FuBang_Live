@@ -286,9 +286,10 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     @Override
     protected void onResume() {
         super.onResume();
-        if (mPreviewSurface != null) {
-            mMediaRecorder.prepare(mConfigure, mPreviewSurface);
-            Log.d("AlivcMediaRecorder", " onResume==== isRecording =" + isRecording + "=====");
+        if (  is_pause) {
+            KLog.e("onResume");
+            mMediaRecorder.startRecord(publishUrlFromServer);
+            is_pause = false;
         }
         mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_BITRATE_DOWN, mBitrateDownRes));
         mMediaRecorder.subscribeEvent(new AlivcEventSubscriber(AlivcEvent.EventType.EVENT_BITRATE_RAISE, mBitrateUpRes));
@@ -305,6 +306,8 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     @Override
     protected void onPause() {
         if (isRecording) {
+            is_pause = true;
+            KLog.e("onpause");
             mMediaRecorder.stopRecord();
             isRecording = false;
         }
@@ -321,7 +324,6 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
         /**
          * 如果要调用stopRecord和reset()方法，则stopRecord（）必须在reset之前调用，否则将会抛出IllegalStateException
          */
-        mMediaRecorder.reset();
         super.onPause();
     }
 

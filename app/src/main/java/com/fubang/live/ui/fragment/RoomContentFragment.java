@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -43,8 +42,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.alivc.player.AliVcMediaPlayer;
-import com.alivc.player.MediaPlayer;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.fubang.live.AppConstant;
@@ -114,7 +111,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.widget.LinearLayout.HORIZONTAL;
 import static com.fubang.live.ui.RoomActivity.is_emoticon_show;
 
-public class RoomContentFragment extends BaseFragment implements MicNotify, RtmpUrlView, AliVcMediaPlayer.MediaPlayerErrorListener, AliVcMediaPlayer.MediaPlayerInfoListener, AliVcMediaPlayer.MediaPlayerPreparedListener {
+public class RoomContentFragment extends BaseFragment implements MicNotify, RtmpUrlView {
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
     @BindView(R.id.content)
     RelativeLayout viewContent;
@@ -184,11 +181,13 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     @BindView(R.id.rll_room_privite_chat_content)
     RelativeLayout rllRoomPriviteChatContent;
 
-    private SurfaceView surfaceView;
+    private MediaController mMediaController;
+    private PLVideoTextureView mVideoView;
     private Toast mToast = null;
     private String mVideoPath = null;
     private int mRotation = 0;
     private int mDisplayAspectRatio = PLVideoTextureView.ASPECT_RATIO_FIT_PARENT; //default
+    private View mLoadingView;
     private View mCoverView = null;
     private boolean mIsActivityPaused = true;
     private int mIsLiveStreaming = 1;
@@ -206,11 +205,9 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private GiftFrameLayout giftFrameLayout1;
     private GiftFrameLayout giftFrameLayout2;
     private GiftControl giftControl;
-    private AliVcMediaPlayer mVideoView;
 
     @Nullable
     @Override
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_content_video_texture, container, false);
         ButterKnife.bind(this, view);
@@ -245,24 +242,40 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 .bindToEmotionButton(emotionButton)
                 .build();
         setUpEmotionViewPager();
-        //====================播放器设置
-        surfaceView = (SurfaceView) getView().findViewById(R.id.VideoView);
-        //创建player对象
-        mVideoView = new AliVcMediaPlayer(context, surfaceView);
-        mVideoView.enableNativeLog();
-        mVideoView.setMediaType(MediaPlayer.MediaType.Live);
-        mVideoView.setSurfaceView(surfaceView);
-        // 设置图像适配屏幕，适配最短边，超出部分裁剪
-        mVideoView.setVideoScalingMode(MediaPlayer.VideoScalingMode.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-        //设置缺省编码类型：0表示硬解；1表示软解；
-        //如果缺省为硬解，在使用硬解时如果解码失败，会尝试使用软解
-        //如果缺省为软解，则一直使用软解，软解较为耗电，建议移动设备尽量使用硬解
-        mVideoView.setDefaultDecoder(0);
-        mVideoView.setErrorListener(this);
-        mVideoView.setInfoListener(this);
-        mVideoView.setPreparedListener(this);
-        //====================播放器设置
+        mVideoView = (PLVideoTextureView) getView().findViewById(R.id.VideoView);
+        mLoadingView = getView().findViewById(R.id.LoadingView);
+        mVideoView.setBufferingIndicator(mLoadingView);
+        mLoadingView.setVisibility(View.VISIBLE);
         mCoverView = (ImageView) getView().findViewById(R.id.CoverView);
+        mVideoView.setCoverView(mCoverView);
+
+
+        // If you want to fix display orientation such as landscape, you can use the code show as follow
+        //
+        // if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        //     mVideoView.setPreviewOrientation(0);
+        // }
+        // else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        //     mVideoView.setPreviewOrientation(270);
+        // }
+
+        mIsLiveStreaming = getActivity().getIntent().getIntExtra("liveStreaming", 1);
+
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        int codec = getActivity().getIntent().getIntExtra("mediaCodec", AVOptions.MEDIA_CODEC_SW_DECODE);
+        setOptions(codec);
+
+        // You can mirror the display
+        // mVideoView.setMirror(true);
+
+        // You can also use a custom `MediaController` widget
+        mMediaController = new MediaController(getActivity(), false, mIsLiveStreaming == 1);
+//        mVideoView.setMediaController(mMediaController);
+
+        mVideoView.setOnCompletionListener(mOnCompletionListener);
+        mVideoView.setOnErrorListener(mOnErrorListener);
+//        mVideoView.setVideoPath(mVideoPath);
+//        mVideoView.start();
         presenter = new RtmpUrlPresenterImpl(this, String.valueOf(roomId), String.valueOf(roomId));
         presenter.getRtmpUrl();
         //设置listadapter
@@ -445,7 +458,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private void getRoomUrl(String url) {
         mVideoPath = url;
         KLog.e(mVideoPath);
-//        mCoverView.setVisibility(View.VISIBLE);
+        mVideoView.pause();
+        mCoverView.setVisibility(View.VISIBLE);
         sendReconnectMessage();
     }
 
@@ -699,17 +713,14 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     public void onResume() {
         super.onResume();
         mWakeLock.acquire();
-        if (!StringUtil.isEmptyandnull(mVideoPath) && mIsActivityPaused) {
-            KLog.e("onresume " + mVideoPath);
-            mVideoView.prepareToPlay(mVideoPath);
-        }
         mIsActivityPaused = false;
+        mVideoView.start();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mVideoView.destroy();
+        mVideoView.stopPlayback();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -727,73 +738,91 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onInfo(int i, int i1) {
-        switch (i) {
-            case MediaPlayer.MEDIA_INFO_UNKNOW:
-                KLog.e("未知");
-                // 未知
-                break;
-            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                KLog.d("开始缓冲");
-                // 开始缓冲
-                break;
-            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                KLog.d("结束缓冲");
-                // 结束缓冲
-                break;
-            case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                KLog.e("首帧显示时间");
-                // 首帧显示时间
-                break;
+
+    private PLMediaPlayer.OnErrorListener mOnErrorListener = new PLMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(PLMediaPlayer mp, int errorCode) {
+            boolean isNeedReconnect = false;
+            switch (errorCode) {
+                case PLMediaPlayer.ERROR_CODE_INVALID_URI:
+                    KLog.e("Invalid URL !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
+                    KLog.e("404 resource not found !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
+                    KLog.e("Connection refused !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+                    KLog.e("Connection timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
+                    KLog.e("Empty playlist !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+                    KLog.e("Stream disconnected !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+                    KLog.e("Network IO Error !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
+                    KLog.e("Unauthorized Error !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
+                    KLog.e("Prepare timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
+                    KLog.e("Read frame timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
+                    setOptions(AVOptions.MEDIA_CODEC_SW_DECODE);
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    break;
+                default:
+                    KLog.e("unknown error !");
+                    break;
+            }
+            if (isNeedReconnect) {
+                sendReconnectMessage();
+            } else {
+//                finish();
+            }
+            // Return true means the error has been handled
+            // If return false, then `onCompletion` will be called
+            return true;
         }
-    }
+    };
 
-    @Override
-    public void onPrepared() {
-        KLog.e("onPrepared");
-        mVideoView.play();
-    }
-
-
-    @Override
-    public void onError(int i, int i1) {
-        switch (i) {
-            case MediaPlayer.ALIVC_ERR_ILLEGALSTATUS:
-                KLog.e("非法状态");
-                // 非法状态！
-                break;
-            case MediaPlayer.ALIVC_ERR_NO_NETWORK:
-                KLog.e("视频资源或网络不可用");
-                //report_error("视频资源或网络不可用！", true);
-                break;
-            case MediaPlayer.ALIVC_ERR_INVALID_INPUTFILE:
-                KLog.e("无效的视频源");
-                //视频资源或网络不可用！
-                break;
-            case MediaPlayer.ALIVC_ERR_NO_SUPPORT_CODEC:
-                KLog.e("无支持的解码器");
-                //无支持的解码器!
-                break;
-            case MediaPlayer.ALIVC_ERR_UNKNOWN:
-                KLog.e("未知错误");
-                //未知错误!
-                break;
-            case MediaPlayer.ALIVC_ERR_NOTAUTH:
-                KLog.e("未鉴权");
-                //未鉴权!
-                break;
-            case MediaPlayer.ALIVC_ERR_READD:
-                KLog.e("资源访问失败");
-                //资源访问失败!
-                break;
-            default:
-                //播放器错误!
-                break;
+    private PLMediaPlayer.OnCompletionListener mOnCompletionListener = new PLMediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(PLMediaPlayer plMediaPlayer) {
+            KLog.e("Play Completed !");
+//            finish();
         }
+    };
+
+    private void showToastTips(final String tips) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(getActivity(), tips, Toast.LENGTH_SHORT);
+                mToast.show();
+            }
+        });
     }
 
     private void sendReconnectMessage() {
+        mLoadingView.setVisibility(View.VISIBLE);
         mHandler.removeCallbacksAndMessages(null);
         mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 500);
     }
@@ -812,11 +841,8 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 sendReconnectMessage();
                 return;
             }
-            if (!StringUtil.isEmptyandnull(mVideoPath)) {
-                KLog.e("" + mVideoPath);
-                mVideoView.prepareToPlay(mVideoPath);
-            }
-
+            mVideoView.setVideoPath(mVideoPath);
+            mVideoView.start();
         }
     };
     private InputMethodManager imm;
@@ -832,6 +858,30 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         switch (view.getId()) {
             case R.id.ib_change_orientation:
                 mRotation = (mRotation + 90) % 360;
+                mVideoView.setDisplayOrientation(mRotation);
+                break;
+            case R.id.ib_change_screen:
+                mDisplayAspectRatio = (mDisplayAspectRatio + 1) % 5;
+                mVideoView.setDisplayAspectRatio(mDisplayAspectRatio);
+                switch (mVideoView.getDisplayAspectRatio()) {
+                    case PLVideoTextureView.ASPECT_RATIO_ORIGIN:
+                        KLog.e("Origin mode");
+                        break;
+                    case PLVideoTextureView.ASPECT_RATIO_FIT_PARENT:
+                        KLog.e("Fit parent !");
+                        break;
+                    case PLVideoTextureView.ASPECT_RATIO_PAVED_PARENT:
+                        KLog.e("Paved parent !");
+                        break;
+                    case PLVideoTextureView.ASPECT_RATIO_16_9:
+                        KLog.e("16 : 9 !");
+                        break;
+                    case PLVideoTextureView.ASPECT_RATIO_4_3:
+                        KLog.e("4 : 3 !");
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case R.id.iv_room_gift:
                 showWindow();
@@ -1125,14 +1175,36 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         if (entity != null) {
             mVideoPath = entity.getRTMPPlayURL();
             KLog.e(mVideoPath);
-            mVideoView.prepareToPlay(mVideoPath);
+            mVideoView.setVideoPath(mVideoPath);
+            mVideoView.start();
         }
+
     }
 
     @Override
     public void faided() {
-        ToastUtil.show(context, R.string.net_error);
+
     }
 
+    private void setOptions(int codecType) {
+        AVOptions options = new AVOptions();
+
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
+        // Some optimization with buffering mechanism when be set to 1
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, mIsLiveStreaming);
+        if (mIsLiveStreaming == 1) {
+            options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
+        }
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
+
+        // whether start play automatically after prepared, default value is 1
+        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
+
+        mVideoView.setAVOptions(options);
+    }
 
 }

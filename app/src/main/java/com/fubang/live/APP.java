@@ -5,9 +5,6 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import com.alivc.player.AccessKey;
-import com.alivc.player.AccessKeyCallback;
-import com.alivc.player.AliVcMediaPlayer;
 import com.duanqu.qupai.jni.ApplicationGlue;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.live.util.CrashHandler;
@@ -59,13 +56,7 @@ public class APP extends MultiDexApplication {
         LiteOrmDBUtil.createDb(getApplicationContext(), "live");
         MobclickAgent.setScenarioType(getApplicationContext(), MobclickAgent.EScenarioType.E_UM_NORMAL);
 
-//        //阿里云直播初始化
-//        AliVcMediaPlayer.init(getApplicationContext(), "wanghong", new AccessKeyCallback() {
-//            public AccessKey getAccessToken() {
-//                KLog.e("AccessKeyCallback");
-//                return new AccessKey("LTAIC4QFrCWb2WzP", "06RdS2kZrKhFj8oryKQIUoeUotfIB4");
-//            }
-//        });
+
         System.loadLibrary("gnustl_shared");
 //        System.loadLibrary("ijkffmpeg");//目前使用微博的ijkffmpeg会出现1K再换wifi不重连的情况
         System.loadLibrary("qupai-media-thirdparty");
