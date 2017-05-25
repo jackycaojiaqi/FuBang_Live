@@ -254,11 +254,9 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
         //对焦，缩放
         mDetector = new GestureDetector(_CameraSurface.getContext(), mGestureDetector);
         mScaleDetector = new ScaleGestureDetector(_CameraSurface.getContext(), mScaleGestureListener);
-
         mMediaRecorder = AlivcMediaRecorderFactory.createMediaRecorder();
         mMediaRecorder.init(context);
         mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
-
         /**
          * this method only can be called after mMediaRecorder.init(),
          * else will return null;
@@ -267,9 +265,8 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
         mMediaRecorder.setOnRecordStatusListener(mRecordStatusListener);
         mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
         mMediaRecorder.setOnRecordErrorListener(mOnErrorListener);
-
         mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
-        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 1);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 3);
         mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
         mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
         mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
@@ -1017,6 +1014,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                 break;
             case R.id.tv_live_lrc_cancle:
                 mediaPlayer.pause();
+                mediaPlayer.reset();
                 lrcLive.onDrag(0);
                 rllLiveLrc.setVisibility(View.GONE);
                 break;
@@ -1121,6 +1119,11 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
 
                 if (file_music.exists()) {
                     try {
+                        if (mediaPlayer != null) {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.pause();
+                            }
+                        }
                         mediaPlayer.reset();
                         String path = file_music.getAbsolutePath();
                         KLog.e(path);
@@ -1195,7 +1198,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     private OnRecordStatusListener mRecordStatusListener = new OnRecordStatusListener() {
         @Override
         public void onDeviceAttach() {
-//            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_AUTO_FOCUS_ON);
+            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_AUTO_FOCUS_ON);
         }
 
         @Override

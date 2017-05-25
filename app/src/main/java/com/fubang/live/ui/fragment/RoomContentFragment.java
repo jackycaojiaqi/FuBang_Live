@@ -262,7 +262,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         mIsLiveStreaming = getActivity().getIntent().getIntExtra("liveStreaming", 1);
 
         // 1 -> hw codec enable, 0 -> disable [recommended]
-        int codec = getActivity().getIntent().getIntExtra("mediaCodec", AVOptions.MEDIA_CODEC_SW_DECODE);
+        int codec = AVOptions.MEDIA_CODEC_AUTO;
         setOptions(codec);
 
         // You can mirror the display
@@ -423,14 +423,14 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     }
 
     private long nk_num;//用户金币总量
-
+    private long nk_num_this_time = 0;//最近一次 金币消耗数量
 
     //充值金币成功后，
     @Subscriber(tag = "onPaySuccess")
     private void onPaySuccess(long nk) {
         nk_num = nk;
         if (tv_nk_num != null) {
-            tv_nk_num.setText("金币余额 " + nk_num);
+            tv_nk_num.setText("金币余额:" + nk_num);
         }
     }
 
@@ -780,7 +780,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
-                    setOptions(AVOptions.MEDIA_CODEC_SW_DECODE);
+                    setOptions(AVOptions.MEDIA_CODEC_AUTO);
                     isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
@@ -1062,22 +1062,27 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     private int giftId;
     private View view_pop_gift;
     private int gift_position = -1;
-    private TextView tv_nk_num;
+    private TextView tv_nk_num, giftName;
+    private GridView gridView;
+    private Button giftSendBtn;
+    private LinearLayout goto_pay;
+    private EditText giftCount;
 
     //礼物的悬浮框
     private void showWindow() {
-        LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view_pop_gift = layoutInflater.inflate(R.layout.pop_gift_grid, null);
-        GridView gridView = (GridView) view_pop_gift.findViewById(R.id.room_gift_list);
-        Button giftSendBtn = (Button) view_pop_gift.findViewById(R.id.gift_send_btn);
-        final TextView giftName = (TextView) view_pop_gift.findViewById(R.id.gift_name_txt);
-        LinearLayout goto_pay = (LinearLayout) view_pop_gift.findViewById(R.id.ll_room_goto_pay);
-        tv_nk_num = (TextView) view_pop_gift.findViewById(R.id.tv_room_nk_num);
-        final EditText giftCount = (EditText) view_pop_gift.findViewById(R.id.gift_count);
-//        final EditText
-        giftToUser = (TextView) view_pop_gift.findViewById(R.id.gift_to_user);
-        popupWindow = new PopupWindow(view_pop_gift);
-        popupWindow.setFocusable(true);
+        if (popupWindow == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view_pop_gift = layoutInflater.inflate(R.layout.pop_gift_grid, null);
+            gridView = (GridView) view_pop_gift.findViewById(R.id.room_gift_list);
+            giftSendBtn = (Button) view_pop_gift.findViewById(R.id.gift_send_btn);
+            giftName = (TextView) view_pop_gift.findViewById(R.id.gift_name_txt);
+            goto_pay = (LinearLayout) view_pop_gift.findViewById(R.id.ll_room_goto_pay);
+            tv_nk_num = (TextView) view_pop_gift.findViewById(R.id.tv_room_nk_num);
+            giftCount = (EditText) view_pop_gift.findViewById(R.id.gift_count);
+            giftToUser = (TextView) view_pop_gift.findViewById(R.id.gift_to_user);
+            popupWindow = new PopupWindow(view_pop_gift);
+            popupWindow.setFocusable(true);
+        }
         gifts.clear();
         gifts.addAll(GiftUtil.getGifts());
         GiftGridViewAdapter giftAdapter = new GiftGridViewAdapter(gifts, getActivity());
@@ -1096,11 +1101,19 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
         giftSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (giftId == -1) {
+                if (giftId == -1 || gift_position == -1) {
                     ToastUtil.show(context, R.string.please_select_a_gift);
                     return;
                 }
-                final int count = Integer.parseInt(giftCount.getText().toString());
+                if (StringUtil.isEmptyandnull(giftCount.getText().toString().trim())) {
+                    ToastUtil.show(context, R.string.please_select_a_gift_num);
+                    return;
+                }
+                final int count = Integer.parseInt(giftCount.getText().toString().trim());
+                if (count <= 0) {
+                    ToastUtil.show(context, R.string.please_select_a_gift_num);
+                    return;
+                }
                 if (nk_num < (gifts.get(gift_position).getPrice() * count)) {
                     ToastUtil.show(context, R.string.no_more_nk);
                     Intent intent = new Intent(context, PayActivity.class);
@@ -1108,11 +1121,13 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     startActivity(intent);
                     return;
                 }
+                nk_num_this_time = gifts.get(gift_position).getPrice() * count;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         if (roomMain.getRoom().isOK())
                             roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
+
                     }
                 }).start();
                 giftName.setText("送给");
@@ -1128,7 +1143,14 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                 startActivity(intent);
             }
         });
-        tv_nk_num.setText("余额:" + nk_num);
+        if (nk_num_this_time == 0) {
+            tv_nk_num.setText("余额:" + nk_num);
+        } else {
+            long nk_left = nk_num - nk_num_this_time;
+            tv_nk_num.setText("余额:" + nk_left);
+            nk_num = nk_left;
+        }
+
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         ColorDrawable dw = new ColorDrawable(0x00ffffff);
@@ -1145,7 +1167,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
     /**
      * 表情页面
      */
-
     private void setUpEmotionViewPager() {
         final String[] titles = new String[]{"经典"};
         EmotionAdapter mViewPagerAdapter = new EmotionAdapter(getActivity().getSupportFragmentManager(), titles);
@@ -1188,7 +1209,6 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     private void setOptions(int codecType) {
         AVOptions options = new AVOptions();
-
         // the unit of timeout is ms
         options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
         options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
