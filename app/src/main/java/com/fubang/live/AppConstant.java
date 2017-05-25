@@ -25,6 +25,7 @@ public class AppConstant {
     public static final String ROOMPWD = "roompwd";
     public static final String NVCBID = "nvcbid";
 
+    public static final long NKTIMES = 100;
 
     public static final String MSG_GET_ROOM_INFO = "/index.php/app/roomlist?";//获取房间信息       （首页热门）
     public static final String MSG_UP_AUTH_INFO = "/index.php/app/info_up";//上传认证信息

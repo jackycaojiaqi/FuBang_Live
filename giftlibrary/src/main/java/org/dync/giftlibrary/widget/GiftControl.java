@@ -59,15 +59,19 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
      * @param gift
      * @param supportCombo 是否支持实时连击，如果为true：支持，否则不支持
      */
+    private String userId;
+
     public void loadGift(GiftModel gift, boolean supportCombo) {
+        userId = gift.getSendUserId();
         if (mGiftQueue != null) {
             if (supportCombo) {
                 if (mFirstItemGift.isShowing()) {
                     if (mFirstItemGift.getCurrentGiftId().equals(gift.getGiftId()) && mFirstItemGift.getCurrentSendUserId().equals(gift.getSendUserId())) {
                         //连击
-                        Log.i(TAG, "addGiftQueue: ========mFirstItemGift连击========礼物：" + gift.getGiftId() + ",连击X" + gift.getGiftCount());
+                        Log.e(TAG, "addGiftQueue: ========mFirstItemGift连击========礼物：" + gift.getGiftId() + ",连击X" + gift.getGiftCount());
                         mFirstItemGift.setGiftCount(gift.getGiftCount());
                         mFirstItemGift.setSendGiftTime(gift.getSendGiftTime());
+                        Log.e(TAG, gift.getSendUserId());
                         return;
                     }
                 }
@@ -75,9 +79,10 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
                 if (mSecondItemGift.isShowing()) {
                     if (mSecondItemGift.getCurrentGiftId().equals(gift.getGiftId()) && mSecondItemGift.getCurrentSendUserId().equals(gift.getSendUserId())) {
                         //连击
-                        Log.i(TAG, "addGiftQueue: ========mSecondItemGift连击========礼物：" + gift.getGiftId() + ",连击X" + gift.getGiftCount());
+                        Log.e(TAG, "addGiftQueue: ========mSecondItemGift连击========礼物：" + gift.getGiftId() + ",连击X" + gift.getGiftCount());
                         mSecondItemGift.setGiftCount(gift.getGiftCount());
                         mSecondItemGift.setSendGiftTime(gift.getSendGiftTime());
+                        Log.e(TAG, gift.getSendUserId());
                         return;
                     }
                 }
@@ -158,6 +163,7 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
 
     /**
      * 通过获取giftId和getSendUserName当前用户giftId礼物总数
+     *
      * @param giftId
      * @param userName
      * @return
@@ -170,11 +176,11 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
             curGiftCount = mFirstItemGift.getGiftCount();
         } else if (secondGift != null && secondGift.getGiftId().equals(giftId) && secondGift.getSendUserName().equals(userName)) {
             curGiftCount = mSecondItemGift.getGiftCount();
-        }else {//自己的礼物不正在显示，还在队列中
+        } else {//自己的礼物不正在显示，还在队列中
             Iterator<GiftModel> iterator = mGiftQueue.iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 GiftModel giftModel = iterator.next();
-                if (giftModel.getGiftId().equals(giftId) && giftModel.getSendUserName().equals(userName)){
+                if (giftModel.getGiftId().equals(giftId) && giftModel.getSendUserName().equals(userName)) {
                     curGiftCount = giftModel.getGiftCount();
                     break;
                 }
@@ -185,6 +191,7 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
 
     /**
      * 通过获取giftId和getSendUserId当前用户giftId礼物总数
+     *
      * @param giftId
      * @param userId
      * @return
@@ -197,11 +204,11 @@ public class GiftControl implements GiftFrameLayout.LeftGiftAnimationStatusListe
             curGiftCount = mFirstItemGift.getGiftCount();
         } else if (secondGift != null && secondGift.getGiftId().equals(giftId) && secondGift.getSendUserId().equals(userId)) {
             curGiftCount = mSecondItemGift.getGiftCount();
-        }else {//自己的礼物不正在显示，还在队列中
+        } else {//自己的礼物不正在显示，还在队列中
             Iterator<GiftModel> iterator = mGiftQueue.iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 GiftModel giftModel = iterator.next();
-                if (giftModel.getGiftId().equals(giftId) && giftModel.getSendUserId().equals(userId)){
+                if (giftModel.getGiftId().equals(giftId) && giftModel.getSendUserId().equals(userId)) {
                     curGiftCount = giftModel.getGiftCount();
                     break;
                 }

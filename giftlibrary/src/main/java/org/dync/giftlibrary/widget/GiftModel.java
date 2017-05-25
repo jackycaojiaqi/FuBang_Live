@@ -66,6 +66,7 @@ public class GiftModel {
         setSendGiftTime(sendGiftTime);
     }
 
+
     public GiftModel(String giftId, String sendUserName, String sendUserPic, int giftCont) {
         setGiftId(giftId);
         setSendUserName(sendUserName);

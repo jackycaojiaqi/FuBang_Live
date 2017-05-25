@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.text.method.KeyListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import org.dync.giftlibrary.R;
+import org.simple.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -87,6 +89,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
      * 礼物动画结束
      */
     private boolean isEnd = true;
+    private String sendUserId;
     private LeftGiftAnimationStatusListener mGiftAnimationListener;
 
     public GiftFrameLayout(Context context) {
@@ -114,7 +117,18 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
         anim_header = (ImageView) view.findViewById(R.id.headIv);
         anim_nickname = (TextView) view.findViewById(R.id.nickNameTv);
         anim_sign = (TextView) view.findViewById(R.id.infoTv);
+        anim_header.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, sendUserId + "123");
+                if (!TextUtils.isEmpty(sendUserId)) {
+                    Log.e(TAG, sendUserId + "125");
+                    EventBus.getDefault().post(sendUserId, "click_show_pop");
+                }
+            }
+        });
         this.addView(view);
+
     }
 
     public ImageView getAnimGift() {
@@ -139,6 +153,7 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
         if (gift == null) {
             return false;
         }
+        sendUserId = gift.getSendUserId();
         mGift = gift;
         if (0 != gift.getGiftCount()) {
             this.mGiftCount = gift.getGiftCount();
@@ -362,11 +377,10 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 isShowing = true;
                 isEnd = false;
                 if (mGift.getSendUserPic().equals("")) {
-                    Glide.with(mContext).load(R.mipmap.icon).transform(new GlideCircleTransform(mContext)).into(anim_header);
+                    Glide.with(mContext).load(R.mipmap.ic_user_pic).error(R.mipmap.ic_user_pic).transform(new GlideCircleTransform(mContext)).into(anim_header);
                 } else {
-                    Glide.with(mContext).load(mGift.getSendUserPic()).transform(new GlideCircleTransform(mContext)).into(anim_header);
+                    Glide.with(mContext).load(mGift.getSendUserPic()).error(R.mipmap.ic_user_pic).transform(new GlideCircleTransform(mContext)).into(anim_header);
                 }
-
                 anim_num.setText("x " + mCombo);
             }
         });
@@ -610,5 +624,14 @@ public class GiftFrameLayout extends FrameLayout implements Handler.Callback {
                 });
                 break;
         }
+    }
+
+    public String getSendUserId() {
+        return sendUserId;
+    }
+
+    public void setSendUserId(String sendUserId) {
+        Log.e(TAG, sendUserId);
+        this.sendUserId = sendUserId;
     }
 }

@@ -545,15 +545,15 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
     private RoomChatAdapter adapter;
     private RoomGiftAdapter adapter_gift;
 
-    @PermissionSuccess(requestCode = 100)
-    public void Permission100Success() {
-        //================================================================推流组件
-
-        //采集
-        initCameraView();
-
-        //======================推流组件
-    }
+//    @PermissionSuccess(requestCode = 100)
+//    public void Permission100Success() {
+//        //================================================================推流组件
+//
+//        //采集
+//        initCameraView();
+//
+//        //======================推流组件
+//    }
 
     @PermissionFail(requestCode = 100)
     public void Permission100Fail() {
@@ -884,7 +884,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                                 }
                             }).start();
                             try {
-                                mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+//                                mMediaRecorder.prepare(mConfigure, mPreviewSurface);
                                 mMediaRecorder.startRecord(publishUrlFromServer);
                             } catch (Exception e) {
                             }

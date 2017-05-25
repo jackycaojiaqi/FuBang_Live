@@ -531,6 +531,25 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     }
 
+    @Subscriber(tag = "click_show_pop")
+    public void click_show_pop(String obj) {
+        KLog.e(obj+" ");
+        View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_user_info, null);
+        //处理popWindow 显示内容
+        for (RoomUserInfoNew roomUserInfoNew : list_audience) {
+            if (roomUserInfoNew.getUserid() == Integer.parseInt(obj)) {
+                handleLogic(contentView, roomUserInfoNew);
+                //创建并显示popWindow
+                pop_info = new CustomPopWindow.PopupWindowBuilder(getActivity())
+                        .setView(contentView)
+                        .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+                        .size(ViewGroup.LayoutParams.MATCH_PARENT, ScreenUtils.Dp2Px(context, 620))//显示大小
+                        .create()
+                        .showAtLocation(rvRoomAudience, Gravity.CENTER, 0, 0);
+            }
+        }
+    }
+
     //接收礼物消息更新
     @Subscriber(tag = "BigGiftRecord")
     public void getGiftRecord(BigGiftRecord obj) {
