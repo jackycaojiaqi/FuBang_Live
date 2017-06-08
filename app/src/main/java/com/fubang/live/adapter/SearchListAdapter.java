@@ -10,6 +10,7 @@ import com.fubang.live.entities.RoomListEntity;
 import com.fubang.live.entities.SearchListEntity;
 import com.fubang.live.util.FBImage;
 import com.fubang.live.util.StringUtil;
+import com.socks.library.KLog;
 
 import java.util.List;
 
@@ -50,8 +51,10 @@ public class SearchListAdapter extends BaseQuickAdapter<SearchListEntity.Roomlis
     protected void convert(BaseViewHolder helper, SearchListEntity.RoomlistBean item) {
         helper.setText(R.id.tv_room_history_name, item.getCalias() + " ")
                 .setText(R.id.tv_room_history_signe, item.getCidiograph() + " ");
-        if (!StringUtil.isEmptyandnull(item.getCphoto()))
+        if (!StringUtil.isEmptyandnull(item.getCphoto())){
             FBImage.Create(mContext, AppConstant.BASE_IMG_URL + item.getCphoto()).into((ImageView) helper.getView(R.id.riv_room_history_pic));
+        }
+
 
         if (!StringUtil.isEmptyandnull(item.getNgender())) {
             if (item.getNgender().equals("0")) {

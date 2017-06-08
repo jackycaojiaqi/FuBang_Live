@@ -21,7 +21,7 @@ public interface ApiService {
     @GET("/index.php/app/roomlist?")//获取房间列表
     Call<RoomEntity> getRoomEntity(@QueryMap Map<String, String> map);
 
-    @GET("/index.php/app/upmic?")//主播上麦
+    @GET("/index.php/app/upmic?")//主播上麦房间信息
     Call<RoomEntity> getUpMic(@QueryMap Map<String, String> map);
 
     @GET("/rtmp_pub.php?")//获取推流地址

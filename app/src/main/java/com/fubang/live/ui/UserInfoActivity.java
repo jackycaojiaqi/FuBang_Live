@@ -112,7 +112,7 @@ public class UserInfoActivity extends TakePhotoActivity {
 
     private void initdate() {
         userInfoEntity = getIntent().getParcelableExtra(AppConstant.CONTENT);
-        KLog.e(userInfoEntity.getInfo().getType()+" ");
+        KLog.e(userInfoEntity.getInfo().getType() + " ");
         if (userInfoEntity.getStatus().equals("success")) {
             //头像
             if (!StringUtil.isEmptyandnull(userInfoEntity.getInfo().getCphoto())) {
@@ -350,14 +350,14 @@ public class UserInfoActivity extends TakePhotoActivity {
                     .execute(new StringDialogCallback(this) {
                         @Override
                         public void onSuccess(String s, Call call, Response response) {
-                            ToastUtil.show(context, R.string.up_auth_info_success);
+                            ToastUtil.show(context, R.string.up_auth_pic_success);
                         }
 
                         @Override
                         public void onError(Call call, Response response, Exception e) {
                             super.onError(call, response, e);
                             e.printStackTrace();
-                            ToastUtil.show(context, R.string.up_auth_info_failure);
+                            ToastUtil.show(context, R.string.up_auth_pic_failure);
                         }
                     });
         }

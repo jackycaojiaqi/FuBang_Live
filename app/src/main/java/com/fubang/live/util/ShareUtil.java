@@ -1,19 +1,30 @@
 package com.fubang.live.util;
 
+import android.app.Activity;
 import android.content.Context;
 
+import com.fubang.live.AppConstant;
+import com.fubang.live.R;
+import com.fubang.live.callback.StringDialogCallback;
+import com.lzy.okgo.OkGo;
 import com.socks.library.KLog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.HashMap;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
+import okhttp3.Call;
+import okhttp3.Response;
 
 /**
  * 第三方分享工具类
  * Created by dell on 2016/4/11.
  */
-public class ShareUtil {
+public class ShareUtil  {
 
     private static volatile ShareUtil instance = null;
 
@@ -63,39 +74,60 @@ public class ShareUtil {
 //        oks.show(context);
 //    }
 
-    public void showShareNew(final Context context, Platform platform) {
-        Platform.ShareParams sp = new Platform.ShareParams();
-        sp.setTitle("富邦直播");
-        sp.setTitleUrl("http://61.153.104.118:9418/download/fbzb.apk"); // 标题的超链接
-        sp.setText("富邦直播，你值得拥有！");
-        sp.setImageUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492651940&di=66d41148d98384b03f7297bfce9442bd&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.bjxifu.cn%2Ftupian%2Fbd9977330.jpg.jpg");
-        sp.setSite("富邦直播");
-        sp.setSiteUrl("富邦直播");
-        sp.setUrl("http://61.153.104.118:9418/download/fbzb.apk");
-        sp.setShareType(Platform.SHARE_WEBPAGE);
-        // 设置分享事件回调（注：回调放在不能保证在主线程调用，不可以在里面直接处理UI操作）
-        platform.setPlatformActionListener(new PlatformActionListener() {
-            public void onError(Platform arg0, int arg1, Throwable arg2) {
-                KLog.e("分享失败" + arg2.getMessage() + arg2.getLocalizedMessage());
-                ToastUtil.show(context, "分享失败");
-                //失败的回调，arg:平台对象，arg1:表示当前的动作，arg2:异常信息
-            }
+    public void showShareNew(final Context context, final Platform platform, String roomId) {
+        String url = AppConstant.BASE_RTMP_URL + AppConstant.MSG_GET_PLAY_URL + "streamKey=" + "wh_" + roomId + "_" + roomId;
+        OkGo.get(url)
+                .tag(context)//
+                .execute(new StringDialogCallback((Activity) context) {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        try {
+                            JSONObject object = new JSONObject(s);
+                            String paly_url = object.getString("RTMPPlayURL");
+                            Platform.ShareParams sp = new Platform.ShareParams();
+                            sp.setTitle("富邦直播");
+                            sp.setText("富邦直播，你值得拥有！");
+                            sp.setImageUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492651940&di=66d41148d98384b03f7297bfce9442bd&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.bjxifu.cn%2Ftupian%2Fbd9977330.jpg.jpg");
+                            sp.setSite("富邦直播");
+                            sp.setSiteUrl("富邦直播");
+                            sp.setUrl("http://www.pppktv.com/sp/demos/shiping.html?url=" + paly_url);
+                            sp.setShareType(Platform.SHARE_WEBPAGE);
+                            // 设置分享事件回调（注：回调放在不能保证在主线程调用，不可以在里面直接处理UI操作）
+                            platform.setPlatformActionListener(new PlatformActionListener() {
+                                public void onError(Platform arg0, int arg1, Throwable arg2) {
+                                    KLog.e("分享失败" + arg2.getMessage() + arg2.getLocalizedMessage());
+                                    ToastUtil.show(context, "分享失败");
+                                    //失败的回调，arg:平台对象，arg1:表示当前的动作，arg2:异常信息
+                                }
 
-            public void onComplete(Platform arg0, int arg1, HashMap<String, Object> arg2) {
-                ToastUtil.show(context, "分享成功");
-                //分享成功的回调
-            }
+                                public void onComplete(Platform arg0, int arg1, HashMap<String, Object> arg2) {
+                                    ToastUtil.show(context, "分享成功");
+                                    //分享成功的回调
+                                }
 
-            public void onCancel(Platform arg0, int arg1) {
-                //取消分享的回调
-                ToastUtil.show(context, "分享取消");
-            }
-        });
-        // 执行图文分享
-        platform.SSOSetting(false);
-        if (!platform.getName().contains("Wechat")) {
-            platform.authorize();
-        }
-        platform.share(sp);
+                                public void onCancel(Platform arg0, int arg1) {
+                                    //取消分享的回调
+                                    ToastUtil.show(context, "分享取消");
+                                }
+                            });
+                            // 执行图文分享
+                            platform.SSOSetting(false);
+                            if (!platform.getName().contains("Wechat")) {
+                                platform.authorize();
+                            }
+                            platform.share(sp);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                        e.printStackTrace();
+                        ToastUtil.show(context, R.string.up_auth_pic_failure);
+                    }
+                });
+
     }
 }

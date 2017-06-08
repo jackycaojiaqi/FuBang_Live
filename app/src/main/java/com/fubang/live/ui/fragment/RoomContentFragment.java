@@ -533,7 +533,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
 
     @Subscriber(tag = "click_show_pop")
     public void click_show_pop(String obj) {
-        KLog.e(obj+" ");
+        KLog.e(obj + " ");
         View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_user_info, null);
         //处理popWindow 显示内容
         for (RoomUserInfoNew roomUserInfoNew : list_audience) {
@@ -1039,7 +1039,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(Wechat.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat, String.valueOf(roomId));
                 pop_share.dismiss();
             }
         });
@@ -1047,7 +1047,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(WechatMoments.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat, String.valueOf(roomId));
                 pop_share.dismiss();
             }
         });
@@ -1055,7 +1055,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(QQ.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat, String.valueOf(roomId));
                 pop_share.dismiss();
             }
         });
@@ -1063,7 +1063,7 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(SinaWeibo.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat, String.valueOf(roomId));
                 pop_share.dismiss();
             }
         });
@@ -1145,8 +1145,11 @@ public class RoomContentFragment extends BaseFragment implements MicNotify, Rtmp
                     @Override
                     public void run() {
                         if (roomMain.getRoom().isOK())
-                            roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
-
+                            if (StringUtil.isEmptyandnull(userInfoAnchor.getAlias())) {
+                                ToastUtil.show(context, "当前主播不在线，不能赠送礼物");
+                            } else {
+                                roomMain.getRoom().getChannel().sendGiftRecord(Integer.parseInt(StartUtil.getUserId(context)), roomId, giftId, count, userInfoAnchor.getAlias(), StartUtil.getUserName(context));
+                            }
                     }
                 }).start();
                 giftName.setText("送给");

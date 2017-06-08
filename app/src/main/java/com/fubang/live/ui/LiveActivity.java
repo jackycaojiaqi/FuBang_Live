@@ -782,6 +782,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
             intent.putExtra("num", audience);
             intent.putExtra("name", userInfoAnchor.getAlias());
             intent.putExtra("pic", userInfoAnchor.getCphoto());
+            intent.putExtra("roomId", StartUtil.getUserId(context));
             startActivity(intent);
             finish();
         } else {//观众退出
@@ -1040,7 +1041,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(Wechat.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,StartUtil.getUserId(context));
                 pop_share.dismiss();
             }
         });
@@ -1048,7 +1049,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(WechatMoments.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,StartUtil.getUserId(context));
                 pop_share.dismiss();
             }
         });
@@ -1056,7 +1057,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(QQ.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,StartUtil.getUserId(context));
                 pop_share.dismiss();
             }
         });
@@ -1064,7 +1065,7 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
             @Override
             public void onClick(View v) {
                 Platform plat = ShareSDK.getPlatform(SinaWeibo.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,StartUtil.getUserId(context));
                 pop_share.dismiss();
             }
         });

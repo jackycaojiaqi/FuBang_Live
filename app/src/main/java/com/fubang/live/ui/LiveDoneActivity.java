@@ -51,7 +51,7 @@ public class LiveDoneActivity extends BaseActivity {
     ImageView ivLiveDoneBack;
     private Context context;
     private int audience_num = 0;
-    private String pic, name;
+    private String pic, name,roomId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +62,7 @@ public class LiveDoneActivity extends BaseActivity {
         audience_num = getIntent().getIntExtra("num", 0);
         name = getIntent().getStringExtra("name");
         pic = getIntent().getStringExtra("pic");
+        roomId = getIntent().getStringExtra("roomId");
         initview();
     }
 
@@ -77,19 +78,19 @@ public class LiveDoneActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.iv_live_done_share_sina:
                 plat = ShareSDK.getPlatform(SinaWeibo.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,roomId);
                 break;
             case R.id.iv_live_done_share_qq:
                 plat = ShareSDK.getPlatform(QQ.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,roomId);
                 break;
             case R.id.iv_live_done_share_wechat:
                 plat = ShareSDK.getPlatform(Wechat.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,roomId);
                 break;
             case R.id.iv_live_done_share_wechat_circle:
                 plat = ShareSDK.getPlatform(WechatMoments.NAME);
-                ShareUtil.getInstance().showShareNew(context, plat);
+                ShareUtil.getInstance().showShareNew(context, plat,roomId);
                 break;
             case R.id.iv_live_done_back:
                 startActivity(new Intent(context, MainActivity.class));

@@ -64,6 +64,8 @@ public class RoomAudienceAdapter extends BaseQuickAdapter<RoomUserInfoNew, BaseV
             helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.drawable.ic_room_user_no2);
         } else if (helper.getPosition() == 2) {
             helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.drawable.ic_room_user_no3);
+        }else {
+            helper.setBackgroundRes(R.id.rll_audience_ranking_bg, R.color.transparent_50);
         }
     }
 }
