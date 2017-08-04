@@ -885,7 +885,6 @@ public class LiveActivity extends BaseStreamingActivity implements MicNotify, AM
                                 }
                             }).start();
                             try {
-//                                mMediaRecorder.prepare(mConfigure, mPreviewSurface);
                                 mMediaRecorder.startRecord(publishUrlFromServer);
                             } catch (Exception e) {
                             }

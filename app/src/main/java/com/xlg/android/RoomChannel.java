@@ -563,6 +563,7 @@ public class RoomChannel implements ClientSocketHandler {
             byte[] data = new byte[buf.size()];
 
             buf.getBytes(data, 0, buf.size());
+            KLog.e(data);
             mSocket.Send(data);
         }
     }

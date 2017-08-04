@@ -14,6 +14,15 @@ public class RtmpUrlEntity extends BaseEntity {
     private int state;
     private String publishUrl;
     private String RTMPPlayURL;
+    private String M3U8PlayURL;
+
+    public String getM3U8PlayURL() {
+        return M3U8PlayURL;
+    }
+
+    public void setM3U8PlayURL(String m3U8PlayURL) {
+        M3U8PlayURL = m3U8PlayURL;
+    }
 
     public int getState() {
         return state;

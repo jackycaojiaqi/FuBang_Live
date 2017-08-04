@@ -84,15 +84,15 @@ public class ShareUtil  {
                         try {
                             JSONObject object = new JSONObject(s);
                             String paly_url = object.getString("RTMPPlayURL");
+                            String m3u8_url =  object.getString("M3U8PlayURL");
                             Platform.ShareParams sp = new Platform.ShareParams();
                             sp.setTitle("富邦直播");
                             sp.setText("富邦直播，你值得拥有！");
                             sp.setImageUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492651940&di=66d41148d98384b03f7297bfce9442bd&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.bjxifu.cn%2Ftupian%2Fbd9977330.jpg.jpg");
                             sp.setSite("富邦直播");
                             sp.setSiteUrl("富邦直播");
-                            sp.setUrl("http://www.pppktv.com/sp/demos/shiping.html?url=" + paly_url);
+                            sp.setUrl("http://www.pppktv.com/sp/demos/shiping.html?url=" + paly_url+"&murl="+m3u8_url);
                             sp.setShareType(Platform.SHARE_WEBPAGE);
-                            // 设置分享事件回调（注：回调放在不能保证在主线程调用，不可以在里面直接处理UI操作）
                             platform.setPlatformActionListener(new PlatformActionListener() {
                                 public void onError(Platform arg0, int arg1, Throwable arg2) {
                                     KLog.e("分享失败" + arg2.getMessage() + arg2.getLocalizedMessage());
